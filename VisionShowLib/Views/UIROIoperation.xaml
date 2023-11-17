@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="VisionShowLib.Views.UIROIoperation"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VisionShowLib.Views"       
+              xmlns:viewmodel="clr-namespace:VisionShowLib.ViewModels"        
+              mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="300">
+            
+
+    <UserControl.DataContext>
+        <viewmodel:CommandModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Dictionary/Chinese.xaml"/>
+                <ResourceDictionary Source="../Dictionary/Style.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <WrapPanel Background="white" Margin="2">
+            <Button  Name="btnCreateRect" ToolTip="{StaticResource btnCreateRectTip}">
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreateRectImage}"/>
+                </Button.Content>
+            </Button>
+            <Button  Name="btnCreateRatRect" ToolTip="{StaticResource btnCreateRatRectTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreateRatRectImage}"/>
+                </Button.Content>
+            </Button>
+            <Button Name="btnCreateCircle"  ToolTip="{StaticResource btnCreateCircleTip}">
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreateCircleImage}"/>
+                </Button.Content>
+            </Button>
+            <Button Name="btnCreateCircleArc" ToolTip="{StaticResource btnCreateCircleArcTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreateCircleArcImage}"/>
+                </Button.Content>
+            </Button>
+            <Button  Name="btnCreateLine" ToolTip="{StaticResource btnCreateLineTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreateLineImage}"/>
+                </Button.Content>
+            </Button>
+            <Button Name="btnCreatePoint" ToolTip="{StaticResource btnCreatePointTip}">
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreatePointImage}"/>
+                </Button.Content>
+            </Button>
+            <Button  Name="btnCreatePolygn" ToolTip="{StaticResource btnCreatePolygnTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreatePolygnImage}"/>
+                </Button.Content>
+            </Button>
+            <Button  Name="btnCreateEllipse" ToolTip="{StaticResource btnCreateEllipseTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnCreateEllipseImage}"/>
+                </Button.Content>
+            </Button>
+            <Button   Name="btnROIDelete" ToolTip="{StaticResource btnROIDeleteTip}"  >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnROIDeleteImage}"/>
+                </Button.Content>
+            </Button>
+            <Button   Name="btnROIAddup" ToolTip="{StaticResource btnROIAddupTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnROIAddupImage}"/>
+                </Button.Content>
+            </Button>
+            <Button  Name="btnROISubtract" ToolTip="{StaticResource btnROISubtractTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnROISubtractImage}"/>
+                </Button.Content>
+            </Button>
+            <Button  Name="btnRoiConfirm" ToolTip="{StaticResource btnRoiConfirmTip}" >
+                <Button.Content>
+                    <Image Style="{ StaticResource btnRoiConfirmImage}"/>
+                </Button.Content>
+            </Button>
+        </WrapPanel>
+    </Grid>
+</UserControl>

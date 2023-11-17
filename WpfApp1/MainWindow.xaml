@@ -4,12 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
-        xmlns:view="clr-namespace:VisionShowLib.View;assembly=VisionShowLib"
-        xmlns:img="clr-namespace:VisionShowLib;assembly=VisionShowLib"
+        xmlns:view="clr-namespace:VisionShowLib.UserControls;assembly=VisionShowLib"     
         mc:Ignorable="d" Loaded="Window_Loaded"
         Title="MainWindow" Height="450" Width="800">
 
- 
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -17,6 +15,6 @@
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <WindowsFormsHost x:Name="winHost"/>
-        <view:UIROIoperation Grid.Column="1" Margin="2"/>
+        <view:UIROIoperation Grid.Column="1" Margin="2" Name="RoiEditer"/>
     </Grid>
 </Window>

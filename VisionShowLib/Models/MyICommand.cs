@@ -5,13 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace VisionShowLib
+namespace VisionShowLib.Models
 {
-
-    internal class MyICommand : ICommand
+    public class MyICommand : ICommand
     {
         Action<object> _TargetExecuteMethod;
-        Func<object,  bool> _TargetCanExecuteMethod;
+        Func<object, bool> _TargetCanExecuteMethod;
 
         public MyICommand(Action<object> executeMethod)
         {
@@ -44,7 +43,7 @@ namespace VisionShowLib
             }
 
             return false;
-        }  
+        }
         void ICommand.Execute(object parameter)
         {
             if (_TargetExecuteMethod != null)
@@ -53,7 +52,4 @@ namespace VisionShowLib
             }
         }
     }
-
-
 }
-

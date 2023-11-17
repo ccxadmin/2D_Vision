@@ -1,0 +1,74 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:VisionShowLib"
+                    x:Class="VisionShowLib.UserControls.ButtonEvent">
+
+
+<Style TargetType="{x:Type Button}">
+    <Setter Property="Width" Value="50"/>
+    <Setter Property="Height" Value="50"/>
+    <Setter Property="Margin" Value="3"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderBrush" Value="#FFFF6D3C"/>
+    <Setter Property="BorderThickness" Value="2"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
+    <EventSetter Event="Click"  Handler="BtnClick"/>
+    <!--<Setter Property="ClickMode" Value="Press" />-->
+
+     <!--<Setter Property="Command" Value="{Binding Button_Click}" />
+     <Setter Property="CommandParameter" Value="{Binding RelativeSource={x:Static RelativeSource.Self}}"/>-->
+    <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="true">
+            <Setter Property = "Background" Value="LightGray"/>
+        </Trigger>
+    </Style.Triggers>
+</Style>
+    
+<Style TargetType="{x:Type  Rectangle}">
+    <Setter Property="Width" Value="2"/>
+    <Setter Property="Height" Value="48"/>
+    <Setter Property="Fill" Value="White"/>
+    <Setter Property="Margin" Value="1"/>
+    <Setter Property="VerticalAlignment" Value="Stretch"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
+</Style>
+
+<Style x:Key="btnCreateRectImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/矩形3.png"/>
+</Style>
+<Style x:Key="btnCreateRatRectImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/旋转矩形.png"/>
+</Style>
+<Style x:Key="btnCreateCircleImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/圆形.png"/>
+</Style>
+<Style x:Key="btnCreateCircleArcImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/圆弧.png"/>
+</Style>
+<Style x:Key="btnCreateLineImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/直线2.png"/>
+</Style>
+<Style x:Key="btnCreatePointImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/点.png"/>
+</Style>
+<Style x:Key="btnCreatePolygnImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/多边形3.png"/>
+</Style>
+<Style x:Key="btnCreateEllipseImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/椭圆 (1).png"/>
+</Style>
+<Style x:Key="btnROIDeleteImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/删除.png"/>
+</Style>
+<Style x:Key="btnROIAddupImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/加.png"/>
+</Style>
+<Style x:Key="btnROISubtractImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/减.png"/>
+</Style>
+<Style x:Key="btnRoiConfirmImage" TargetType="Image">
+    <Setter Property="Source" Value="../images/确认.png"/>
+</Style>
+
+</ResourceDictionary>

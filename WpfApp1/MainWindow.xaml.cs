@@ -15,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using VisionShowLib;
 using HalconDotNet;
+using VisionShowLib.UserControls;
+using ROIGenerateLib;
 
 namespace WpfApp1
 {
@@ -53,6 +55,9 @@ namespace WpfApp1
             tool.SetBackgroundColor(EumControlBackColor.white);
             tool.setDraw(EumDrawModel.margin);
             winHost.Child = tool;
+            RoiEditer.SetRoiController(tool.RoiController);
+            tool.ViewController.setDispLevel(HWndCtrl.MODE_INCLUDE_ROI);         
+            tool.SetSystemPatten(EumSystemPattern.DesignModel);
         }
 
         
@@ -61,7 +66,10 @@ namespace WpfApp1
             HOperatorSet.GenEmptyObj(out grabImg);
             grabImg.Dispose();
             grabImg = tool.D_HImage;
-          
+            //object obj = RoiEditer.DataContext;
+            //传递图像尺寸方便组合区域移动超边界
+            RoiEditer.ImgWidth = tool.ImageWidth;
+            RoiEditer.ImgHeight = tool.ImageHeight;
         }
 
     }

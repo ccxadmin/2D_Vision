@@ -14,7 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UserControl = System.Windows.Controls.UserControl;
 
-namespace VisionShowLib.View
+namespace VisionShowLib.Views
 {
     /// <summary>
     /// UIROIoperation.xaml 的交互逻辑

@@ -9,7 +9,55 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Compile Remove="ViewModels\**" />
+    <Compile Remove="Views\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="ViewModels\**" />
+    <EmbeddedResource Remove="Views\**" />
+    <None Remove="Models\**" />
+    <None Remove="ViewModels\**" />
+    <None Remove="Views\**" />
+    <Page Remove="Models\**" />
+    <Page Remove="ViewModels\**" />
+    <Page Remove="Views\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="MyICommand.cs" />
     <Compile Remove="UIROIoperation.xaml.cs" />
+    <Compile Remove="VisionShowTool.cs" />
+    <Compile Remove="VisionShowTool.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="VisionShowTool.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="images\scale.png" />
+    <None Remove="images\XY.png" />
+    <None Remove="images\减.png" />
+    <None Remove="images\删除.png" />
+    <None Remove="images\加.png" />
+    <None Remove="images\圆弧.png" />
+    <None Remove="images\圆形.png" />
+    <None Remove="images\多边形3.png" />
+    <None Remove="images\手掌 %282%29.png" />
+    <None Remove="images\指针 %281%29.png" />
+    <None Remove="images\放大 %282%29.png" />
+    <None Remove="images\旋转.png" />
+    <None Remove="images\旋转矩形.png" />
+    <None Remove="images\时钟 %282%29.png" />
+    <None Remove="images\椭圆 %281%29.png" />
+    <None Remove="images\灰度.png" />
+    <None Remove="images\点.png" />
+    <None Remove="images\直线2.png" />
+    <None Remove="images\相机小.png" />
+    <None Remove="images\矩形3.png" />
+    <None Remove="images\确认.png" />
+    <None Remove="images\缩小 %281%29.png" />
+    <None Remove="images\自适应 %281%29.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,7 +93,75 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="View\" />
+    <Resource Include="images\scale.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\XY.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\减.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\加.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\圆弧.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\圆形.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\多边形3.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\手掌 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\指针 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\放大 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\旋转.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\旋转矩形.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\时钟 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\椭圆 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\灰度.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\点.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\直线2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\相机小.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\矩形3.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\确认.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\缩小 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\自适应 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

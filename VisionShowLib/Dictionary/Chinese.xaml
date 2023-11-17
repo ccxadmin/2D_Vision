@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:VisionShowLib">
+
+
+    <sys:String x:Key="btnCreateRectContent">btnCreateRect</sys:String>
+    <sys:String x:Key="btnCreateRectTip">矩形</sys:String>
+    <sys:String x:Key="btnCreateRatRectContent">btnCreateRatRect</sys:String>
+    <sys:String x:Key="btnCreateRatRectTip">旋转矩形</sys:String>
+    <sys:String x:Key="btnCreateCircleContent">btnCreateCircle</sys:String>
+    <sys:String x:Key="btnCreateCircleTip">圆形</sys:String>
+    <sys:String x:Key="btnCreateCircleArcContent">btnCreateCircleArc</sys:String>
+    <sys:String x:Key="btnCreateCircleArcTip">圆弧</sys:String>
+    <sys:String x:Key="btnCreateLineContent">btnCreateLine</sys:String>
+    <sys:String x:Key="btnCreateLineTip">直线</sys:String>
+    <sys:String x:Key="btnCreatePointContent">btnCreatePoint</sys:String>
+    <sys:String x:Key="btnCreatePointTip">点</sys:String>
+    <sys:String x:Key="btnCreatePolygnContent">btnCreatePolygn</sys:String>
+    <sys:String x:Key="btnCreatePolygnTip">多边形</sys:String>
+    <sys:String x:Key="btnCreateEllipseContent">btnCreateEllipse</sys:String>
+    <sys:String x:Key="btnCreateEllipseTip">椭圆</sys:String>
+    <sys:String x:Key="btnROIDeleteContent">btnROIDelete</sys:String>
+    <sys:String x:Key="btnROIDeleteTip">删除</sys:String>
+    <sys:String x:Key="btnROIAddupContent">btnROIAddup</sys:String>
+    <sys:String x:Key="btnROIAddupTip">区域相加</sys:String>
+    <sys:String x:Key="btnROISubtractContent">btnROISubtract</sys:String>
+    <sys:String x:Key="btnROISubtractTip">区域相减</sys:String>
+    <sys:String x:Key="btnRoiConfirmContent">btnRoiConfirm</sys:String>
+    <sys:String x:Key="btnRoiConfirmTip">确认</sys:String>
+    
+</ResourceDictionary>
