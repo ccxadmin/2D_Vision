@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,8 +14,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="FilesRAWLibrary">
+      <HintPath>dll\FilesRAWLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="halcondotnet">
       <HintPath>dll\halcondotnet.dll</HintPath>
+    </Reference>
+    <Reference Include="OSLogLib">
+      <HintPath>dll\OSLogLib.dll</HintPath>
     </Reference>
   </ItemGroup>
 

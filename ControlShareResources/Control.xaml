@@ -1,0 +1,29 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                
+                   
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Button.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/CheckBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ComboBox.xaml" />
+        <!--<ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ContextMenu.xaml" />-->
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/DataGrid.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Expander.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/GroupBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Label.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ListBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ListView.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Menu.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/PasswordBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ProgressBar.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/RadioButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/RepeatButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ScrollViewer3.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Slider.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TabControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TextBox.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ToolBar.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TreeView.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Window.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

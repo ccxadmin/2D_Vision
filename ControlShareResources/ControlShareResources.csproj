@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Helpers\**" />
+    <EmbeddedResource Remove="Helpers\**" />
+    <None Remove="Helpers\**" />
+    <Page Remove="Helpers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\Font Awesome 5 Free-Solid-900.otf" />
+    <None Remove="Themes\q05sj33r.maw~" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Themes\Generic.Core.xaml" />
+    <Page Remove="Themes\ScrollViewer.xaml" />
+    <Page Remove="Themes\ScrollViewer2.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\Font Awesome 5 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>

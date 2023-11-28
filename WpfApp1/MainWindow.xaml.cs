@@ -17,18 +17,38 @@ using VisionShowLib;
 using HalconDotNet;
 using VisionShowLib.UserControls;
 using ROIGenerateLib;
+using System.Collections.ObjectModel;
 
 namespace WpfApp1
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow :Window
     {
         public MainWindow()
         {
-            InitializeComponent();
+            dataList.Add(new data(1,"xiaoming",12));
+            dataList.Add(new data(1, "xiaoming", 12));
+            dataList.Add(new data(1, "xiaoming", 12));
+            dataList.Add(new data(1, "xiaoming", 12));
+            dataList.Add(new data(1, "xiaoming", 12));
+            dataList.Add(new data(1, "xiaoming", 12));
+            dataList.Add(new data(1, "xiaoming", 12));
+            dataList.Add(new data(1, "xiaoming", 12));
 
+            ObservableCollection<person> list = new ObservableCollection<person>()
+            {
+                new person{ FirstName="Mark",LastName="Otto",Username="@mdo"},
+                new person{ FirstName="cob",LastName="Thornton",Username="@fat"},
+                new person{ FirstName="Larry",LastName="the Bird",Username="@twitter"},
+            };
+
+            InitializeComponent();
+            this.DataContext = dataList;
+            dg.ItemsSource = list;
+            ShowTreeView();         
+            ExPandAllNodes(treeview.Items);
         }
         /// <summary>
         /// 装载winform控件，主动释放方式内存泄漏
@@ -71,6 +91,88 @@ namespace WpfApp1
             RoiEditer.ImgWidth = tool.ImageWidth;
             RoiEditer.ImgHeight = tool.ImageHeight;
         }
+        public ObservableCollection<data> dataList = new ObservableCollection<data>();
 
+        public ObservableCollection<OrgModel> OrgList { get; set; }
+        /// <summary>
+        /// 加载tree数据
+        /// </summary>
+        private void ShowTreeView()
+        {
+
+            OrgList = new ObservableCollection<OrgModel>()
+            {
+                new OrgModel()
+                {
+                    IsGrouping=true,
+                    DisplayName="单位名称(3/7)",
+                    Children=new ObservableCollection<OrgModel>()
+                    {
+                        new OrgModel(){
+                            IsGrouping=true,
+                            DisplayName="未分组联系人(2/4)",
+                            Children=new ObservableCollection<OrgModel>()
+                            {
+                                new OrgModel(){
+                                    IsGrouping=false,
+                                    SurName="刘",
+                                    Name="刘棒",
+                                    Info="我要走向天空！",
+                                    Count=3
+                                }
+                            }
+                        }
+                    },
+                }
+
+            };
+            treeview.ItemsSource = OrgList;                 
+        }
+
+        public void ExPandAllNodes(ItemCollection items)
+        {
+            foreach(var s in items)
+            {
+                var treeviewItem = treeview.ItemContainerGenerator
+                    .ContainerFromItem(s) as TreeViewItem;
+                if(treeviewItem!=null)
+                {
+                    treeviewItem.IsExpanded = true;
+                    ExPandAllNodes(treeviewItem.Items);
+                }
+
+            }
+        }
+    }
+   
+    public class data
+    {
+        public data(int id,string name,int age)
+        {
+            ID = id;
+            Name = name;
+            Age = age;
+        }
+       public int ID { get; set; }
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+    }
+    public class person
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Username { get; set; }
+    }
+
+    public class OrgModel
+    {
+        public bool IsGrouping { get; set; }
+        public ObservableCollection<OrgModel> Children { get; set; }
+        public string DisplayName { get; set; }
+        public string SurName { get; set; }
+        public string Name { get; set; }
+        public string Info { get; set; }
+        public int Count { get; set; }
     }
 }

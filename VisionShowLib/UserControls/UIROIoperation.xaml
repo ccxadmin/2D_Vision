@@ -12,8 +12,8 @@
         
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Dictionary/Chinese.xaml"/>
-                <ResourceDictionary Source="../Dictionary/ButtonStyle.xaml"/>
+                <ResourceDictionary Source="../Themes/Chinese.xaml"/>
+                <ResourceDictionary Source="../Themes/ButtonStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
        
