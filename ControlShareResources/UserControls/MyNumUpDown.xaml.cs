@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -34,14 +35,6 @@ namespace ControlShareResources.UserControls
 		/// Sync Resource
 		/// </summary>
 		private static object lockObj = new object();
-        /// <summary>
-		/// label 显示内容
-		/// </summary>
-		public string LabeContent
-        {
-            get { return GetValue(LabeContentProperty).ToString(); }
-            set { SetValue(LabeContentProperty, value); }
-        }
 
         /// <summary>
         /// 最小值
@@ -106,36 +99,18 @@ namespace ControlShareResources.UserControls
             }
         }
 
-        /// <summary>
-        /// 左侧的Label的宽度
-        /// </summary>
-        public double LabelWidth
+
+        //属性包装器
+        public Action ValueChangeAction
         {
-            get { return Convert.ToDouble(GetValue(LabelWidthValueProperty)); }
-            set { SetValue(LabelWidthValueProperty, value); }
+            get { return (Action)GetValue(ValueChangeActionProperty); }
+            set { SetValue(ValueChangeActionProperty, value); }
+
         }
 
-        /// <summary>
-        /// 标签的可见性
-        /// </summary>
-        public string LabelVisibility
-        {
-            get { return Convert.ToString(GetValue(LabelVisibilityValueProperty)); }
-            set { SetValue(LabelVisibilityValueProperty, value); }
-        }
+        public static readonly DependencyProperty ValueChangeActionProperty =
+                DependencyProperty.RegisterAttached("ValueChangeAction", typeof(Action), typeof(MyNumUpDown), new PropertyMetadata(null));
 
-        public static readonly DependencyProperty LabeContentProperty =
-             DependencyProperty.Register("LabeContent",
-                 typeof(string),
-                 typeof(MyNumUpDown),
-                 new PropertyMetadata("", new PropertyChangedCallback(LabelContentCallback))
-         );
-
-        private static void LabelContentCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        {
-            MyNumUpDown control = obj as MyNumUpDown;
-            control.myNumLabelName.Content = e.NewValue.ToString();
-        }
 
         public static readonly DependencyProperty MinValueProperty =
             DependencyProperty.Register("MinValue",
@@ -176,42 +151,11 @@ namespace ControlShareResources.UserControls
                new PropertyMetadata(new PropertyChangedCallback(NumericValueChangedCallback))
         );
 
-        public static readonly DependencyProperty LabelWidthValueProperty =
-            DependencyProperty.Register("LabelWidth",
-               typeof(double),
-               typeof(MyNumUpDown),
-               new PropertyMetadata(0.0, new PropertyChangedCallback(LabelWidthCallback))
-         );
-
-        public static readonly DependencyProperty LabelVisibilityValueProperty =
-            DependencyProperty.Register("LabelVisibility",
-               typeof(string),
-               typeof(MyNumUpDown),
-               new PropertyMetadata("Visible", new PropertyChangedCallback(LabelVisibilityCallback))
-         );
-
-        private static void LabelWidthCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        {
-            MyNumUpDown control = obj as MyNumUpDown;
-            control.myNumLabelName.Width = double.Parse(string.IsNullOrEmpty(e.NewValue.ToString()) ? "0" : e.NewValue.ToString());
-        }
-
-        private static void LabelVisibilityCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        {
-            MyNumUpDown control = obj as MyNumUpDown;
-            string visi = e.NewValue.ToString();
-            if (visi.Equals(Visibility.Visible.ToString()))
-                control.myNumLabelName.Visibility = Visibility.Visible;
-            else if (visi.Equals(Visibility.Hidden.ToString()))
-                control.myNumLabelName.Visibility = Visibility.Hidden;
-            else
-                control.myNumLabelName.Visibility = Visibility.Collapsed;
-        }
 
         private static void MaxValueChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             MyNumUpDown control = obj as MyNumUpDown;
-            
+
             control.tbContent.MaxLength = e.NewValue.ToString().Length;
         }
 
@@ -222,6 +166,7 @@ namespace ControlShareResources.UserControls
             control.tbContent.Text = e.NewValue.ToString();
             control.tbContent.SelectionStart = control.tbContent.Text.Length;
         }
+      
 
         /// <summary>
         /// 增加按钮
@@ -256,7 +201,8 @@ namespace ControlShareResources.UserControls
                 newValue = decimal.Parse(newValue.ToString("0.######"));
             tbContent.Text = newValue.ToString();
             NumericValue = newValue;
-        }
+            ValueChangeAction?.Invoke();
+    }
 
         /// <summary>
         /// 减少按钮
@@ -289,6 +235,7 @@ namespace ControlShareResources.UserControls
                 newValue = decimal.Parse(newValue.ToString("0.######"));
             tbContent.Text = newValue.ToString();
             NumericValue = newValue;
+            ValueChangeAction?.Invoke();
         }
 
         /// <summary>

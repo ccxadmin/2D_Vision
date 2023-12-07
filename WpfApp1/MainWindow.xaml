@@ -46,12 +46,12 @@
             <StackPanel Grid.Row="1">
                 <uc:MyNumUpDown   Width="120"  Height="30"
                    NumericValue="10.0" OffsetValue="0.1" IsInteger="False"
-                   MaxValue="999.0" MinValue="0"
-                  LabelVisibility="Collapsed" />
+                   MaxValue="999.0" MinValue="0" />
+               
 
                 <Button Style="{DynamicResource PrimaryButton}" 
-                        attach:ButtonAttach.ButtonCornerRadius="5"
-                        Content="test" />
+                        attach:ButtonAttach.ButtonCornerRadius="5" 
+                        Content="&#xf06e;"  Click="Button_Click"/>
                 <CheckBox Content="勾选" Style="{DynamicResource CheckBoxFrame}" Margin="2"
                           attach:ButtonAttach.ButtonCornerRadius="5"
                           attach:CheckBoxAttach.FrameSize="small" />

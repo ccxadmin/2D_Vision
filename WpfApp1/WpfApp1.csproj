@@ -16,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="FilesRAWLibrary">
+      <HintPath>..\FunctionLib\dll\FilesRAWLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="halcondotnet">
       <HintPath>..\ROIGenerateLib\dll\halcondotnet.dll</HintPath>
     </Reference>

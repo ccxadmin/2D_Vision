@@ -18,6 +18,7 @@
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ProgressBar.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/RadioButton.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/RepeatButton.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/RichTextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ScrollViewer3.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Slider.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TabControl.xaml" />

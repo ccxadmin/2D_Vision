@@ -3,9 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LightSourceController.Views"           
-        mc:Ignorable="d"  Style="{x:Null}"
-        Title="LightSourceWindow" Height="802" Width="428">
+        xmlns:local="clr-namespace:LightSourceController.Views"  
+        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"     
+        xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
+        xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
+        xmlns:ll="clr-namespace:ControlShareResources.Controls;assembly=ControlShareResources"
+        xmlns:vm="clr-namespace:LightSourceController.ViewModels"
+        mc:Ignorable="d"  Style="{x:Null}" Loaded="Window_Loaded" Closing="Window_Closing"
+        Title="串口通讯助手（数字控制器）" Height="700" Width="428">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -14,9 +19,289 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    
+
     <Grid>
         
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
+        <StackPanel >
+            <GroupBox Header="串口配置"  Foreground="White"
+                      Style="{DynamicResource GroupBoxStyle}">
+                <Grid >
+                    <ComboBox  Name="cobxPort"  HorizontalAlignment="Left" Style="{DynamicResource MyCbbStyle}"
+                              Width="80" Margin="5,2"     Height="20"                                          
+                              ItemsSource="{Binding Model.PortNames}"                          
+                              SelectedItem="{Binding Model.SelectedPort }"
+                               IsEnabled="{Binding Model.CobxPortEnable,Mode=TwoWay}">
+                               
+                        <!--<behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="SelectionChanged">
+                                <behaviors:InvokeCommandAction Command="{Binding PortSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxPort,Path=SelectedValue}"/>
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>-->
+                        <!--<i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding SelectionComboBoxCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ComboBox}}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>-->
+
+                    </ComboBox>
+
+                    <Button  Content="{Binding Model.OpenButContent}"  Margin="2,2,100,2" HorizontalAlignment="Right"  
+                    attach:ButtonAttach.ButtonCornerRadius="5"  
+                    Style="{DynamicResource PrimaryButton}"
+                    Command="{Binding OpenButClickCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+
+                    <Button  Content="重新扫描"  Margin="2" HorizontalAlignment="Right"  
+                    attach:ButtonAttach.ButtonCornerRadius="5" 
+                    Style="{DynamicResource PrimaryButton}"
+                    Command="{Binding ScanButClickCommand}"
+                    IsEnabled="{Binding Model.BtnScanEnable,Mode=TwoWay}"/>
+
+
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1">
+            <GroupBox Foreground="White" Style="{DynamicResource GroupBoxStyle}"
+                      Header="发送接收区"  IsEnabled="{Binding Model.SendRevEnable,Mode=TwoWay}"  >
+                <Grid >
+                    <Label  HorizontalAlignment="Left" VerticalAlignment="Top"                           
+                        Style="{DynamicResource LabelStyle}" Content="发送数据："/>
+                    
+                    <Label  HorizontalAlignment="Left" Margin="5,35,5,5"       
+                      Style="{DynamicResource LabelStyle}" Content="接收数据："/>
+
+                    <TextBox Style="{DynamicResource baseInput}" 
+                             Height="26" Width="260"  Margin="70,5,5,5"
+                           HorizontalAlignment="Left"  VerticalAlignment="Top"
+                            Text="{Binding Model.SendDat,Mode=TwoWay}"   />
+
+                    <TextBox Style="{DynamicResource baseInput}" IsEnabled="False"
+         Height="26" Width="260" Margin="70,35,5,5" 
+       HorizontalAlignment="Left"  VerticalAlignment="Top"
+        Text="{Binding Model.RecieveDat,Mode=TwoWay}"   />
+                       
+                    <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Right"
+                            Margin="5" Width="auto" Height="50" MinWidth="60"
+                            Content="发送"
+                            attach:ButtonAttach.ButtonCornerRadius="5"
+                              Command="{Binding SendButClickCommand}"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2">
+            <GroupBox Header="数字模式亮度设置（0~255极）" Foreground="White"
+                      Style="{DynamicResource GroupBoxStyle}"
+                      IsEnabled="{Binding Model.LightValueEnable, Mode=TwoWay}" >
+                <Grid>
+                    <CheckBox Style="{DynamicResource CheckBoxBasic}"
+                          HorizontalAlignment="Right" VerticalAlignment="Top"
+                          Margin="15,3" Content="常亮"
+                           IsChecked="{Binding Model.IsNormalOn,Mode=TwoWay}"
+                          IsEnabled="{Binding Model.ChxbNormalOnEnable,Mode=TwoWay}" 
+                           Command="{Binding ChxbNormalOnCommand}"/>
+                                                     
+                    <GroupBox Margin="5,30,5,5" VerticalAlignment="Top" Header="CH1" Foreground="White"    Style="{DynamicResource GroupBoxStyle}">
+                        <Grid>
+                            <Slider Name="LightSlider1"  Style="{DynamicResource sliderStyle}"  Width="300"    Minimum="0" Maximum="255"
+                             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,6,2,2"
+                                Value="{Binding Model.LightSliderValue1,Mode=TwoWay}"
+                                   Thumb.DragCompleted ="mySlider_DragCompleted" >
+                                <!--<behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="DragCompleted">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightSliderValueChangedCommand}" 
+                                                                       CommandParameter="{Binding ElementName=LightSlider1,Path=Name}"   />
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>-->
+                            </Slider>
+                            <uc:MyNumUpDown  HorizontalAlignment="Right" VerticalAlignment="Top"
+                             DefaultValue="0" MinValue="0"  MaxValue="255"    Height="20" 
+                                       Margin="300,2,2,2"  OffsetValue="1"    ValueChangeAction="{Binding Model.LightNumeric1Command}"                               
+                                 NumericValue="{Binding Model.LightNumricValue1,Mode=TwoWay}">
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="KeyDown">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightNumeric1KeyDownCommand}"                                                                    
+                                                                      PassEventArgsToCommand="True"/>
+                                    </behaviors:EventTrigger>
+                                    
+                                </behaviors:Interaction.Triggers>
+                              
+                            </uc:MyNumUpDown>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Margin="5,90,5,5" VerticalAlignment="Top" Header="CH2" Foreground="White"    Style="{DynamicResource GroupBoxStyle}">
+                        <Grid>
+                            <Slider  Name="LightSlider2"  Style="{DynamicResource sliderStyle}"  Width="300"    
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,6,2,2"
+                             Minimum="0"   Maximum="255"  Value="{Binding Model.LightSliderValue2,Mode=TwoWay}" 
+                                      Thumb.DragCompleted ="mySlider_DragCompleted">
+                                <!--<behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="TouchUp">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightSliderValueChangedCommand}" 
+                                        CommandParameter="{Binding ElementName=LightSlider2,Path=Name}"   />
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>-->
+
+                            </Slider>
+                            <uc:MyNumUpDown  HorizontalAlignment="Right" VerticalAlignment="Top"
+DefaultValue="0" MinValue="0"  MaxValue="255"   OffsetValue="1"  Height="20"  Margin="300,2,2,2"
+                                         NumericValue="{Binding Model.LightNumricValue2,Mode=TwoWay}" 
+                                             ValueChangeAction="{Binding Model.LightNumeric2Command}">
+
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="KeyDown">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightNumeric2KeyDownCommand}"                                                                    
+                                       PassEventArgsToCommand="True"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
+                                
+                            </uc:MyNumUpDown>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Margin="5,150,5,5" VerticalAlignment="Top" Header="CH3" Foreground="White"    Style="{DynamicResource GroupBoxStyle}">
+                        <Grid>
+                            <Slider Name="LightSlider3"  Style="{DynamicResource sliderStyle}"  Width="300"    
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,6,2,2" Minimum="0" Maximum="255"
+                                    Value="{Binding Model.LightSliderValue3,Mode=TwoWay}"
+                                     Thumb.DragCompleted ="mySlider_DragCompleted">
+                                <!--<behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="ValueChanged">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightSliderValueChangedCommand}" 
+          CommandParameter="{Binding ElementName=LightSlider3,Path=Name}"   />
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>-->
+                                
+                            </Slider>
+                            <uc:MyNumUpDown  HorizontalAlignment="Right" VerticalAlignment="Top"
+DefaultValue="0" MinValue="0"  MaxValue="255"   OffsetValue="1"  Height="20"  Margin="300,2,2,2"
+                                         NumericValue="{Binding Model.LightNumricValue3,Mode=TwoWay}" 
+                                             ValueChangeAction="{Binding Model.LightNumeric3Command}">
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="KeyDown">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightNumeric3KeyDownCommand}"                                                                    
+                                       PassEventArgsToCommand="True"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
+                            </uc:MyNumUpDown>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Margin="5,210,5,5" VerticalAlignment="Top" Header="CH4" Foreground="White"    Style="{DynamicResource GroupBoxStyle}">
+                        <Grid>
+                            <Slider Name="LightSlider4"  Style="{DynamicResource sliderStyle}"  Width="300"    
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,6,2,2" Minimum="0" Maximum="255"
+                                Value="{Binding Model.LightSliderValue4,Mode=TwoWay}"  
+                              Thumb.DragCompleted ="mySlider_DragCompleted" >      
+                                    
+                                <!--<behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="ValueChanged">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightSliderValueChangedCommand}" 
+CommandParameter="{Binding ElementName=LightSlider4,Path=Name}"   />
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>-->
+
+                            </Slider>
+                            <uc:MyNumUpDown  HorizontalAlignment="Right" VerticalAlignment="Top"
+DefaultValue="0" MinValue="0"  MaxValue="255"   OffsetValue="1"  Height="20"  Margin="300,2,2,2"
+                                 NumericValue="{Binding Model.LightNumricValue4,Mode=TwoWay}" 
+                                             ValueChangeAction="{Binding Model.LightNumeric4Command}">
+
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="KeyDown">
+                                        <behaviors:InvokeCommandAction Command="{Binding LightNumeric4KeyDownCommand}"                                                                    
+        PassEventArgsToCommand="True"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
+
+                            </uc:MyNumUpDown>
+
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" >
+
+            <RichTextBox  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"               
+                attach:RichTextBoxAttach.RichText="{Binding  Model.RichIfo,Mode=TwoWay}"
+                attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWay}">
+                <RichTextBox.Resources>
+                    <Style  TargetType="{x:Type RichTextBox}">
+                        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+                        <Setter Property="Foreground" Value="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                        <Setter Property="Background" Value="#ffffff"/>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalAlignment" Value="Top"/>
+                        <Setter Property="Padding" Value="1"/>
+                        <Setter Property="Margin" Value="3"/>
+                        <Setter Property="IsReadOnly" Value="true"/>
+                        <Setter Property="Width" Value="auto"/>
+                        <Setter Property="MinWidth" Value="200"/>
+                        <!--<Setter Property="Height" Value="auto"/>-->
+                        <Setter Property="Height" Value="180"/>
+                        <!--<Setter Property="MinHeight" Value="100"/>-->
+                        <Setter Property="SnapsToDevicePixels" Value="True" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type RichTextBox}">
+                                    <Grid>
+                                        <Border x:Name="border" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"  BorderThickness="1.5" BorderBrush="#ff6d3c"  Background="{TemplateBinding Background}" >
+                                            <ScrollViewer x:Name="PART_ContentHost"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"  HorizontalScrollBarVisibility="Disabled"   VerticalScrollBarVisibility="Visible">
+                                                <!--<TextBox x:Name="myTxt"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             AcceptsReturn="True"      
+                             TextWrapping="Wrap"
+                             FontSize="12"
+                             FontWeight="Normal"                       
+                             Foreground="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}">-->
+                                                    <!--<TextBox.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="清除" Command="{Binding ClearTextCommand}"/>
+                                                        </ContextMenu>
+                                                    </TextBox.ContextMenu>
+                                                </TextBox>-->
+                                            </ScrollViewer>
+
+                                        </Border>
+                                    </Grid>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                        </Trigger>
+
+                                        <Trigger Property="IsEnabled" Value="false">
+                                            <Setter Property="Background" TargetName="border" Value="White"/>
+                                            <Setter Property="BorderThickness" TargetName="border" Value="1"/>
+                                            <Setter Property="BorderBrush" TargetName="border" Value="gray"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+
+                                </ControlTemplate>
+
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </RichTextBox.Resources>
+                <RichTextBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="清除" Command="{Binding ClearTextCommand}"/>
+                    </ContextMenu>
+                </RichTextBox.ContextMenu>
+            </RichTextBox>
+        </StackPanel>
     </Grid>
 </Window>

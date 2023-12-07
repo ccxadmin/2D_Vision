@@ -18,6 +18,9 @@ using HalconDotNet;
 using VisionShowLib.UserControls;
 using ROIGenerateLib;
 using System.Collections.ObjectModel;
+using LightSourceController.Views;
+using LightSourceController.Models;
+using FilesRAW.Common;
 
 namespace WpfApp1
 {
@@ -78,9 +81,12 @@ namespace WpfApp1
             RoiEditer.SetRoiController(tool.RoiController);
             tool.ViewController.setDispLevel(HWndCtrl.MODE_INCLUDE_ROI);         
             tool.SetSystemPatten(EumSystemPattern.DesignModel);
+
+
+          
         }
 
-        
+        LightSource lightSource = null;//光源控制器
         void LoadedImageNoticeEvent(object sender, EventArgs e)
         {
             HOperatorSet.GenEmptyObj(out grabImg);
@@ -143,8 +149,18 @@ namespace WpfApp1
 
             }
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+          
+            string port = GeneralUse.ReadValue("光源控制器", "端口", "config", "COM1");
+            lightSource = new LightSource(port);
+            lightSource.Open(port);
+            LightSourceWindow f = new LightSourceWindow(lightSource);
+            f.ShowDialog();
+        }
     }
-   
+
     public class data
     {
         public data(int id,string name,int age)

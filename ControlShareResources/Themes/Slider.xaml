@@ -12,7 +12,13 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Ellipse Width="25" Height="25" Fill="#ff6d3c"/>
+                    <Ellipse Name="EllipseThumb" Width="15" Height="15" Fill="#ff6d3c"/>
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Fill" TargetName="EllipseThumb" Value="lightgray"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -21,8 +27,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RepeatButton">
-                    <Border SnapsToDevicePixels="True" Background="DeepSkyBlue" BorderThickness="1" 
-                            CornerRadius="5" BorderBrush="DeepSkyBlue" Height="10"/>
+                    <Border SnapsToDevicePixels="True" Background="#ff6d3c" BorderThickness="1" 
+                            CornerRadius="5" BorderBrush="#ff6d3c" Height="10"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -32,8 +38,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
                     <Grid>
-                        <Border Name="PART_Border" BorderBrush="Black" BorderThickness="1" CornerRadius="5"
-                                Padding="2" Width="{TemplateBinding Width}" Height="10" Background="LightGray" 
+                        <Border Name="PART_Border" BorderBrush="#ff6d3c" BorderThickness="1" CornerRadius="3"
+                                Padding="2" Width="{TemplateBinding Width}" Height="10" Background="White" 
                                 HorizontalAlignment="Stretch" VerticalAlignment="Center">
                         </Border>
                         <Track Name="PART_Track">
@@ -46,6 +52,13 @@
                             </Track.Thumb>
                         </Track>
                     </Grid>
+                    <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="BorderBrush" TargetName="PART_Border" Value="lightgray"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+               
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

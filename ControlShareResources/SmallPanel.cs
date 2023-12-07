@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 
 namespace ControlShareResources.Controls
 {
@@ -49,4 +50,16 @@ namespace ControlShareResources.Controls
             return (arrangeSize);
         }
     }
+
+    public class TalkFlowDocument : FlowDocument
+    {
+        protected override bool IsEnabledCore
+        {
+            get
+            {
+                return true;
+            }
+        }
+    }
+
 }

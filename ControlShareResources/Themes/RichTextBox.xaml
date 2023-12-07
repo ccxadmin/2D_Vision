@@ -1,0 +1,83 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Generic.xaml" />
+        <ResourceDictionary Source="ScrollViewer3.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <!--<ContextMenu x:Key="TextContextMenu">
+        <MenuItem Command="ApplicationCommands.Cut"/>
+        <MenuItem Command="ApplicationCommands.Copy"/>
+        <MenuItem Command="ApplicationCommands.Paste"/>
+        <MenuItem Header="清除" Command="{Binding ClearTextCommand}"/>
+    </ContextMenu>-->
+
+
+    <Style x:Key="RichTextBoxStyle" TargetType="{x:Type RichTextBox}">
+        <!--<Setter Property="ContextMenu" Value="{DynamicResource TextContextMenu}"/>-->
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+        <Setter Property="Foreground" Value="{StaticResource Button.Orange.Background}"/>
+        <Setter Property="Background" Value="{DynamicResource Button.White.Font.Color}"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="VerticalAlignment" Value="Top"/>
+        <Setter Property="Padding" Value="1"/>
+        <Setter Property="Margin" Value="3"/>
+        <Setter Property="Width" Value="auto"/>
+        <Setter Property="MinWidth" Value="200"/>
+        <Setter Property="Height" Value="100"/>
+        <!--SnapsToDevicePixels:该值来确定呈现此元素是否应使用特定于设备的像素设置-->
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type RichTextBox}">
+                    <Grid>
+                        <Border x:Name="border" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"  BorderThickness="1.5" BorderBrush="#ff6d3c"  Background="{TemplateBinding Background}" >
+                            <ScrollViewer  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"  HorizontalScrollBarVisibility="Disabled"   VerticalScrollBarVisibility="Auto">
+                                <TextBox x:Name="myTxt"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                AcceptsReturn="True"      
+                                TextWrapping="Wrap"
+                                FontSize="12"
+                                FontWeight="Normal"                       
+                                Foreground="{StaticResource {x:Static SystemColors.ControlTextBrushKey}}">
+                                    <!--<TextBox.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="清除" Command="{Binding ClearTextCommand}"/>
+                                        </ContextMenu>
+                                    </TextBox.ContextMenu>-->
+                               </TextBox>
+                            </ScrollViewer>
+                       
+                        </Border>
+                    </Grid>
+                    <!--<Grid>
+                        <Border x:Name="border"
+                                BorderBrush="#ff6d3c" BorderThickness="1.5"
+                                Background="{TemplateBinding Background}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                            <ScrollViewer x:Name="PART_ContentHost"   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                                          HorizontalScrollBarVisibility="Disabled"   VerticalScrollBarVisibility="Auto"
+                                          />
+                        </Border>
+                    </Grid>-->
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="true">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                        </Trigger>
+                      
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" TargetName="border" Value="White"/>
+                            <Setter Property="BorderThickness" TargetName="border" Value="1"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="gray"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                            
+                </ControlTemplate>
+                
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

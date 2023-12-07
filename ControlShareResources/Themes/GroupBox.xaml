@@ -6,20 +6,20 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style  TargetType="{x:Type GroupBox}" x:Key="GroupBoxStyle">
-        <Setter Property="Margin" Value="5"/>
+        <Setter Property="Margin" Value="3"/>
         <Setter Property="Background" Value="#ff6d3c"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GroupBox}">
                     <Grid >
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <Border x:Name="border" Grid.Row="0" SnapsToDevicePixels="True" BorderBrush="{TemplateBinding Background}" Background="{TemplateBinding Background}" HorizontalAlignment="Stretch" BorderThickness="0"  CornerRadius="2,2,0,0" >
-                            <Grid Margin="5">
+                            <Grid Margin="3">
                                 <ContentPresenter Name="header" Visibility="Collapsed" ContentSource="Header" RecognizesAccessKey="True" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                <TextBlock FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" Text="{Binding ElementName=header, Path=Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                <TextBlock   FontSize="{TemplateBinding FontSize}" Foreground="{TemplateBinding Foreground}" Text="{Binding ElementName=header, Path=Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                         <Border Grid.Row="1" BorderBrush="{TemplateBinding Background}" SnapsToDevicePixels="True" BorderThickness="1,0,1,1" CornerRadius="0,0,2,2" >
@@ -28,8 +28,8 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Header" Value="{x:Null}">
-                            <Setter TargetName="cpmdi" Property="Margin" Value="10"/>
-                            <Setter TargetName="border" Property="Height" Value="32"/>
+                            <Setter TargetName="cpmdi" Property="Margin" Value="3"/>
+                            <Setter TargetName="border" Property="Height" Value="15"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

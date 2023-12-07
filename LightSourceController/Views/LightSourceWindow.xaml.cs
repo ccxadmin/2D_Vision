@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ControlShareResources;
+using LightSourceController.Models;
+using LightSourceController.ViewModels;
 
 namespace LightSourceController.Views
 {
@@ -20,9 +23,28 @@ namespace LightSourceController.Views
     /// </summary>
     public partial class LightSourceWindow :Window
     {
-        public LightSourceWindow()
+        public LightSourceWindow(LightSource _lightSource)
         {
             InitializeComponent();
+            var model =  LightSourceViewModel.CreateSingleInstance(_lightSource);         
+            DataContext = model;
+        }
+
+      
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+          
+        
+        }
+
+        private void mySlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            LightSourceViewModel.This.LightSliderValueChangedCommand.DoExecute?.Invoke(sender);
         }
     }
 }

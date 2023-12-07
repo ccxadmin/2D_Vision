@@ -8,11 +8,15 @@
         <Setter Property="TextElement.FontFamily" Value="../Fonts/#Font Awesome 5 Free Solid" />
     </Style>
 
+    <FontFamily x:Key="Iconfont">
+        ../Fonts/#Font Awesome 5 Free Solid
+    </FontFamily>
+
     <Style x:Key="FocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="#ff6d3c" StrokeThickness="1" StrokeDashArray="1 2"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

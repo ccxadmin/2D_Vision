@@ -12,7 +12,7 @@
         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
         <Setter Property="Background" Value="#ffffff"/>
         <Setter Property="BorderBrush" Value="#ff6d3c"/>
-        <Setter Property="Foreground" Value="#606266"/>
+        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="5,0,0,0"/>
         <Setter Property="Template">
@@ -25,7 +25,7 @@
                         </Grid.ColumnDefinitions>
                         <Border x:Name="checkBoxBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="1" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
                             <Grid x:Name="markGrid">
-                                <Rectangle x:Name="indeterminateMark" Fill="#409eff" Opacity="0"/>
+                                <Rectangle x:Name="indeterminateMark" Fill="#ff6d3c" Opacity="0"/>
                                 <Path x:Name="optionMark" Data="F1 M 9.97498,1.22334L 4.6983,9.09834L 4.52164,9.09834L 0,5.19331L 1.27664,3.52165L 4.255,6.08833L 8.33331,1.52588e-005L 9.97498,1.22334 Z " Fill="#ffffff" Margin="2" Opacity="0" Stretch="None"/>
                             </Grid>
                         </Border>
@@ -33,7 +33,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="#409eff"/>
+                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="#ff6d3c"/>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#c0c4cf"/>
@@ -41,7 +41,7 @@
                             <!--<Setter Property="Fill" TargetName="indeterminateMark" Value="#a4c0ed"/>-->
                             <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
                             <!--<Setter Property="Fill" TargetName="optionMark" Value="#dcdfe6"/>-->
-                            <Setter Property="Fill" TargetName="optionMark" Value="CadetBlue"/>
+                            <Setter Property="Fill" TargetName="optionMark" Value="Orange"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
@@ -50,12 +50,18 @@
                         <Trigger Property="IsChecked" Value="true">
                             <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
                             <Setter Property="Opacity" TargetName="optionMark" Value="1"/>
-                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#409eff"/>
+                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="#ff6d3c"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="{x:Null}">
                             <Setter Property="Opacity" TargetName="optionMark" Value="0"/>
                             <Setter Property="Opacity" TargetName="indeterminateMark" Value="1"/>
                         </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <!--<Setter Property="Fill" TargetName="indeterminateMark" Value="Lightgray"/>
+                            <Setter Property="Opacity" TargetName="indeterminateMark" Value="0"/>-->
+                            <Setter Property="BorderBrush" TargetName="checkBoxBorder" Value="Lightgray"/>
+                        </Trigger>
+
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

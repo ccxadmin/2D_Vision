@@ -199,7 +199,7 @@
         <Setter Property="Width" Value="auto"/>
         <Setter Property="MinWidth" Value="100"/>
         <Setter Property="Height" Value="auto"/>
-        <Setter Property="MinHeight" Value="25"/>
+        <Setter Property="MinHeight" Value="26"/>
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -213,9 +213,10 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Background" TargetName="border" Value="#f5f7fa"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="gray"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="BorderBrush" TargetName="border" Value="#c0c4cc"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="Orange"/>
                             <Setter Property="Cursor"  Value="Hand"/>
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="true">

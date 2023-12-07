@@ -14,7 +14,7 @@ namespace LightSourceController.Models
         public LightSource(string _portName)
         {
             if (sp == null) sp = new SerialPort(_portName, 19200, Parity.None, 8, StopBits.One);
-            sp.DataReceived += new SerialDataReceivedEventHandler(OnSerialDataReceivedEventHandler);
+            //sp.DataReceived += new SerialDataReceivedEventHandler(OnSerialDataReceivedEventHandler);
             portName = _portName;
         }
      
@@ -23,7 +23,7 @@ namespace LightSourceController.Models
             if (sp.IsOpen)
                 sp.Close();
             isOpen = false;
-            sp.DataReceived -= new SerialDataReceivedEventHandler(OnSerialDataReceivedEventHandler);
+            //sp.DataReceived -= new SerialDataReceivedEventHandler(OnSerialDataReceivedEventHandler);
             sp.Dispose();
         }
         SerialPort sp = null;//串口
@@ -41,10 +41,9 @@ namespace LightSourceController.Models
             //*string portName, int baudRate, Parity parity, int dataBits, StopBits stopBits
             if (sp == null)
             {
-                sp = new SerialPort(portName, 19200, Parity.None, 8, StopBits.One);
-                sp.DataReceived += new SerialDataReceivedEventHandler(OnSerialDataReceivedEventHandler);
+                sp = new SerialPort(portName, 19200, Parity.None, 8, StopBits.One);              
                 portName = _portName;  
-            }
+            }           
             if (sp.IsOpen)
             {
                 portName = sp.PortName;
@@ -52,7 +51,7 @@ namespace LightSourceController.Models
                 return true;
             }
             try
-            {
+            {              
                 sp.PortName = _portName;
                 sp.Open();
                
@@ -64,6 +63,8 @@ namespace LightSourceController.Models
             }
             portName = sp.PortName;
             isOpen = sp.IsOpen;
+            if(isOpen)
+                sp.DataReceived += new SerialDataReceivedEventHandler(OnSerialDataReceivedEventHandler);
             return sp.IsOpen;
         }
         /// <summary>
