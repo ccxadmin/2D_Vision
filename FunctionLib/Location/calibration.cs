@@ -361,9 +361,9 @@ namespace FunctionLib.Location
             try
             {
                 if (hv_WindowHandle.D > 100000)
-                    HOperatorSet.SetFont(hv_WindowHandle, "Courier New-" + "12");
+                    HOperatorSet.SetFont(hv_WindowHandle, "Arial-" + "12");
                 else
-                    HOperatorSet.SetFont(hv_WindowHandle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                    HOperatorSet.SetFont(hv_WindowHandle, "-Arial-" + "12" + "-*-*-*-*-1-");
                 //提示
                 disp_message(hv_WindowHandle, "点击鼠标左键画一条直线,点击右键确认", "image",
                     12, 12, "red", "false");
@@ -958,9 +958,9 @@ namespace FunctionLib.Location
             hv_Direct = new HTuple();
             //提示
             if (hv_WindowHandle.D > 100000)
-                HOperatorSet.SetFont(hv_WindowHandle, "Courier New-" + "12");
+                HOperatorSet.SetFont(hv_WindowHandle, "Arialw-" + "12");
             else
-                HOperatorSet.SetFont(hv_WindowHandle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(hv_WindowHandle, "-Arial-" + "12" + "-*-*-*-*-1-");
 
             disp_message(hv_WindowHandle, new HTuple("1、画4个以上点确定一个圆弧,点击右键确认"),
                 "image", 12, 12, "red", "false");
@@ -976,9 +976,9 @@ namespace FunctionLib.Location
             if ((int)(new HTuple(hv_Length1.TupleLess(4))) != 0)
             {
                 if (hv_WindowHandle.D > 100000)
-                    HOperatorSet.SetFont(hv_WindowHandle, "Courier New-" + "12");
+                    HOperatorSet.SetFont(hv_WindowHandle, "Arial-" + "12");
                 else
-                    HOperatorSet.SetFont(hv_WindowHandle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                    HOperatorSet.SetFont(hv_WindowHandle, "-Arial-" + "12" + "-*-*-*-*-1-");
                 disp_message(hv_WindowHandle, "提示：点数太少，请重画", "window", 32, 12, "red",
                     "false");
                 hv_ROIRows = new HTuple();
@@ -1027,9 +1027,9 @@ namespace FunctionLib.Location
             HOperatorSet.ClearWindow(hv_WindowHandle);
             HOperatorSet.DispObj(ho_Image, hv_WindowHandle);
             if (hv_WindowHandle.D > 100000)
-                HOperatorSet.SetFont(hv_WindowHandle, "Courier New-" + "12");
+                HOperatorSet.SetFont(hv_WindowHandle, "Arial-" + "12");
             else
-                HOperatorSet.SetFont(hv_WindowHandle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(hv_WindowHandle, "-Arial-" + "12" + "-*-*-*-*-1-");
             //提示
             disp_message(hv_WindowHandle, "2、远离圆心，画箭头确定边缘检测方向，点击右键确认",
                 "window", 12, 12, "red", "false");
@@ -1356,7 +1356,7 @@ namespace FunctionLib.Location
             if ((int)(new HTuple(hv_Elements.TupleLess(3))) != 0)
             {
               
-                HOperatorSet.SetFont(3600, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(3600, "-Arial-" + "12" + "-*-*-*-*-1-");
                 disp_message(3600, "检测的边缘数量太少，请重新设置!", "window", 52, 12, "red",
                     "false");
                 ho_Contour.Dispose();
@@ -1625,7 +1625,7 @@ namespace FunctionLib.Location
             if ((int)(new HTuple(hv_Elements.TupleLess(3))) != 0)
             {
               
-                HOperatorSet.SetFont(3600, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(3600, "-Arial-" + "12" + "-*-*-*-*-1-");
                 disp_message(3600, "检测的边缘数量太少，请重新设置!", "window", 52, 12, "red",
                     "false");
                 ho_Contour.Dispose();

@@ -25,6 +25,6 @@
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ToolBar.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TreeView.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Window.xaml" />
+        <!--<ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Window.xaml" />-->
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

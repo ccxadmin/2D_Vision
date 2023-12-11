@@ -38,8 +38,7 @@ namespace LightSourceController.ViewModels
         //光源亮度值滑条调整
         public CommandBase LightSliderValueChangedCommand { get; set; }
         //光源1亮度值调整
-        public CommandBase LightNumeric1KeyDownCommand { get; set; }
-        public CommandBase LightNumeric1Command { get; set; }
+        public CommandBase LightNumeric1KeyDownCommand { get; set; }    
         //光源2亮度值调整
         public CommandBase LightNumeric2KeyDownCommand { get; set; }
         //光源3亮度值调整

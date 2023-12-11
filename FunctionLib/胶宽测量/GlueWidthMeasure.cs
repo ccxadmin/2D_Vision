@@ -519,9 +519,9 @@ namespace FunctionLib.GlueWidth
             // Initialize local and output iconic variables 
             HOperatorSet.GenEmptyObj(out ho_Regions);
             if (hv_WindowHandle.D > 100000)
-                HOperatorSet.SetFont(hv_WindowHandle, "Courier New-" + "12");
+                HOperatorSet.SetFont(hv_WindowHandle, "Arial-" + "12");
             else
-                HOperatorSet.SetFont(hv_WindowHandle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(hv_WindowHandle, "-Arial-" + "12" + "-*-*-*-*-1-");
             //提示
             disp_message(hv_WindowHandle, new HTuple("点击鼠标左键画一条直线,点击右键确认"),
                 "image", 12, 12, "red", "false");

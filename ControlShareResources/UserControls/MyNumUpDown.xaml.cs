@@ -98,9 +98,27 @@ namespace ControlShareResources.UserControls
                 SetValue(NumericValueProperty, value);
             }
         }
-
+        /// <summary>
+        /// 小数位数
+        /// </summary>
+        public int DecimalPlaces
+        {
+            get { return Convert.ToInt32(GetValue(DecimalPlacesProperty)); }
+            set
+            {
+                SetValue(NumericValueProperty, value);
+            }
+        }
 
         //属性包装器
+
+        public static readonly DependencyProperty DecimalPlacesProperty =
+          DependencyProperty.Register("DecimalPlaces",
+              typeof(int),
+              typeof(MyNumUpDown),
+                new PropertyMetadata(0, new PropertyChangedCallback(DecimalPlacesChangedCallback))
+       );
+
         public Action ValueChangeAction
         {
             get { return (Action)GetValue(ValueChangeActionProperty); }
@@ -156,14 +174,24 @@ namespace ControlShareResources.UserControls
         {
             MyNumUpDown control = obj as MyNumUpDown;
 
-            control.tbContent.MaxLength = e.NewValue.ToString().Length;
+            control.tbContent.MaxLength = e.NewValue.ToString().Split('.')[0].Length
+                        + control.DecimalPlaces+1;
+        }
+        private static void DecimalPlacesChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            MyNumUpDown control = obj as MyNumUpDown;
+
+            control.tbContent.MaxLength = control.MaxValue.ToString().Split('.')[0].Length
+                        + (int)e.NewValue+1;
         }
 
         private static void NumericValueChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             MyNumUpDown control = obj as MyNumUpDown;
             control.AvaliableVal = Convert.ToDecimal(e.NewValue);
-            control.tbContent.Text = e.NewValue.ToString();
+            //control.tbContent.Text = e.NewValue.ToString();
+            control.tbContent.Text = control.AvaliableVal.
+                ToString(string.Format("f{0}", control.DecimalPlaces));
             control.tbContent.SelectionStart = control.tbContent.Text.Length;
         }
       
@@ -196,9 +224,10 @@ namespace ControlShareResources.UserControls
                 return;
             }
             if (IsInteger)
-                newValue = decimal.Parse(newValue.ToString("0"));
-            else
-                newValue = decimal.Parse(newValue.ToString("0.######"));
+                newValue = decimal.Parse(newValue.ToString("f0"));
+            else 
+                newValue = decimal.Parse(newValue.ToString(string.Format("f{0}", DecimalPlaces)));
+            //newValue = decimal.Parse(newValue.ToString("0.######"));
             tbContent.Text = newValue.ToString();
             NumericValue = newValue;
             ValueChangeAction?.Invoke();
@@ -231,8 +260,9 @@ namespace ControlShareResources.UserControls
             newValue = AvaliableVal - OffsetValue;
             if (IsInteger)
                 newValue = decimal.Parse(newValue.ToString("0"));
-            else
-                newValue = decimal.Parse(newValue.ToString("0.######"));
+            else 
+                newValue = decimal.Parse(newValue.ToString(string.Format("f{0}", DecimalPlaces)));
+            //newValue = decimal.Parse(newValue.ToString("0.######"));
             tbContent.Text = newValue.ToString();
             NumericValue = newValue;
             ValueChangeAction?.Invoke();

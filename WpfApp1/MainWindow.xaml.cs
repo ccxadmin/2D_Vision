@@ -21,6 +21,10 @@ using System.Collections.ObjectModel;
 using LightSourceController.Views;
 using LightSourceController.Models;
 using FilesRAW.Common;
+using GlueDetectionLib.窗体.Views;
+using GlueDetectionLib.窗体;
+using GlueDetectionLib.窗体.ViewModels;
+using GlueDetectionLib.工具;
 
 namespace WpfApp1
 {
@@ -152,13 +156,22 @@ namespace WpfApp1
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-          
-            string port = GeneralUse.ReadValue("光源控制器", "端口", "config", "COM1");
-            lightSource = new LightSource(port);
-            lightSource.Open(port);
-            LightSourceWindow f = new LightSourceWindow(lightSource);
+
+            //string port = GeneralUse.ReadValue("光源控制器", "端口", "config", "COM1");
+            //lightSource = new LightSource(port);
+            //lightSource.Open(port);
+            //LightSourceWindow f = new LightSourceWindow(lightSource);
+            //f.ShowDialog();
+            BaseTool tool = new ColorConvertTool();
+            FormGlueCaliperWidth f = new FormGlueCaliperWidth();
+            //BinaryzationViewModel.This.OnSaveParamHandle += new BaseViewModel.SaveParamHandle(OnSaveParamEvent);
+            //BinaryzationViewModel.This.OnSaveManageHandle = new BaseViewModel.SaveManageHandle(SaveManageOfGlue);
             f.ShowDialog();
+
         }
+
+
+
     }
 
     public class data

@@ -1,0 +1,177 @@
+﻿<Window x:Class="GlueDetectionLib.窗体.Views.FormGlueGap"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
+                            xmlns:local="clr-namespace:GlueDetectionLib.窗体.Views"
+        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
+xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
+Style="{x:Null}" FocusVisualStyle="{x:Null}"
+mc:Ignorable="d"  Loaded="Window_Loaded" Title="{Binding Model.TitleName ,Mode=TwoWay}"
+Height="700" Width="1000">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Control.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Margin="1" >
+            <Grid>
+                <Rectangle Stroke="#ff6d3c" StrokeThickness="1.5" Margin="0"/>
+                <WindowsFormsHost Name="host" Margin="2" >
+                    <!--<WindowsFormsHost.Child>
+                        <vision:VisionShowTool Dock="Fill" x:Name="{Binding Model.VisionShowToolName}"/>
+                    </WindowsFormsHost.Child>-->
+                </WindowsFormsHost>
+            </Grid>
+        </DockPanel>
+
+        <!--<StackPanel Grid.Column="1"  Margin="1">-->
+        <Grid Grid.Column="1"  Margin="1">
+            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
+
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                HorizontalScrollBarVisibility="auto">
+                    <Grid  Height="700" VerticalAlignment="Top">
+                        <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
+                          HorizontalAlignment="Left" VerticalAlignment="Top" 
+                           Margin="10,20"/>
+                        <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                              Margin="80,22,25,25"  Height="25"
+                                ItemsSource="{Binding Model.ImageList}"                          
+  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                            <behaviors:Interaction.Triggers>
+                                <behaviors:EventTrigger EventName="SelectionChanged">
+                                    <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                </behaviors:EventTrigger>
+                            </behaviors:Interaction.Triggers>
+                        </ComboBox>
+
+                        <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
+                              Margin="5,56" Header="区域" Height="350" VerticalAlignment="Top">
+                            <Grid Margin="1">
+                                <RadioButton Style="{DynamicResource  RadioButtonStyleBasics}" Content="自动"
+                                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" 
+                                    
+                                    />
+
+                                <Label Content="区域类型" Style="{DynamicResource LabelStyle}"
+                                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,5,10,10" />
+
+                                <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,10,10,10"
+                                            HorizontalAlignment="Left" VerticalAlignment="Top" />
+                                <Menu   Margin="10,50" VerticalAlignment="Top"  HorizontalAlignment="Stretch"
+                                    Style="{DynamicResource WD.DefaultMenu}">
+                                    <MenuItem   Margin="5,1" Header="新增" FontSize="16" VerticalContentAlignment="Center">
+
+                                        <MenuItem.Icon>
+                                            <Image Source="/GlueDetectionLib;component/images/加号.png" />
+                                        </MenuItem.Icon>
+
+                                    </MenuItem>
+                                    <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                    <MenuItem  Margin="5,1" Header="删除" FontSize="16"  VerticalContentAlignment="Center">
+
+                                        <MenuItem.Icon>
+                                            <Image Source="/GlueDetectionLib;component/images/减号.png" />
+                                        </MenuItem.Icon>
+
+                                    </MenuItem>
+                                </Menu>
+                                <DataGrid  Margin="10,80,10,40"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
+                                       VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
+                                       Style="{DynamicResource datagrid}"  ItemsSource="{Binding}">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="启用" Binding="{Binding FirstName,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
+                                        <DataGridTextColumn Header="卡尺名称"  Binding="{Binding LastName,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                        <DataGridTextColumn Header="状态"  Binding="{Binding Username,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                    </DataGrid.Columns>
+
+                                </DataGrid>
+                                <CheckBox Content="启用位置补正"  Margin="10,300,10,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                                      Style="{DynamicResource CheckBoxBasic}">
+                                </CheckBox>
+                                <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="150"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="120,298,25,0"  Height="20"
+                              ItemsSource="{Binding Model.ImageList}"                          
+SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
+                                </ComboBox>
+                            </Grid>
+                        </GroupBox>
+
+                        <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
+       Margin="5,420,5,5" Header="规格" Height="200" VerticalAlignment="Top">
+                            <Grid>
+                                <Label Style="{DynamicResource LabelStyle}" Content="像素比："
+                                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5"/>
+                                <TextBox Style="{DynamicResource baseInput}"  HorizontalAlignment="Left" VerticalAlignment="Top"
+                                          Margin="80,5,5,5" Width="130" attach:TexboxAttach.TextBoxCornerRadius="3"  
+                                         />
+                                <Button Content="获取" Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
+                                        VerticalAlignment="Top" Margin="220,5,5,5"
+                                        attach:ButtonAttach.ButtonCornerRadius="3"/>
+                                <Label Style="{DynamicResource LabelStyle}" Content="卡尺高度："
+    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,5,5"/>
+                                <uc:MyNumUpDown  MaxValue="999" MinValue="1" OffsetValue="10" DecimalPlaces="0"
+                                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="80,40,5,5" 
+                                    Width="130" Height="25"/>
+                                <Label Style="{DynamicResource LabelStyle}" Content="卡尺阈值："
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
+                                <uc:MyNumUpDown   MaxValue="255" MinValue="1" OffsetValue="1" DecimalPlaces="0"
+                                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="80,76,5,5" 
+                                Width="130" Height="25"/>
+                                <Label Style="{DynamicResource LabelStyle}" Content="边距下限："
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,5,5"/>
+                                <uc:MyNumUpDown  MaxValue="99999.99" MinValue="0.00" DefaultValue="0.00"
+                                                 OffsetValue="0.1"  DecimalPlaces="2"
+                                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="80,110,5,5" 
+                                Width="130" Height="25"/>
+                                <Label Style="{DynamicResource LabelStyle}" Content="边距下限："
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,146,0,0"/>
+                                <uc:MyNumUpDown   MaxValue="99999.99" MinValue="0.00" DefaultValue="0.00"
+                                                 OffsetValue="0.1" DecimalPlaces="2"
+                                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="80,146,0,0" 
+                                Width="130" Height="25"/>
+                            </Grid>
+
+                        </GroupBox>
+
+                        <Button Style="{DynamicResource PrimaryButton}"  Content="保存"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+  Margin="40,650,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                            Command="{Binding SaveButClickCommand}"/>
+                        <Button  Style="{DynamicResource PrimaryButton}" Content="测试"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="180,650,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                              Command="{Binding TestButClickCommand}"/>
+
+                    </Grid>
+                </ScrollViewer>
+            </GroupBox>
+
+        </Grid>
+        <!--</StackPanel>-->
+
+    </Grid>
+</Window>

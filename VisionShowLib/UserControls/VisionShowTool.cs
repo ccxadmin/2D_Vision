@@ -940,9 +940,9 @@ namespace VisionShowLib.UserControls
                     for (int i = 0; i < length1; i++)
                     {
                         if (hWindowsHandle.D > 100000)
-                            HOperatorSet.SetFont(hWindowsHandle, "Courier New-" + size.ToString());
+                            HOperatorSet.SetFont(hWindowsHandle, "Arial-" + size.ToString());
                         else
-                            HOperatorSet.SetFont(hWindowsHandle, "-Courier New-" + size.ToString() + "-*-*-*-*-1-");
+                            HOperatorSet.SetFont(hWindowsHandle, "-Arial-" + size.ToString() + "-*-*-*-*-1-");
 
                         disp_message(hWindowsHandle, message[i], new HTuple("image"), row[i], col[i], color[i], new HTuple("false"));
                     }
@@ -1007,9 +1007,9 @@ namespace VisionShowLib.UserControls
         public void DispMessage(string message, HTuple row, HTuple col, HTuple color, int size)
         {
             if (hWindowsHandle.D > 100000)
-                HOperatorSet.SetFont(hWindowsHandle, "Courier New-" + size.ToString());
+                HOperatorSet.SetFont(hWindowsHandle, "Arial-" + size.ToString());
             else
-                HOperatorSet.SetFont(hWindowsHandle, "-Courier New-" + size.ToString() + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(hWindowsHandle, "-Arial-" + size.ToString() + "-*-*-*-*-1-");
             disp_message(hWindowsHandle, message, new HTuple("image"), row, col, color, new HTuple("false"));
 
         }
@@ -1017,9 +1017,9 @@ namespace VisionShowLib.UserControls
         public void DispAlarmMessage(string message, HTuple row, HTuple col, int size)
         {
             if (hWindowsHandle.D > 100000)
-                HOperatorSet.SetFont(hWindowsHandle, "Courier New-" + size.ToString());
+                HOperatorSet.SetFont(hWindowsHandle, "Arial-" + size.ToString());
             else
-                HOperatorSet.SetFont(hWindowsHandle, "-Courier New-" + size.ToString() + "-*-*-*-*-1-");
+                HOperatorSet.SetFont(hWindowsHandle, "-Arial-" + size.ToString() + "-*-*-*-*-1-");
             disp_message(hWindowsHandle, message, new HTuple("image"), row, col, "red", new HTuple("true"));
 
         }

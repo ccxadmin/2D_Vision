@@ -8,6 +8,7 @@
     <Style  TargetType="{x:Type GroupBox}" x:Key="GroupBoxStyle">
         <Setter Property="Margin" Value="3"/>
         <Setter Property="Background" Value="#ff6d3c"/>
+        <Setter Property="Foreground" Value="#ffffff"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GroupBox}">

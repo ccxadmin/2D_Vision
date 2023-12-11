@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <NoWarn>$(NoWarn);SYSLIB0011</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="images\减号.png" />
+    <None Remove="images\加号.png" />
+    <None Remove="images\加号2.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FilesRAWLibrary">
+      <HintPath>..\ROIGenerateLib\dll\FilesRAWLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="halcondotnet">
+      <HintPath>..\ROIGenerateLib\dll\halcondotnet.dll</HintPath>
+    </Reference>
+    <Reference Include="OSLogLib">
+      <HintPath>..\ROIGenerateLib\dll\OSLogLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\减号.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\加号.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\加号2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>

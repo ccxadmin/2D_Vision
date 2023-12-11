@@ -83,7 +83,7 @@
             toolStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
             toolStrip1.Location = new Point(1, 1);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(594, 38);
+            toolStrip1.Size = new Size(598, 38);
             toolStrip1.TabIndex = 0;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -312,10 +312,10 @@
             statusStrip1.ImageScalingSize = new Size(20, 20);
             statusStrip1.Items.AddRange(new ToolStripItem[] { LocationLabel, toolStripStatusLabel2, GrayLabel, toolStripStatusLabel4, TimeLabel });
             statusStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            statusStrip1.Location = new Point(1, 407);
+            statusStrip1.Location = new Point(1, 411);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Padding = new Padding(1, 0, 16, 0);
-            statusStrip1.Size = new Size(594, 38);
+            statusStrip1.Size = new Size(598, 38);
             statusStrip1.Stretch = false;
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
@@ -372,9 +372,9 @@
             h_Disp.Margin = new Padding(2, 3, 2, 3);
             h_Disp.Name = "h_Disp";
             h_Disp.Padding = new Padding(2, 3, 2, 3);
-            h_Disp.Size = new Size(594, 368);
+            h_Disp.Size = new Size(598, 372);
             h_Disp.TabIndex = 5;
-            h_Disp.WindowSize = new Size(594, 368);
+            h_Disp.WindowSize = new Size(598, 372);
             h_Disp.SizeChanged += h_Disp_SizeChanged;
             h_Disp.MouseDown += h_Disp_MouseDown;
             h_Disp.MouseEnter += h_Disp_MouseEnter;
@@ -386,7 +386,6 @@
             AutoScaleDimensions = new SizeF(9F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Transparent;
-            BorderStyle = BorderStyle.Fixed3D;
             Controls.Add(h_Disp);
             Controls.Add(statusStrip1);
             Controls.Add(toolStrip1);
@@ -394,7 +393,7 @@
             Margin = new Padding(2, 3, 2, 3);
             Name = "VisionShowTool";
             Padding = new Padding(1);
-            Size = new Size(596, 446);
+            Size = new Size(600, 450);
             Load += VisionShowTool_Load;
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\GlueDetectionLib\GlueDetectionLib.csproj" />
     <ProjectReference Include="..\LightSourceController\LightSourceController.csproj" />
     <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />
     <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />

@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Page Remove="Themes\Generic.Core.xaml" />
+    <Page Remove="Themes\NumericBox.xaml" />
     <Page Remove="Themes\ScrollViewer.xaml" />
     <Page Remove="Themes\ScrollViewer2.xaml" />
   </ItemGroup>
