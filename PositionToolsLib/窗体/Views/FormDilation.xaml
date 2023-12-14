@@ -1,0 +1,95 @@
+﻿<Window x:Class="PositionToolsLib.窗体.Views.FormDilation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
+        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
+xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
+Style="{x:Null}" FocusVisualStyle="{x:Null}"
+mc:Ignorable="d"  Loaded="Window_Loaded" Title="{Binding Model.TitleName ,Mode=TwoWay}"
+Height="700" Width="1000">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Control.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Margin="1" >
+            <Grid>
+                <Rectangle Stroke="#ff6d3c" StrokeThickness="1.5" Margin="0"/>
+                <WindowsFormsHost Name="host" Margin="2" >
+                    <!--<WindowsFormsHost.Child>
+                        <vision:VisionShowTool Dock="Fill" x:Name="{Binding Model.VisionShowToolName}"/>
+                    </WindowsFormsHost.Child>-->
+                </WindowsFormsHost>
+            </Grid>
+        </DockPanel>
+
+        <!--<StackPanel Grid.Column="1"  Margin="1">-->
+        <Grid Grid.Column="1"  Margin="1">
+            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
+                <Grid>
+                    <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
+                          HorizontalAlignment="Left" VerticalAlignment="Top" 
+                           Margin="60,20"/>
+                    <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                              Margin="140,22,25,25"  Height="25"
+                                ItemsSource="{Binding Model.ImageList}"                          
+  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="SelectionChanged">
+                                <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>
+                    </ComboBox>
+                    <Label Style="{DynamicResource LabelStyle}" Content="掩膜宽度："
+       HorizontalAlignment="Left" VerticalAlignment="Top" 
+        Margin="60,56"/>
+                    <ComboBox  Width="120" Height="25"  Style="{DynamicResource MyCbbStyle}"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Margin="140,57,25,25"                             
+                               ItemsSource="{Binding Model.MaskWidthList}"                          
+SelectedItem="{Binding Model.SelectMaskWidth,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectMaskWidthIndex,Mode=TwoWay}"  >
+                    </ComboBox>
+
+                    <Label Style="{DynamicResource LabelStyle}" Content="掩膜高度："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="60,90"/>
+                    <ComboBox  Width="120" Height="25"
+     HorizontalAlignment="Left" VerticalAlignment="Top"
+     Margin="140,92,25,25"           Style="{DynamicResource MyCbbStyle}"             
+                               ItemsSource="{Binding Model.MaskHeightList}"                          
+SelectedItem="{Binding Model.SelectMaskHeight,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectMaskHeightIndex,Mode=TwoWay}" >
+                    </ComboBox>
+
+
+                    <Button Style="{DynamicResource PrimaryButton}" Height="25" Content="保存"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+  Margin="140,127,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                            Command="{Binding SaveButClickCommand}"/>
+                    <Button  Height="25" Style="{DynamicResource PrimaryButton}" Content="测试"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="140,163,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                              Command="{Binding TestButClickCommand}"/>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+        <!--</StackPanel>-->
+    </Grid>
+</Window>

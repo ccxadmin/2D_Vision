@@ -21,7 +21,7 @@
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/RichTextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ScrollViewer3.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/Slider.xaml" />
-        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TabControl.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TabControl2.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TextBox.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/ToolBar.xaml" />
         <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Themes/TreeView.xaml" />

@@ -23,5 +23,10 @@ namespace GlueDetectionLib.窗体.Views
         {
             InitializeComponent();
         }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

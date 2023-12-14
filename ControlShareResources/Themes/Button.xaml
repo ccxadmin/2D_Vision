@@ -22,7 +22,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border x:Name="border" SnapsToDevicePixels="true" BorderThickness="1" BorderBrush="#ff6d3c"  Background="{TemplateBinding Background}"  CornerRadius="{TemplateBinding components:ButtonAttach.ButtonCornerRadius}">
+                    <Border x:Name="border" SnapsToDevicePixels="true" BorderThickness="1.5" BorderBrush="#ff6d3c"  Background="{TemplateBinding Background}"  CornerRadius="{TemplateBinding components:ButtonAttach.ButtonCornerRadius}">
                         <TextBlock x:Name="contentPresenter" Text="{TemplateBinding Content}"  FontFamily="{DynamicResource  Iconfont}"  Focusable="False" TextWrapping="Wrap"  FontStretch="{TemplateBinding FontStretch}"
                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>

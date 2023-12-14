@@ -39,7 +39,8 @@
     <Style x:Key="MyCbbStyle" TargetType="ComboBox">
         <Setter Property="BorderBrush" Value="#ff6d3c"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="MinWidth" Value="80"/>
+        <Setter Property="MinWidth" Value="40"/>
+        <Setter Property="Width" Value="auto"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBox">

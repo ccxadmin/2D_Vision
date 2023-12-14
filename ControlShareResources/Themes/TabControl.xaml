@@ -337,7 +337,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style BasedOn="{StaticResource WD.DefaultTabControl}" TargetType="{x:Type TabControl}" />
+    <!--<Style BasedOn="{StaticResource WD.DefaultTabControl}" TargetType="{x:Type TabControl}" />-->
     
     <!--<Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource TabControlStyle}"></Style>
 

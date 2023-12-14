@@ -162,44 +162,44 @@
                      attach:TexboxAttach.Placeholder="请输入内容" 
                      attach:TexboxAttach.TextBoxCornerRadius="3"/>
 
-            <TabControl >
-              
-                    <TabItem  Cursor="Hand" Header="音乐电台" >
-                        <Grid Background="#33ffffff">
+            <TabControl Style="{DynamicResource  TabControlStyle}" >
+
+                <TabItem  Cursor="Hand" Header="音乐电台" Style="{DynamicResource TabItemStyle}" >
+                        <Grid Background="#33ffffff" >
                             <TextBlock Text="音乐电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </TabItem>
-                    <TabItem  Cursor="Hand" Header="Mv电台"  >
+                <TabItem  Cursor="Hand" Header="Mv电台"  Style="{DynamicResource TabItemStyle}">
                         <Grid Background="#33ffffff">
                             <TextBlock Text="Mv电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </TabItem>
-                    <TabItem  Cursor="Hand" Header="Mc电台"  >
+                <TabItem  Cursor="Hand" Header="Mc电台" Style="{DynamicResource TabItemStyle}" >
                         <Grid Background="#33ffffff">
                             <TextBlock Text="Mc电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </TabItem>
-                    <TabItem  Cursor="Hand" Header="Md电台"  >
+                <TabItem  Cursor="Hand" Header="Md电台"  Style="{DynamicResource TabItemStyle}">
                         <Grid Background="#33ffffff">
                             <TextBlock Text="Md电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </TabItem>
-                    <TabItem  Cursor="Hand" Header="Me电台"  >
+                <TabItem  Cursor="Hand" Header="Me电台"  Style="{DynamicResource TabItemStyle}">
                         <Grid Background="#33ffffff">
                             <TextBlock Text="Me电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </TabItem>
-                    <TabItem  Cursor="Hand" Header="Mf电台"  >
+                <TabItem  Cursor="Hand" Header="Mf电台"  Style="{DynamicResource TabItemStyle}">
                         <Grid Background="#33ffffff">
                             <TextBlock Text="Mf电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </TabItem>
-                   <TabItem  Cursor="Hand" Header="Mg电台"  >
+                <TabItem  Cursor="Hand" Header="Mg电台"  Style="{DynamicResource TabItemStyle}">
                     <Grid Background="#33ffffff">
                         <TextBlock Text="Mg电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                 </TabItem>
-                   <TabItem  Cursor="Hand" Header="Mh电台"  >
+                <TabItem  Cursor="Hand" Header="Mh电台" Style="{DynamicResource TabItemStyle}" >
                     <Grid Background="#33ffffff">
                         <TextBlock Text="Mh电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>

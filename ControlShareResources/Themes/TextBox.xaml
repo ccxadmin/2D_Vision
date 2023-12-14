@@ -197,9 +197,9 @@
         <Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Width" Value="auto"/>
-        <Setter Property="MinWidth" Value="100"/>
+        <Setter Property="MinWidth" Value="30"/>
         <Setter Property="Height" Value="auto"/>
-        <Setter Property="MinHeight" Value="26"/>
+        <Setter Property="MinHeight" Value="20"/>
         <Setter Property="Margin" Value="2"/>
         <Setter Property="Template">
             <Setter.Value>

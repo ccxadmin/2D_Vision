@@ -1,0 +1,199 @@
+﻿<Window x:Class="PositionToolsLib.窗体.Views.FormFindLine"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
+ xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
+xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
+xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
+  
+Style="{x:Null}" FocusVisualStyle="{x:Null}"
+mc:Ignorable="d"  Loaded="Window_Loaded" Title="{Binding Model.TitleName ,Mode=TwoWay}"
+Height="700" Width="1000">
+
+
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Control.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Margin="1" >
+            <Grid>
+                <Rectangle Stroke="#ff6d3c" StrokeThickness="1.5" Margin="0"/>
+                <WindowsFormsHost Name="host" Margin="2" >
+                    <!--<WindowsFormsHost.Child>
+                        <vision:VisionShowTool Dock="Fill" x:Name="{Binding Model.VisionShowToolName}"/>
+                    </WindowsFormsHost.Child>-->
+                </WindowsFormsHost>
+            </Grid>
+        </DockPanel>
+
+        <!--<StackPanel Grid.Column="1"  Margin="1">-->
+        <Grid Grid.Column="1"  Margin="1">
+            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <TabControl Style="{DynamicResource TabControlStyle}" Margin="2">
+                <TabItem Style="{DynamicResource TabItemStyle}" Header="输入参数">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+
+                        <Grid Margin="2">
+                            <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
+                            <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
+                          HorizontalAlignment="Left" VerticalAlignment="Top" 
+                           Margin="60,20"/>
+                            <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                              Margin="140,20,0,0"  Height="25"
+                                ItemsSource="{Binding Model.ImageList}"                          
+  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="SelectionChanged">
+                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
+                            </ComboBox>
+
+                            <Label Style="{DynamicResource LabelStyle}" Content="边缘阈值："
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
+                         Margin="60,55"/>
+                            <uc:MyNumUpDown   Width="120"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="140,55,0,0"  Height="25"
+                             >
+
+                            </uc:MyNumUpDown>
+
+                            <Label Style="{DynamicResource LabelStyle}" Content="卡尺数量："
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
+                         Margin="60,90,10,10"/>
+                            <uc:MyNumUpDown   Width="120"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="140,90,0,0"  Height="25" >
+
+
+                            </uc:MyNumUpDown>
+
+                            <Label Style="{DynamicResource LabelStyle}" Content="卡尺宽度："
+       HorizontalAlignment="Left" VerticalAlignment="Top" 
+        Margin="60,125,10,10"/>
+                            <uc:MyNumUpDown   Width="120"
+           HorizontalAlignment="Left" VerticalAlignment="Top"
+           Margin="140,125,0,0"  Height="25" >
+
+
+                            </uc:MyNumUpDown>
+
+
+                            <Label Style="{DynamicResource LabelStyle}" Content="卡尺高度："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="60,160,10,10"/>
+                            <uc:MyNumUpDown   Width="120"
+    HorizontalAlignment="Left" VerticalAlignment="Top"
+    Margin="140,160,0,0"  Height="25" >
+
+
+
+                            </uc:MyNumUpDown>
+
+                            <Label Style="{DynamicResource LabelStyle}" Content="边缘极性："
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
+                         Margin="60,195,10,10"/>
+                            <ComboBox Style="{DynamicResource MyCbbStyle}" Width="120"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="140,195,0,0"  Height="25"
+                                                    
+SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                                <ComboBoxItem Content="positive"/>
+                                <ComboBoxItem Content="negative"/>
+                                <ComboBoxItem Content="all"/>
+
+                            </ComboBox>
+
+                            <Label Style="{DynamicResource LabelStyle}" Content="边缘选择："
+                        HorizontalAlignment="Left" VerticalAlignment="Top" 
+                         Margin="60,230,10,10"/>
+                            <ComboBox Style="{DynamicResource MyCbbStyle}" Width="120"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="140,230,0,0"  Height="25"
+                                                    
+SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                                <ComboBoxItem Content="first"/>
+                                <ComboBoxItem Content="last"/>
+                                <ComboBoxItem Content="max"/>
+
+                            </ComboBox>
+
+                            <CheckBox Style="{DynamicResource CheckBoxBasic}" Content="启用位置补正"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                              Margin="60,270,10,10"/>
+                            <ComboBox Style="{DynamicResource MyCbbStyle}" Width="180"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="80,290,0,0"  Height="25"                                                    
+SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                            </ComboBox>
+
+                            <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="绘制检测区域"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="60,340,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                          Command="{Binding SaveButClickCommand}"/>
+
+
+                            <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="保存"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+  Margin="60,390,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                           />
+                            <Button  Height="30" Style="{DynamicResource PrimaryButton}" Content="测试"
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="60,440,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                           Command="{Binding TestButClickCommand}"/>
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem Style="{DynamicResource TabItemStyle}" Header="检测结果">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+                        <Grid Margin="2">
+                            <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
+                            <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
+             VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
+             Style="{DynamicResource datagrid}"  ItemsSource="{Binding}" Background="#ffffff"  >
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="ID" Binding="{Binding FirstName,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>
+                                    <DataGridTextColumn Header="行坐标1"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="列坐标1"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="行坐标2"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="列坐标2"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="角度"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+           
+
+        </Grid>
+        <!--</StackPanel>-->
+    </Grid>
+    
+</Window>
