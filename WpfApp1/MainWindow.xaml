@@ -207,7 +207,7 @@
 
             </TabControl>
 
-            <ScrollViewer Style="{DynamicResource ScrollViewerStyle}"/>
+        
         </StackPanel>
 
     </Grid>

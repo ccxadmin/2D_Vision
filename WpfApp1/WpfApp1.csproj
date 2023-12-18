@@ -10,10 +10,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\ExternalFunctionLib\ExternalFunctionLib.csproj" />
+    <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
     <ProjectReference Include="..\GlueDetectionLib\GlueDetectionLib.csproj" />
     <ProjectReference Include="..\LightSourceController\LightSourceController.csproj" />
     <ProjectReference Include="..\PositionToolsLib\PositionToolsLib.csproj" />
     <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />
+    <ProjectReference Include="..\visionForm\visionForm.csproj" />
     <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
   </ItemGroup>
 

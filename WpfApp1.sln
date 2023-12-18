@@ -17,11 +17,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightSourceController", "Li
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlShareResources", "ControlShareResources\ControlShareResources.csproj", "{2B70C8D1-20CD-46DA-BACB-FF45A34BDA41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GlueDetectionLib", "GlueDetectionLib\GlueDetectionLib.csproj", "{555EFA77-5B9A-49FA-8D03-14A237F4E776}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueDetectionLib", "GlueDetectionLib\GlueDetectionLib.csproj", "{555EFA77-5B9A-49FA-8D03-14A237F4E776}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PositionToolsLib", "PositionToolsLib\PositionToolsLib.csproj", "{FDC279F5-04FB-4ECF-982D-99EDB0921824}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionToolsLib", "PositionToolsLib\PositionToolsLib.csproj", "{FDC279F5-04FB-4ECF-982D-99EDB0921824}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "visionForm", "visionForm\visionForm.csproj", "{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "visionForm", "visionForm\visionForm.csproj", "{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DlasaCameraLib", "DlasaCameraLib\DlasaCameraLib.csproj", "{6C195EB7-3BC1-468A-8C11-D27074A6F303}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

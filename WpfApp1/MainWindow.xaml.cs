@@ -26,6 +26,7 @@ using GlueDetectionLib.窗体;
 using GlueDetectionLib.窗体.ViewModels;
 using GlueDetectionLib.工具;
 using PositionToolsLib.窗体.Views;
+using visionForm.Views;
 
 namespace WpfApp1
 {
@@ -164,7 +165,7 @@ namespace WpfApp1
             //LightSourceWindow f = new LightSourceWindow(lightSource);
             //f.ShowDialog();
             //BaseTool tool = new ColorConvertTool();
-            FormTrajectoryExtraction f = new FormTrajectoryExtraction();
+            frmCalibration f = new frmCalibration();
             //BinaryzationViewModel.This.OnSaveParamHandle += new BaseViewModel.SaveParamHandle(OnSaveParamEvent);
             //BinaryzationViewModel.This.OnSaveManageHandle = new BaseViewModel.SaveManageHandle(SaveManageOfGlue);
             f.ShowDialog();

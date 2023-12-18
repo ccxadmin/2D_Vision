@@ -22,6 +22,7 @@
     <Style  x:Key="WD.DefaultMenu"  TargetType="{x:Type Menu}"  >
         <Setter Property="Foreground" Value="#ffffff" />
         <Setter Property="Background" Value="#ff6d3c" />
+      
         <Setter Property="Padding" Value="2" />
         <Setter Property="Template">
             <Setter.Value>
@@ -91,7 +92,7 @@
                         Width="{Binding ElementName=Border, Path=ActualWidth}"
                         Height="1.2"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
+                        VerticalAlignment="Center"
                         Background="#ff6d3c"
                         BorderThickness="1,0,0,0" />
                     </Grid>
