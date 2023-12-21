@@ -63,16 +63,15 @@
                     <uc:MyNumUpDown  Width="120" Height="25"
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Margin="140,57,25,25"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMin,Mode=TwoWay}"
-                                     ValueChangeAction="{Binding Model.NumGrayMinValueChangeAction}"  >
+                                     OffsetValue="1" NumericValue="{Binding Model.GrayMin,Mode=TwoWay}" >
 
-                        <behaviors:Interaction.Triggers>
+                        <!--<behaviors:Interaction.Triggers>
                             <behaviors:EventTrigger EventName="KeyDown">
                                 <behaviors:InvokeCommandAction Command="{Binding NumGrayMinKeyDownCommand}"                                                                    
                                        PassEventArgsToCommand="True"/>
                             </behaviors:EventTrigger>
 
-                        </behaviors:Interaction.Triggers>
+                        </behaviors:Interaction.Triggers>-->
 
                     </uc:MyNumUpDown>
 
@@ -82,16 +81,15 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
                     <uc:MyNumUpDown  Width="120" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
      Margin="140,92,25,25"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}">
 
-                        <behaviors:Interaction.Triggers>
+                        <!--<behaviors:Interaction.Triggers>
                             <behaviors:EventTrigger EventName="KeyDown">
                                 <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
                   PassEventArgsToCommand="True"/>
                             </behaviors:EventTrigger>
 
-                        </behaviors:Interaction.Triggers>
+                        </behaviors:Interaction.Triggers>-->
                     </uc:MyNumUpDown>
 
                     <CheckBox Style="{DynamicResource CheckBoxBasic}"

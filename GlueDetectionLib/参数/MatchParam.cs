@@ -149,12 +149,12 @@ namespace GlueDetectionLib.参数
             }
         }
 
-        float matchDownScale = 1.0f;
+        double matchDownScale = 1.0;
         /// <summary>
         /// 模板匹配比例下限
         /// </summary>
         [Description("模板匹配比例下限"), DefaultValue(1.0)]
-        public float MatchDownScale
+        public double MatchDownScale
         {
             get => this.matchDownScale;
             set
@@ -164,12 +164,12 @@ namespace GlueDetectionLib.参数
             }
         }
 
-        float matchUpScale = 1.0f;
+        double matchUpScale = 1.0;
         /// <summary>
         /// 模板匹配比例上限
         /// </summary>
         [Description("模板匹配比例上限"), DefaultValue(1.0)]
-        public float MatchUpScale
+        public double MatchUpScale
         {
             get => this.matchUpScale;
             set
@@ -208,12 +208,12 @@ namespace GlueDetectionLib.参数
             }
         }
 
-        float matchScore = 0.4f;
+        double matchScore = 0.4;
         /// <summary>
         /// 模板匹配得分
         /// </summary>
         [Description("模板匹配得分"), DefaultValue(0.4)]
-        public float MatchScore
+        public double MatchScore
         {
             get => this.matchScore;
             set

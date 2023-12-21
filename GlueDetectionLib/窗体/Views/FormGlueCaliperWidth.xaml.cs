@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GlueDetectionLib.工具;
+using GlueDetectionLib.窗体.ViewModels;
+using HalconDotNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using VisionShowLib.UserControls;
 
 namespace GlueDetectionLib.窗体.Views
 {
@@ -19,13 +23,27 @@ namespace GlueDetectionLib.窗体.Views
     /// </summary>
     public partial class FormGlueCaliperWidth : Window
     {
-        public FormGlueCaliperWidth()
+        public FormGlueCaliperWidth(BaseTool tool)
         {
             InitializeComponent();
+            var model = new GlueCaliperWidthViewModel(tool);
+            DataContext = model;
+           
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            HOperatorSet.SetSystem("temporary_mem_cache", "false");
+            HOperatorSet.SetSystem("clip_region", "false");
+
+            var tool = GlueCaliperWidthViewModel.This.ShowTool;
+            //tool.SetColorOfTopBottomTitle(System.Drawing.Color.FromArgb(255, 109, 60));
+            tool.Dock = System.Windows.Forms.DockStyle.Fill;
+            tool.Padding = new System.Windows.Forms.Padding(2);
+
+            tool.SetBackgroundColor(EumControlBackColor.white);
+            tool.setDraw(EumDrawModel.margin);
+            host.Child = tool;
 
         }
     }

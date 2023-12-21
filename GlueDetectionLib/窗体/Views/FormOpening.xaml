@@ -39,7 +39,7 @@
 
         <!--<StackPanel Grid.Column="1"  Margin="1">-->
         <Grid Grid.Column="1"  Margin="1">
-            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <!--<Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>-->
             <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
                 <Grid>
                     <Label Style="{DynamicResource LabelStyle}" Content="输入图像："

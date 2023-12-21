@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GlueDetectionLib.窗体.Models;
 using HalconDotNet;
 
 
@@ -18,12 +19,12 @@ namespace GlueDetectionLib.参数
         /*****************************************Property*****************************************/
         #region---Property---
         //Input parmas value define --2
-        List<ResultShowData> resultShowDataList = new List<ResultShowData>();
+        List<DgDataOfResultShow> resultShowDataList = new List<DgDataOfResultShow>();
         /// <summary>
         /// 表格数据集合
         /// </summary>                                                       
         [Description("表格数据集合"), DefaultValue(null)]
-        public List<ResultShowData> ResultShowDataList
+        public List<DgDataOfResultShow> ResultShowDataList
         {
             get => this.resultShowDataList;
             set

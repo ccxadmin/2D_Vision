@@ -229,16 +229,7 @@ namespace GlueDetectionLib
         public HObject region;
         public string status;
         public EumRegionUnionWay regionUnionWay;
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    isUse,
-                    regionName,
-                    status
-                 );
-
-        }
+      
 
     }
     [Serializable]
@@ -269,30 +260,5 @@ namespace GlueDetectionLib
     }
 
 
-    [Serializable]
-    public class ResultShowData
-    {
-        public ResultShowData(bool t_isUse, string t_toolName, string t_status)
-        {
-            isUse = t_isUse;
-            toolName = t_toolName;
-            status = t_status;
-        }
-        public bool isUse { get; set; }
-        public string toolName { get; set; }
-        public string status { get; set; }
-
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    isUse,
-                    toolName,
-                    status
-                 );
-
-        }
-    }
 
 }

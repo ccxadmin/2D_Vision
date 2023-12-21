@@ -37,9 +37,14 @@ Height="700" Width="1000">
 
         <!--<StackPanel Grid.Column="1"  Margin="1">-->
         <Grid Grid.Column="1"  Margin="1">
-            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
-            <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数"
-                     VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Rectangle Grid.RowSpan="3" Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <GroupBox Grid.Row="0"  Style="{DynamicResource GroupBoxStyle}"  Header="参数"
+                  Height="170" >
                 <Grid>
                     <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
@@ -63,17 +68,8 @@ Height="700" Width="1000">
         Margin="10,40"/>
                     <uc:MyNumUpDown  Width="80" Height="25"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            Margin="80,40,0,0"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMin,Mode=TwoWay}"
-                                     ValueChangeAction="{Binding Model.NumGrayMinValueChangeAction}"  >
-
-                        <behaviors:Interaction.Triggers>
-                            <behaviors:EventTrigger EventName="KeyDown">
-                                <behaviors:InvokeCommandAction Command="{Binding NumGrayMinKeyDownCommand}"                                                                    
-                                       PassEventArgsToCommand="True"/>
-                            </behaviors:EventTrigger>
-
-                        </behaviors:Interaction.Triggers>
+            Margin="80,40,0,0"  DefaultValue="-90" MinValue="-180" MaxValue="180"
+                                     OffsetValue="1" NumericValue="{Binding Model.StartAngle,Mode=TwoWay}">
 
                     </uc:MyNumUpDown>
 
@@ -82,17 +78,9 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
  Margin="170,40,0,0"/>
                     <uc:MyNumUpDown  Width="80" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
-     Margin="244,40,0,0"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+     Margin="244,40,0,0"  DefaultValue="180" MinValue="0" MaxValue="360"
+                                     OffsetValue="1" NumericValue="{Binding Model.RangeAngle,Mode=TwoWay}">
 
-                        <behaviors:Interaction.Triggers>
-                            <behaviors:EventTrigger EventName="KeyDown">
-                                <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
-                  PassEventArgsToCommand="True"/>
-                            </behaviors:EventTrigger>
-
-                        </behaviors:Interaction.Triggers>
                     </uc:MyNumUpDown>
                 
                     <Label Style="{DynamicResource LabelStyle}" Content="对比度："
@@ -100,17 +88,9 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
  Margin="10,75,0,0"/>
                     <uc:MyNumUpDown  Width="80" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
-     Margin="80,75,0,0"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+     Margin="80,75,0,0"  DefaultValue="20" MinValue="0" MaxValue="255"
+                                     OffsetValue="1" NumericValue="{Binding Model.Contrast,Mode=TwoWay}">
 
-                        <behaviors:Interaction.Triggers>
-                            <behaviors:EventTrigger EventName="KeyDown">
-                                <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
-                  PassEventArgsToCommand="True"/>
-                            </behaviors:EventTrigger>
-
-                        </behaviors:Interaction.Triggers>
                     </uc:MyNumUpDown>
 
                     <Label Style="{DynamicResource LabelStyle}" Content="匹配得分："
@@ -118,17 +98,10 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
  Margin="170,75,0,0"/>
                     <uc:MyNumUpDown  Width="80" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
-     Margin="244,75,0,0"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+     Margin="244,75,0,0"  DefaultValue="0.5" MinValue="0.0" MaxValue="1.0"
+                           DecimalPlaces="1"          OffsetValue="0.1" NumericValue="{Binding Model.MatchScore,Mode=TwoWay}">
 
-                        <behaviors:Interaction.Triggers>
-                            <behaviors:EventTrigger EventName="KeyDown">
-                                <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
-                  PassEventArgsToCommand="True"/>
-                            </behaviors:EventTrigger>
-
-                        </behaviors:Interaction.Triggers>
+              
                     </uc:MyNumUpDown>
 
                     <Label Style="{DynamicResource LabelStyle}" Content="比例下限："
@@ -136,83 +109,71 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
  Margin="10,110,0,0"/>
                     <uc:MyNumUpDown  Width="80" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
-     Margin="80,110,0,0"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+     Margin="80,110,0,0"  DefaultValue="1.0" MinValue="0.3" MaxValue="1.0"
+                       DecimalPlaces="1"   OffsetValue="0.1" NumericValue="{Binding Model.ScaleDownLimit,Mode=TwoWay}">
 
-                        <behaviors:Interaction.Triggers>
-                            <behaviors:EventTrigger EventName="KeyDown">
-                                <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
-                  PassEventArgsToCommand="True"/>
-                            </behaviors:EventTrigger>
-
-                        </behaviors:Interaction.Triggers>
                     </uc:MyNumUpDown>
 
 
                     <Label Style="{DynamicResource LabelStyle}" Content="比例上限："
 HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="170,110,10,10"/>
+ Margin="170,110,0,0"/>
                     <uc:MyNumUpDown  Width="80" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
-     Margin="244,110,10,10"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+     Margin="244,110,0,0"  DefaultValue="1.0" MinValue="0.3" MaxValue="3.0"
+                              DecimalPlaces="1"    OffsetValue="0.1" NumericValue="{Binding Model.ScaleUpLimit,Mode=TwoWay}">
 
-                        <behaviors:Interaction.Triggers>
-                            <behaviors:EventTrigger EventName="KeyDown">
-                                <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
-                  PassEventArgsToCommand="True"/>
-                            </behaviors:EventTrigger>
-
-                        </behaviors:Interaction.Triggers>
+            
                     </uc:MyNumUpDown>
                 </Grid>
             </GroupBox>
-            <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="区域"
-                     VerticalAlignment="Top" Margin="3,190,3,3">
+            <GroupBox   Grid.Row="1" Style="{DynamicResource GroupBoxStyle}"  Header="区域"
+                     Height="200" >
                 <Grid>
                     <Label Style="{DynamicResource LabelStyle}" Content="模板搜索区域："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="40,20"/>
                     <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="100"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="180,20,25,25"  Height="25"                                   
-  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                              Margin="180,20,25,25"  Height="25"  x:Name="cobxSearchModelROI"                            
+  SelectedItem="{Binding Model.SearchModelROISelectName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.SearchModelROISelectIndex,Mode=TwoWay}"  >
                         <ComboBoxItem Content="全图搜索"/>
                         <ComboBoxItem Content="局部搜索"/>
                         <behaviors:Interaction.Triggers>
                             <behaviors:EventTrigger EventName="SelectionChanged">
-                                <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                <behaviors:InvokeCommandAction Command="{Binding SearchModelROISelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxSearchModelROI,Path=SelectedValue}"/>
                             </behaviors:EventTrigger>
                         </behaviors:Interaction.Triggers>
                     </ComboBox>
                     <Button Style="{DynamicResource  PrimaryButton}" Content="绘制模板区域" Width="100"
        HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
-        Margin="40,56,10,10"/>
+        Margin="40,56,10,10"
+                            Command="{Binding DrawModelRegionClickCommand}"/>
                     <Button Style="{DynamicResource  PrimaryButton}" Content="绘制模板区域" Width="100"
 HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="180,56,10,10"/>
+ Margin="180,56,10,10"  Command="{Binding DrawModelSearchRegionClickCommand}"
+                         IsEnabled="{Binding  Model.BtnDrawModelSearchRegionEnable,Mode=TwoWay}"   
+                            />
 
                     <Button Style="{DynamicResource  PrimaryButton}" Content="训练" Width="100"
        HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
-        Margin="40,92,10,10"/>
+        Margin="40,92,10,10" Command="{Binding TranModelClickCommand}"  />
                     <Button Style="{DynamicResource  PrimaryButton}" Content="掩膜设置" Width="100"
 HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="180,92,10,10"/>
+ Margin="180,92,10,10"  Command="{Binding MaskSetClickCommand}"/>
 
                     <Button Style="{DynamicResource  PrimaryButton}" Content="参数保存" Width="100"
        HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
-        Margin="40,128,10,10"/>
+        Margin="40,128,10,10"  Command="{Binding SaveParamClickCommand}"/>
                     <Button Style="{DynamicResource  PrimaryButton}" Content="手动测试" Width="100"
 HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="180,128,10,10"/>
+ Margin="180,128,10,10" Command="{Binding ModelTestClickCommand}"/>
                     
                 </Grid>
             </GroupBox>
-            <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="基准点"
-                     VerticalAlignment="Top" Margin="3,400,3,3">
+            <GroupBox Grid.Row="2"   Style="{DynamicResource GroupBoxStyle}"  Header="基准点">
+                   
                 <Grid>
                     <Label Style="{DynamicResource LabelStyle}" Content="行坐标："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
@@ -221,7 +182,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCor
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="140,22,25,25"  Height="25"
                               attach:TexboxAttach.TextBoxCornerRadius="3"
-                              IsReadOnly="True" >
+                              IsReadOnly="True" Text="{Binding Model.BaseRowText}">
                     </TextBox>
 
                     <Label Style="{DynamicResource LabelStyle}" Content="列坐标："
@@ -231,7 +192,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCor
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Margin="140,57,25,25"  Style="{DynamicResource  baseInput}"
                               attach:TexboxAttach.TextBoxCornerRadius="3"
-                  IsReadOnly="True"  >
+                  IsReadOnly="True"  Text="{Binding Model.BaseColumnText}">
 
                     </TextBox>
 
@@ -242,7 +203,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
      HorizontalAlignment="Left" VerticalAlignment="Top"
      Margin="140,92,10,10"  Style="{DynamicResource  baseInput}"
                               attach:TexboxAttach.TextBoxCornerRadius="3"
-                  IsReadOnly="True"  >
+                  IsReadOnly="True" Text="{Binding Model.BaseAngleText}" >
                         
                     </TextBox>
                   

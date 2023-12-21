@@ -36,7 +36,10 @@ namespace PositionToolsLib.工具
         
         public DataManage GetManage()
         {
-            return OnGetManageHandle?.Invoke();
+            if (OnGetManageHandle == null)
+                return new DataManage();
+            else
+                return OnGetManageHandle.Invoke();
         }
         /// <summary>
         /// 计算直线角度 -180~180

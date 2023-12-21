@@ -103,16 +103,16 @@ namespace PositionToolsLib.工具
                 List<StuFlagInfo> flagInfoList = new List<StuFlagInfo>();    
                 foreach (var s in (toolParam as ResultShowParam).ResultShowDataList)
                 {
-                    if (s.isUse)
+                    if (s.Use)
                     {
                         //if (DataManage.resultFlagDic.ContainsKey(s.toolName))
-                        if (dm.resultFlagDic[s.toolName])//结果标志为true
-                            if (dm.resultBufDic.ContainsKey(s.toolName))
-                                if (BaseTool.ObjectValided(dm.resultBufDic[s.toolName]))
-                                    HOperatorSet.ConcatObj(emptyObj, dm.resultBufDic[s.toolName], out emptyObj);
-                        if (dm.resultInfoDic.ContainsKey(s.toolName))
-                            flagInfoList.Add(new StuFlagInfo(dm.resultInfoDic[s.toolName],
-                                      dm.resultFlagDic[s.toolName]));
+                        if (dm.resultFlagDic[s.ToolName])//结果标志为true
+                            if (dm.resultBufDic.ContainsKey(s.ToolName))
+                                if (BaseTool.ObjectValided(dm.resultBufDic[s.ToolName]))
+                                    HOperatorSet.ConcatObj(emptyObj, dm.resultBufDic[s.ToolName], out emptyObj);
+                        if (dm.resultInfoDic.ContainsKey(s.ToolName))
+                            flagInfoList.Add(new StuFlagInfo(dm.resultInfoDic[s.ToolName],
+                                      dm.resultFlagDic[s.ToolName]));
                     }
                        
                 }

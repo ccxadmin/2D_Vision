@@ -91,6 +91,15 @@ namespace GlueDetectionLib.窗体.Models
         v
     }
 
+    /// <summary>
+    /// 区域生成方式
+    /// </summary>
+    public enum EumGenRegionWay
+    {
+        auto,
+        manual
+    }
+
     public class ComparisonConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -108,7 +117,7 @@ namespace GlueDetectionLib.窗体.Models
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool b && !b) return true;
+            if (value.Equals(parameter)) return true;
             return false;
         }
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

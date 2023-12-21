@@ -1,9 +1,9 @@
-﻿<Window x:Class="GlueDetectionLib.窗体.Views.frmTemplateMaking"
+﻿<Window x:Class="PositionToolsLib.窗体.Views.FormTemplateMaking"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GlueDetectionLib.窗体.Views"
+        xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
   xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
  xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
  xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
@@ -39,7 +39,7 @@
 
         <!--<StackPanel Grid.Column="1"  Margin="1">-->
         <Grid Grid.Column="1"  Margin="1">
-            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <!--<Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>-->
             <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
                 <Grid>
                     <Label Style="{DynamicResource LabelStyle}" Content="画笔类型："

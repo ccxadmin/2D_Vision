@@ -77,16 +77,16 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private Action numGrayMinValueChangeAction;
-        public Action NumGrayMinValueChangeAction
-        {
-            get { return numGrayMinValueChangeAction; }
-            set
-            {
-                numGrayMinValueChangeAction = value;
-                DoNotify();
-            }
-        }
+        //private Action numGrayMinValueChangeAction;
+        //public Action NumGrayMinValueChangeAction
+        //{
+        //    get { return numGrayMinValueChangeAction; }
+        //    set
+        //    {
+        //        numGrayMinValueChangeAction = value;
+        //        DoNotify();
+        //    }
+        //}
 
         /// <summary>
         /// 最大灰度值
@@ -102,16 +102,16 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private Action numGrayMaxValueChangeAction;
-        public Action NumGrayMaxValueChangeAction
-        {
-            get { return numGrayMaxValueChangeAction; }
-            set
-            {
-                numGrayMaxValueChangeAction = value;
-                DoNotify();
-            }
-        }
+        //private Action numGrayMaxValueChangeAction;
+        //public Action NumGrayMaxValueChangeAction
+        //{
+        //    get { return numGrayMaxValueChangeAction; }
+        //    set
+        //    {
+        //        numGrayMaxValueChangeAction = value;
+        //        DoNotify();
+        //    }
+        //}
         /// <summary>
         /// 是否图像反转
         /// </summary>

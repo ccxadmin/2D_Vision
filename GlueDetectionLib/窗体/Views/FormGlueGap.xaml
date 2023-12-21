@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
               xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
                             xmlns:local="clr-namespace:GlueDetectionLib.窗体.Views"
+         xmlns:ccm="clr-namespace:GlueDetectionLib.窗体.Models"
         xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
 xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
 Style="{x:Null}" FocusVisualStyle="{x:Null}"
@@ -44,6 +45,11 @@ Height="700" Width="1000">
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                                 HorizontalScrollBarVisibility="auto">
                     <Grid  Height="800" VerticalAlignment="Top">
+                        <Grid.Resources>
+                            <ccm:ComparisonConverter x:Key="ComparisonConverter" />
+                            <ccm:BooleanInverterConvert x:Key="BooleanInverterConvert" />
+                        </Grid.Resources>
+                        
                         <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="10,20"/>
@@ -66,123 +72,213 @@ Height="700" Width="1000">
                             <Grid Margin="1">
                                 <RadioButton Style="{DynamicResource  RadioButtonStyleBasics}" Content="自动"
                                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10" 
-                                    
+                                             Command="{Binding RdbtnCheckedChangedCommand}"
+                                              CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
+                                  IsChecked="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}"   
                                     />
                                 <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
          Content="绘制检测区域" HorizontalAlignment="Left" VerticalAlignment="Top"
-         Margin="10,35,10,10" Height="25" Width="120"/>
+         Margin="10,35,10,10" Height="25" Width="120"  IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" 
+                                        Command="{Binding DrawRegionOfAutoBtnClickCommand}"/>
                                 <Label Content="区域类型" Style="{DynamicResource LabelStyle}"
                                         HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,35,10,10" />
 
-                                <ComboBox Style="{DynamicResource MyCbbStyle}" Height="25" Margin="200,35,10,10" Width="80"
-                                            HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" >
+                                <ComboBox Name="cobxAutoRegionType" Style="{DynamicResource MyCbbStyle}" Height="25" Margin="200,35,10,10" Width="80"
+                                            HorizontalAlignment="Left" VerticalAlignment="Top" 
+                                          IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" 
+                                          SelectedIndex="{Binding Model.AutoRegionTypeSelectIndex,Mode=TwoWay}" >
                                     <ComboBoxItem Content="任意"/>
                                     <ComboBoxItem Content="矩形"/>
                                     <ComboBoxItem Content="旋转矩形"/>
                                     <ComboBoxItem Content="圆弧"/>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding AutoRegionTypeSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxAutoRegionType,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
                                 </ComboBox>
 
                                 <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
          Content="自动提取胶水外形" HorizontalAlignment="Left" VerticalAlignment="Top"
-         Margin="10,70,10,10" Height="25" Width="120"/>
+         Margin="10,70,10,10" Height="25" Width="120"
+                                        Command="{Binding AutoExtractGlueRegionBtnClickCommand}"
+                                        IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" />
                                 <Label Content="胶水极性" Style="{DynamicResource LabelStyle}"
           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,70,10,10" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,70,10,10"
-            HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0"  Height="25" Width="80">
+            HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.SelectPolarityIndex,Mode=TwoWay}"  Height="25" Width="80"
+                                          SelectedItem="{Binding Model.SelectPolarityName,Mode=TwoWay}"
+                                           IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" >
                                     <ComboBoxItem Content="白色"/>
                                     <ComboBoxItem Content="黑色"/>
                                 </ComboBox>
 
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="10,106,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"  >
+HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"   
+                                          SelectedItem="{Binding Model.MorphProcessSelectName,Mode=TwoWay}"
+                                          IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" >
                                     <ComboBoxItem Content="膨胀"/>
                                     <ComboBoxItem Content="腐蚀"/>
                                 </ComboBox>
 
                                 <uc:MyNumUpDown Width="76"  Height="25"
                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                 Margin="54,106,10,10"/>
+                                                 Margin="54,106,10,10"
+                                                NumericValue="{Binding Model.NumRadius}"
+                                                 IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" />
 
                                 <Label Content="尺寸单位" Style="{DynamicResource LabelStyle}"
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,106,10,10" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,106,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"  Width="80">
+HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"  Width="80"
+                                          SelectedItem="{Binding Model.ConvertUnitsSelectName,Mode=TwoWay}"
+                                           IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" >
                                     <ComboBoxItem Content="像素"/>
                                     <ComboBoxItem Content="物理"/>
                                 </ComboBox>
                                 <CheckBox Style="{DynamicResource CheckBoxBasic}"
-                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,145,10,10"/>
+                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,145,10,10"
+                                          Command="{Binding UseAutoGenInnerCheckedChangedCommand}"
+                                          IsChecked="{Binding Model.UseAutoGenInner1Checked,Mode=TwoWay}"
+                                           IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" />
                                 <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
 Content="生成内圈检测区域1" HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="30,141,10,10" Height="25" Width="120"/>
+Margin="30,141,10,10" Height="25" Width="120"
+                                        Command="{Binding AutoGenInnerRegionBtnClickCommand}"
+                                         IsEnabled="{Binding Model.BtnAutoGenInnerRegion1Enable,  Mode=TwoWay}" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,141,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25" Width="80">
+HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.CobxUnionWaySelect}" Height="25" Width="80"
+                                          x:Name="cobxUnionWay"
+                                          SelectedItem="{Binding Model.UnionWaySelectName,Mode=TwoWay}"
+                                           IsEnabled="{Binding  Model.CobxUnionWayEnable,  Mode=TwoWay}" >
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding UnionWaySelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxUnionWay,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
                                 </ComboBox>
                                 <CheckBox Style="{DynamicResource CheckBoxBasic}"
-                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,180,10,10"/>
+                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,180,10,10"
+                                           Command="{Binding UseAutoGenInner2CheckedChangedCommand}"
+                                          IsChecked="{Binding Model.UseAutoGenInner2Checked,Mode=TwoWay}"
+                                           IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}"
+                                          />
                                 <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
 Content="生成内圈检测区域2" HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="30,175,10,10" Height="25" Width="120"/>
+Margin="30,175,10,10" Height="25" Width="120"
+                                        Command="{Binding AutoGenInnerRegion2BtnClickCommand}"
+                                         IsEnabled="{Binding Model.BtnAutoGenInnerRegion2Enable,  Mode=TwoWay}" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,174,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"  Width="80">
+HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.CobxUnionWay2Select}"  Height="25"  Width="80"
+                                          SelectedItem="{Binding Model.UnionWay2SelectName,Mode=TwoWay}"
+                                          x:Name="cobxUnionWay2"  IsEnabled="{Binding Model.CobxUnionWay2Enable,  Mode=TwoWay}" >
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding UnionWay2SelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxUnionWay2,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
                                 </ComboBox>
 
                                 <RadioButton Style="{DynamicResource  RadioButtonStyleBasics}" Content="手动"
-    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,215,10,10"  />
+    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,215,10,10" 
+                                               Command="{Binding RdbtnCheckedChangedCommand}"
+                                             CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
+                                              IsChecked="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static ccm:EumGenRegionWay.manual}}"   />
                                 <Label Content="区域类型" Style="{DynamicResource LabelStyle}"
          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,235,10,10" />
 
-                                <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="70,235,10,10" Width="80"
-             HorizontalAlignment="Left" VerticalAlignment="Top" SelectedIndex="0" Height="25" >
+                                <ComboBox  x:Name="cobxManulRegionType" Style="{DynamicResource MyCbbStyle}" Margin="70,235,10,10" Width="80"
+             HorizontalAlignment="Left" VerticalAlignment="Top" Height="25" 
+                                           SelectedIndex="{Binding Model.ManulRegionTypeSelectIndex,Mode=TwoWay}"
+                                           IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.manual}}" >
                                     <ComboBoxItem Content="任意"/>
                                     <ComboBoxItem Content="矩形"/>
                                     <ComboBoxItem Content="旋转矩形"/>
                                     <ComboBoxItem Content="圆弧"/>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding ManulRegionTypeSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxManulRegionType,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
                                 </ComboBox>
 
                                 <CheckBox Style="{DynamicResource CheckBoxBasic}"
-                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,274,10,10"/>
+                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,274,10,10"
+                                           Command="{Binding ManualDrawRegionCheckedCommand}"
+ IsChecked="{Binding Model.UseManualDrawRegionChecked,Mode=TwoWay}"
+                                            IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.manual}}"/>
                                 <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
 Content="手动绘制检测区域1" HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="30,270,10,10" Height="25" Width="120"/>
+Margin="30,270,10,10" Height="25" Width="120"
+                                          Command="{Binding ManualDrawRegionBtnClickCommand}"
+  IsEnabled="{Binding Model.BtnManualDrawRegionEnable,  Mode=TwoWay}"/>
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,270,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Width="80" Height="25">
+HorizontalAlignment="Left" VerticalAlignment="Top"   SelectedIndex="{Binding Model.CobxUnionWay3Select}" Width="80" Height="25"
+                                   x:Name="cobxUnionWay3"        SelectedItem="{Binding Model.UnionWay3SelectName,Mode=TwoWay}"
+  IsEnabled="{Binding  Model.CobxUnionWay3Enable,  Mode=TwoWay}" >
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding UnionWay3SelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxUnionWay3,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
                                 </ComboBox>
 
                                 <CheckBox Style="{DynamicResource CheckBoxBasic}"
-                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,308,10,10"/>
+                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,308,10,10"
+                                                                                    Command="{Binding ManualDrawRegion2CheckedCommand}"
+IsChecked="{Binding Model.UseManualDrawRegion2Checked,Mode=TwoWay}"
+                                            IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.manual}}"/>
                                 <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
 Content="手动绘制检测区域2" HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="30,304,10,10" Height="25" Width="120"/>
+Margin="30,304,10,10" Height="25" Width="120"
+                                                                                  Command="{Binding ManualDrawRegionBtn2ClickCommand}"
+IsEnabled="{Binding Model.BtnManualDrawRegion2Enable,  Mode=TwoWay}"/>
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,304,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Width="80" Height="25">
+HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.CobxUnionWay4Select}"  Width="80" Height="25"
+                                          
+                                   x:Name="cobxUnionWay4"        SelectedItem="{Binding Model.UnionWay4SelectName,Mode=TwoWay}"
+  IsEnabled="{Binding  Model.CobxUnionWay4Enable,  Mode=TwoWay}">
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding UnionWay4SelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxUnionWay4,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
                                 </ComboBox>
                                 
 
                                 <CheckBox Content="启用位置补正"  Margin="10,345,10,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                                      Style="{DynamicResource CheckBoxBasic}">
+                                      Style="{DynamicResource CheckBoxBasic}"
+                                                   Command="{Binding UsePosiCorrectCheckedCommand}"
+IsChecked="{Binding Model.UsePosiCorrectChecked,Mode=TwoWay}"
+                                           >
                                 </CheckBox>
                                 <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="150"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="130,340,25,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                            Margin="130,340,25,0"  Height="25" x:Name="cobxMatrixList"
+                              ItemsSource="{Binding Model.MatrixList}"                          
+SelectedItem="{Binding Model.SelectMatrixName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectMatrixIndex,Mode=TwoWay}"  
+                                           IsEnabled="{Binding Model.MatrixEnable,Mode=TwoWay}">
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="SelectionChanged">
-                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                            <behaviors:InvokeCommandAction Command="{Binding MatrixSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxMatrixList,Path=SelectedValue}"/>
                                         </behaviors:EventTrigger>
                                     </behaviors:Interaction.Triggers>
                                 </ComboBox>
                             </Grid>
+                            <GroupBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="区域重置" Command="{Binding MenuItemClickCommand}"/>
+                                </ContextMenu>
+                            </GroupBox.ContextMenu>
                         </GroupBox>
 
                         <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
@@ -192,38 +288,47 @@ SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
                                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5"/>
                                 <TextBox Style="{DynamicResource baseInput}"  HorizontalAlignment="Left" VerticalAlignment="Top"
                                           Margin="90,5,5,5" Width="120" attach:TexboxAttach.TextBoxCornerRadius="3"  
-                                         />
+                                         Text="{Binding Model.PixelRatio,Mode=TwoWay}"/>
                                 <Button Content="获取" Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
                                         VerticalAlignment="Top" Margin="220,5,5,5"
+                                        Command="{Binding GetPixelRatioBtnClickCommand}"
                                         attach:ButtonAttach.ButtonCornerRadius="3"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="灰度值下限："
     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,5,5"/>
                                 <uc:MyNumUpDown  MaxValue="999" MinValue="1" OffsetValue="10" DecimalPlaces="0"
                                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,40,5,5" 
-                                    Width="120" Height="25"/>
+                                    NumericValue="{Binding Model.GrayDown,Mode=TwoWay}"
+                                                 Width="120" Height="25"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="灰度值上限："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
                                 <uc:MyNumUpDown   MaxValue="255" MinValue="1" OffsetValue="1" DecimalPlaces="0"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,76,5,5" 
+                                                   NumericValue="{Binding Model.GrayUp,Mode=TwoWay}"
                                 Width="120" Height="25"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="面积下限："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,110,5,5"/>
                                 <uc:MyNumUpDown  MaxValue="99999.99" MinValue="0.00" DefaultValue="0.00"
                                                  OffsetValue="0.1"  DecimalPlaces="2"
+                                                  NumericValue="{Binding Model.AreaDown,Mode=TwoWay}"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,110,5,5" 
                                 Width="120" Height="25"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="面积上限："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,146,0,0"/>
                                 <uc:MyNumUpDown   MaxValue="99999.99" MinValue="0.00" DefaultValue="0.00"
                                                  OffsetValue="0.1" DecimalPlaces="2"
+                                                   NumericValue="{Binding Model.AreaUp,Mode=TwoWay}"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,146,0,0" 
                                 Width="120" Height="25"/>
 
                                 <CheckBox Style="{DynamicResource CheckBoxBasic}"
                                           HorizontalAlignment="Left" VerticalAlignment="Top"
-                                          Content="显示基准区域" Margin="10,188,0,0"/>
+                                          Content="显示基准区域" Margin="10,188,0,0"
+                                          IsChecked="{Binding Model.ShowBaseRegionChecked,Mode=TwoWay}"
+                                          Command="{Binding BaseRegionCheckedChangeCommad}"
+                                          />
                                 <Button Style="{DynamicResource PrimaryButton}"  Content="提取"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        Command="{Binding ExtratBaseRegionClickCommand}"
 Margin="130,185,0,0" Width="80"  Height="25" attach:ButtonAttach.ButtonCornerRadius="3"/>
                             </Grid>
 

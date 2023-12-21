@@ -491,39 +491,7 @@ namespace PositionToolsLib
         }
     }
 
-    [Serializable]
-    public class MatchData
-    {
-        public MatchData( double _score,  double _row1, double _column1,double _angle)
-        {
-            score = _score.ToString("f3");        
-            row1 = _row1.ToString("f3");
-            column1 = _column1.ToString("f3");
-            angle = _angle.ToString("f3");
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-        public string score { get; set; }
-        public string row1 { get; set; }
-        public string column1 { get; set; }
-        public string angle { get; set; }
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                    score,
-                    row1,
-                    column1,
-                    angle
-
-                 );
-        }
-
-    }
-
+   
 
     [Serializable]
     public class CircleReslutData
@@ -614,30 +582,6 @@ namespace PositionToolsLib
 
     }
 
-    [Serializable]
-    public class ResultShowData
-    {
-        public ResultShowData(bool t_isUse, string t_toolName, string t_status)
-        {
-            isUse = t_isUse;
-            toolName = t_toolName;
-            status = t_status;
-        }
-        public bool isUse { get; set; }
-        public string toolName { get; set; }
-        public string status { get; set; }
-
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    isUse,
-                    toolName,
-                    status
-                 );
-
-        }
-    }
+    
 
 }

@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
     <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
   </ItemGroup>
 

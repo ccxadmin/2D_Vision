@@ -49,7 +49,7 @@
                             <ColumnDefinition Width="7*"/>
                             <ColumnDefinition Width="3*" MaxWidth="20"/>
                         </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0"
+                        <Border Grid.Column="0" x:Name="border"
                                     BorderBrush="#ff6d3c"
                                     BorderThickness="1,1,0,1"
                                     Background="White" CornerRadius="3 0 0 3">
@@ -61,7 +61,7 @@
                                          IsReadOnly="true"
                                          Foreground="#ff6d3c"/>
                         </Border>
-                        <Border Grid.Column="1"
+                        <Border Grid.Column="1" x:Name="btnBorder"
                                     BorderBrush="#ff6d3c"
                                     BorderThickness="1" CornerRadius="0 3 3 0">
                             <ToggleButton Content="&#xeda2;" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
@@ -86,6 +86,8 @@
                        
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" TargetName="myTxt" Value="lightgray"/>
+                            <Setter Property="BorderBrush" TargetName="border" Value="lightgray"/>
+                            <Setter Property="BorderBrush" TargetName="btnBorder" Value="lightgray"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

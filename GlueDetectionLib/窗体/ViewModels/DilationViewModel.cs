@@ -119,15 +119,15 @@ namespace GlueDetectionLib.窗体.ViewModels
             {
                 ShowTool.DispImage((par as DilationParam).OutputImg);
                 ShowTool.D_HImage = (par as DilationParam).OutputImg;
-                ShowTool.DispMessage("OK", 10, width - 600, "green", 50);
-                ShowTool.AddTextBuffer("OK", 10, width - 600, "green", 50);
+                ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
+                ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
 
             }
             else
             {
                 ShowTool.DispImage(imgBuf);
-                ShowTool.DispMessage("NG", 10, width - 600, "red", 50);
-                ShowTool.AddTextBuffer("NG", 10, width - 600, "red", 50);
+                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
         }

@@ -10,10 +10,7 @@ namespace GlueDetectionLib.窗体.Models
 {
     public class ClosingModel : NotifyBase
     {
-        public ClosingModel()
-        {
-            
-        }
+      
         /// <summary>
         /// 窗体标题
         /// </summary>

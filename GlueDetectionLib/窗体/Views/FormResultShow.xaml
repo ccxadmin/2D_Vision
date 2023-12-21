@@ -7,17 +7,22 @@
  xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
 xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
 xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
- 
+ Name="this"
 Style="{x:Null}" FocusVisualStyle="{x:Null}"
 mc:Ignorable="d"  Loaded="Window_Loaded" Title="{Binding Model.TitleName ,Mode=TwoWay}"
 Height="700" Width="1000">
 
     <Window.Resources>
+       
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Control.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <!--<CollectionViewSource x:Key="DgCombox" Source="{Binding Model.ToolNameList}">
+
+            </CollectionViewSource>-->
         </ResourceDictionary>
+        
     </Window.Resources>
 
     <Grid>
@@ -64,7 +69,8 @@ Height="700" Width="1000">
 
                         <CheckBox Style="{DynamicResource CheckBoxBasic}" Content="是否显示检测区域"
                                   HorizontalAlignment="Left" VerticalAlignment="Top"
-                                  Margin="10,60,10,10"/>
+                                  Margin="10,60,10,10"
+                                  IsChecked="{Binding Model.ShowInspectRegChecked,Mode=TwoWay}"/>
 
                         <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
                               Margin="5,90,5,5" Header="打印汇总信息" Height="350" VerticalAlignment="Top">
@@ -79,18 +85,25 @@ Height="700" Width="1000">
      VerticalAlignment="Top" Margin="10,40,0,0"  
      />
                                 <uc:MyNumUpDown HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                Margin="40,40,0,0" Height="25"/>
+                                                Margin="40,40,0,0" Height="25" OffsetValue="1" DecimalPlaces="0"
+                                                DefaultValue="0" MinValue="0" MaxValue="3000"
+                                                NumericValue="{Binding Model.NmCoorX,Mode=TwoWay}"/>
 
                                 <Label Style="{DynamicResource  LabelStyle}" Content="Y："
  HorizontalAlignment="Left"
 VerticalAlignment="Top" Margin="160,40,0,0"  
 />
                                 <uc:MyNumUpDown HorizontalAlignment="Left" VerticalAlignment="Top"
-                                           Margin="190,40,0,0" Height="25"/>
+                                           Margin="190,40,0,0" Height="25"
+                                                 OffsetValue="1" DecimalPlaces="0"
+                                                DefaultValue="0" MinValue="0" MaxValue="3000"
+                                                NumericValue="{Binding Model.NmCoorY,Mode=TwoWay}"/>
 
                                 <Menu   Margin="10,80,10,0" VerticalAlignment="Top"
                                     Style="{DynamicResource WD.DefaultMenu}" >
-                                    <MenuItem   Margin="5,1" Header="新增" FontSize="16" VerticalContentAlignment="Center">
+                                    <MenuItem   Margin="5,1" Header="新增" FontSize="16" 
+                                                Command="{Binding NewMenuItemClickCommand}"
+                                                VerticalContentAlignment="Center">
 
                                         <MenuItem.Icon>
                                             <Image Source="/GlueDetectionLib;component/images/加号.png" />
@@ -98,7 +111,9 @@ VerticalAlignment="Top" Margin="160,40,0,0"
 
                                     </MenuItem>
                                     <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem  Margin="5,1" Header="删除" FontSize="16"  VerticalContentAlignment="Center">
+                                    <MenuItem  Margin="5,1" Header="删除" FontSize="16" 
+                                                Command="{Binding DelMenuItemClickCommand}"
+                                               VerticalContentAlignment="Center">
 
                                         <MenuItem.Icon>
                                             <Image Source="/GlueDetectionLib;component/images/减号.png" />
@@ -107,12 +122,43 @@ VerticalAlignment="Top" Margin="160,40,0,0"
                                     </MenuItem>
                                 </Menu>
                                 <DataGrid  Margin="10,111,10,10" Width="auto" Name="dg" 
-                                       VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-                                       Style="{DynamicResource datagrid}"  ItemsSource="{Binding}" Grid.ColumnSpan="2">
+                                       VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ff6d3c"
+                                       Style="{DynamicResource datagrid}"  Grid.ColumnSpan="2"  Background="Transparent" 
+                                        
+                                           SelectedIndex="{Binding Model.DgDataSelectIndex}"
+                                           ItemsSource="{Binding Model.DgDataOfResultShowList,Mode=TwoWay}" >
                                     <DataGrid.Columns>
-                                        <DataGridTextColumn Header="启用" Binding="{Binding FirstName,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
-                                        <DataGridTextColumn Header="工具名称"  Binding="{Binding LastName,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
-                                        <DataGridTextColumn Header="状态"  Binding="{Binding Username,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                        <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                        <!--<DataGridComboBoxColumn Header="工具名称"  
+                                                                ItemsSource="{Binding ToolNameList,Mode=TwoWay}"                                                              
+                                                                SelectedItemBinding="{Binding ToolName,Mode=TwoWay}"
+                                                              
+                                                                Width="120" ElementStyle="{StaticResource datagridcombobox}" />-->
+                                        <!--<DataGridTemplateColumn Header="工具名称" Width="120">
+                                            <DataGridTemplateColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <ComboBox SelectedItem="{Binding Path=ToolName,Mode=TwoWay}" 
+                                                              ItemsSource="{Binding Path=Model.ToolNameList,ElementName=this,Mode=TwoWay}" />
+                                                </DataTemplate>
+                                            </DataGridTemplateColumn.CellTemplate>
+                                        </DataGridTemplateColumn>-->
+                                        <DataGridComboBoxColumn Header="工具名称" Width="120" x:Name="dgCombox">
+                      
+                                            <DataGridComboBoxColumn.EditingElementStyle>
+                                                <Style TargetType="ComboBox">
+                                                    <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
+                                                    <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                </Style>
+                                            </DataGridComboBoxColumn.EditingElementStyle>
+                                            <DataGridComboBoxColumn.ElementStyle>
+                                                <Style TargetType="ComboBox">
+                                                    <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
+                                                    <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                </Style>
+                                            </DataGridComboBoxColumn.ElementStyle>
+                                        </DataGridComboBoxColumn>
+
+                                        <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
                                     </DataGrid.Columns>
 
                                 </DataGrid>
@@ -126,19 +172,47 @@ VerticalAlignment="Top" Margin="160,40,0,0"
                                 <Label Style="{DynamicResource LabelStyle}" Content="胶水名称："
                                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5"/>
                                 <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
-                                          Margin="100,5,5,5" Height="25" Width="130"  
-                                         />
+                                          Margin="100,5,5,5" Height="25" Width="130"  x:Name="cobxGlueNameList"
+                                       ItemsSource="{Binding Model.GlueNameList,Mode=TwoWay}" 
+                                      IsEnabled="{Binding Model.CobxGlueNameEnable}"    
+                                          SelectedIndex="{Binding Model.SelectGlueIndex,Mode=TwoWay}"
+                                        SelectedItem="{Binding Model.SelectGlueName,Mode=TwoWay}"  >
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding GlueNameSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxGlueNameList,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
+                                </ComboBox>
 
                                 <Label Style="{DynamicResource LabelStyle}" Content="起始坐标X："
     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,5,5"/>
-                                <uc:MyNumUpDown  MaxValue="999" MinValue="1" OffsetValue="10" DecimalPlaces="0"
+                                <uc:MyNumUpDown  MaxValue="5000" MinValue="0" OffsetValue="10" DecimalPlaces="0"
                                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,40,5,5" 
-                                    Width="130" Height="25"/>
+                                    Width="130" Height="25" 
+                                                 NumericValue="{Binding Model.NumStartPx}">
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding NumStartPxKeyDownCommand}"                                                                    
+                                         PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
+                                </uc:MyNumUpDown>
                                 <Label Style="{DynamicResource LabelStyle}" Content="起始坐标Y："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
-                                <uc:MyNumUpDown   MaxValue="255" MinValue="1" OffsetValue="1" DecimalPlaces="0"
+                                <uc:MyNumUpDown   MaxValue="500" MinValue="0" OffsetValue="10" DecimalPlaces="0"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,76,5,5" 
-                                Width="130" Height="25"/>
+                                Width="130" Height="25"
+                                                    NumericValue="{Binding Model.NumStartPy}">
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding NumStartPyKeyDownCommand}"                                                                    
+      PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
+
+                                </uc:MyNumUpDown>
 
                             </Grid>
 

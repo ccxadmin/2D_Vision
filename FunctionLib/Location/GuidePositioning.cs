@@ -1244,7 +1244,111 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
 
 
         }
-    
+        //设置模板创建区域
+        public static SetModelROIData setModelROI(HTuple hwindhanle, HObject ho_Image)
+        {
+            SetModelROIData _setModelROIData = new SetModelROIData();
+
+            HObject ho_Rectangle = null;
+            HObject ho_ImageReduced3 = null;
+            HObject ho_Region = null, connectedRegions = null, ho_SelectedRegions = null;
+            HObject regionFillUp = null, cross = null;
+            //HObject ho_RegionErosion = null;
+            HTuple hv_UsedThreshold;
+            try
+            {
+                HOperatorSet.GenEmptyObj( out ho_Rectangle);
+                HOperatorSet.GenEmptyObj(out ho_ImageReduced3);
+                HOperatorSet.GenEmptyObj(out ho_Region);
+                HOperatorSet.GenEmptyObj(out connectedRegions);
+                HOperatorSet.GenEmptyObj(out ho_SelectedRegions);
+                //HOperatorSet.GenEmptyObj(out ho_RegionErosion);
+                HOperatorSet.GenEmptyObj(out regionFillUp);
+                HOperatorSet.GenEmptyObj(out cross);
+                HOperatorSet.GenEmptyObj(out _setModelROIData.modelSearchROI);
+
+                HTuple hv_Row1 = new HTuple(), hv_Column1 = new HTuple(), hv_Row2 = new HTuple(), hv_Column2 = new HTuple();
+                HOperatorSet.DrawRectangle1(hwindhanle, out hv_Row1, out hv_Column1, out hv_Row2,
+                   out hv_Column2);
+                ho_Rectangle.Dispose();
+                HOperatorSet.GenRectangle1(out ho_Rectangle, hv_Row1, hv_Column1, hv_Row2,
+                    hv_Column2);
+                _setModelROIData.modelSearchROI.Dispose();
+                HOperatorSet.CopyObj(ho_Rectangle, out _setModelROIData.modelSearchROI, 1, 1);
+
+                ho_ImageReduced3.Dispose();
+                HOperatorSet.ReduceDomain(ho_Image, ho_Rectangle, out ho_ImageReduced3);
+                ho_Region.Dispose();
+                HOperatorSet.BinaryThreshold(ho_ImageReduced3, out ho_Region, "max_separability",
+        "light", out hv_UsedThreshold);
+                connectedRegions.Dispose();
+                HOperatorSet.Connection(ho_Region, out connectedRegions);
+                ho_SelectedRegions.Dispose();
+                HOperatorSet.SelectShapeStd(connectedRegions, out ho_SelectedRegions, "max_area",
+        70);
+                //ho_RegionErosion.Dispose();
+                //HOperatorSet.ErosionCircle(ho_SelectedRegions, out ho_RegionErosion, 3.5);
+
+                HOperatorSet.ClosingCircle(ho_SelectedRegions, out HObject regionClosing, 3.5);
+
+                regionFillUp.Dispose();
+                HOperatorSet.FillUp(regionClosing, out regionFillUp);
+                HTuple area, row, column;
+                HOperatorSet.AreaCenter(regionFillUp, out area, out row, out column);
+                if (row != null)
+                {
+                    HOperatorSet.GenEmptyObj(out cross);
+                    cross.Dispose();
+
+                    HOperatorSet.GenCrossContourXld(out cross, row, column, 1000, 0);
+
+                    HOperatorSet.DispObj(cross, hwindhanle);
+                }
+
+                HTuple rowx = new HTuple(), columnx = new HTuple();
+                if (hwindhanle.D > 100000)
+                    HOperatorSet.SetFont(hwindhanle, "Courier New-" +"12");
+                else
+                    HOperatorSet.SetFont(hwindhanle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                disp_message(hwindhanle, "请用鼠标左键在图像上选取一个点作为模型原点！",
+                    "image", row - 100, column, "red", "false");
+
+                HOperatorSet.SetColor(hwindhanle, "orange");
+                HOperatorSet.DrawPointMod(hwindhanle, row, column, out rowx, out columnx);
+                _setModelROIData.modelOrigionRow = rowx;
+                _setModelROIData.modelOrigionColumn = columnx;
+                //HOperatorSet.DrawPoint(hwindhanle, out rowx, out columnx);
+                //HOperatorSet.SetShapeModelOrigin(temmodelMatchStruct.hv_ModelID1, rowx - hv_Row3, columnx - hv_Column3);
+            }
+            catch (Exception er)
+            {
+                ho_Rectangle.Dispose();
+                ho_ImageReduced3.Dispose();
+                ho_Region.Dispose();
+                connectedRegions.Dispose();
+                ho_SelectedRegions.Dispose();
+                //ho_RegionErosion.Dispose();
+                regionFillUp.Dispose();
+                cross.Dispose();
+                return null;
+
+            }
+
+            finally
+            {
+                ho_Rectangle.Dispose();
+                ho_ImageReduced3.Dispose();
+                ho_Region.Dispose();
+                connectedRegions.Dispose();
+                ho_SelectedRegions.Dispose();
+                //ho_RegionErosion.Dispose();
+                regionFillUp.Dispose();
+                cross.Dispose();
+              
+            }
+            return _setModelROIData;
+        }
+
        /// <summary>
        /// 箭头生成
        /// </summary>
@@ -1454,7 +1558,215 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
 
 
 
-      
+        //创建模板
+        public static HObject createModel(HTuple hwindhanle, HObject ho_Image,HObject modelSearchROI,
+                      SetModelROIData _setModelROIData, variableSetParmas dparmas,
+                      ref ModelMatchStruct temmodelMatchStruct,ref  string errmsg)
+        {
+
+            HObject modelContourAffine = null;
+            HObject ho_ImageReduced = null;
+            //HObject ho_ImageReduced2 = null;
+            //HObject ho_ModelImages = null, ho_ModelRegions = null;
+            HObject ho_ModelContours = null, ho_Contours = null;
+         
+            //  HTuple hv_ModelID;
+               HTuple hv_Row3; HTuple hv_Column3;
+                HTuple hv_Row3_convert = new HTuple(); HTuple hv_Column3_convert = new HTuple();
+
+                HTuple hv_Angle;
+                HTuple hv_Scale; HTuple hv_Score;
+
+               HOperatorSet.GenEmptyObj(out ho_ImageReduced);
+          //  HOperatorSet.GenEmptyObj(out ho_ImageReduced2);
+            HOperatorSet.GenEmptyObj(out ho_ModelContours);
+               HOperatorSet.GenEmptyObj(out ho_Contours);
+            HOperatorSet.GenEmptyObj(out modelContourAffine);
+
+            try
+            {
+              
+                ho_ImageReduced.Dispose();
+                HOperatorSet.ReduceDomain(ho_Image, modelSearchROI, out ho_ImageReduced
+                    );
+              
+
+                //最小对比度设置为自动
+                HOperatorSet.CreateScaledShapeModel(ho_ImageReduced, "auto", dparmas.StartAngle.TupleRad()
+                    , dparmas.RangeAngle.TupleRad(), "auto", dparmas.scaleDownLimit, dparmas.scaleUpLimit, "auto", "auto", "use_polarity",
+                  dparmas.MatchContrast.I, "auto", out temmodelMatchStruct.hv_ModelID1);
+
+
+                /******************/
+
+                //HOperatorSet.CreateShapeModel(ho_ImageReduced, "auto", dparmas.StartAngle.TupleRad()
+                //          , endAngle.TupleRad() * 2, "auto", "auto", "use_polarity",
+                //                     dparmas.MatchContrast.I, "auto", out temmodelMatchStruct.hv_ModelID1);
+
+                //  ho_ImageReduced2.Dispose();
+                //HOperatorSet.ReduceDomain(ho_Image, _setModelROIData.modelSearchROI, out ho_ImageReduced2
+                //    );
+
+                //HOperatorSet.WriteShapeModel(temmodelMatchStruct.hv_ModelID1,"11222.shm");
+
+                HOperatorSet.ReduceDomain(ho_Image, _setModelROIData.modelSearchROI, out HObject imageReduced);
+            
+                HOperatorSet.FindScaledShapeModel(imageReduced, temmodelMatchStruct.hv_ModelID1,0
+                    , 0, 1, 1, dparmas.matchScore, 1, 0.5, "least_squares",
+                    0, 0.9, out hv_Row3, out hv_Column3, out hv_Angle, out hv_Scale, out hv_Score);
+
+                //HOperatorSet.InspectShapeModel()
+                //HOperatorSet.FindShapeModel(ho_Image, temmodelMatchStruct.hv_ModelID1, dparmas.StartAngle.TupleRad()
+                // , endAngle.TupleRad() * 2, dparmas.matchScore, 1, 0.5, "least_squares",
+                // 0, dparmas.greedValue, out hv_Row3, out hv_Column3, out hv_Angle, out hv_Score);
+
+                //Task.Factory.StartNew(() => {
+                //    HOperatorSet.WriteImage(ho_Image, "bmp", 255, "D:\\imgSave.bmp");
+                //});
+                if (hv_Score.Length == 1)
+                {                
+                    //HOperatorSet.DrawPoint(hwindhanle, out rowx, out columnx);
+                    HOperatorSet.SetShapeModelOrigin(temmodelMatchStruct.hv_ModelID1, _setModelROIData.modelOrigionRow - hv_Row3,
+                                _setModelROIData.modelOrigionColumn  - hv_Column3);
+                }
+                //------------------------------------  
+                HOperatorSet.FindScaledShapeModel(imageReduced, temmodelMatchStruct.hv_ModelID1, 0
+                   ,0, 1, 1, dparmas.matchScore, 1, 0.5, "least_squares",
+                   0, 0.9, out hv_Row3, out hv_Column3, out hv_Angle, out hv_Scale, out hv_Score);
+                //HOperatorSet.FindShapeModel(ho_Image, temmodelMatchStruct.hv_ModelID1, dparmas.StartAngle.TupleRad()
+                // , endAngle.TupleRad() * 2, dparmas.matchScore, 1, 0.5, "least_squares",
+                // 0, dparmas.greedValue, out hv_Row3, out hv_Column3, out hv_Angle, out hv_Score); 
+                if (hv_Score.Length == 1)
+                {
+
+                    HTuple hv_HomMat2D = new HTuple(), hv_HomMat2DScale = new HTuple();
+                    HOperatorSet.VectorAngleToRigid(0,
+                                      0,
+                                      0, hv_Row3.TupleSelect(0), hv_Column3.TupleSelect(0),
+                                      hv_Angle.TupleSelect(0), out hv_HomMat2D);
+
+                    HOperatorSet.HomMat2dScale(hv_HomMat2D, hv_Scale.TupleSelect(0), hv_Scale.TupleSelect(0),
+                        hv_Row3.TupleSelect(0), hv_Column3.TupleSelect(0), out hv_HomMat2DScale);
+                    //HOperatorSet.HomMat2dScale(hv_HomMat2D, 1, 1,
+                    //   hv_Row3.TupleSelect(0), hv_Column3.TupleSelect(0), out hv_HomMat2DScale);
+                    ho_Contours.Dispose();
+                    HOperatorSet.GetShapeModelContours(out ho_Contours, temmodelMatchStruct.hv_ModelID1, 1);
+                   
+                    modelContourAffine.Dispose();
+                    HOperatorSet.AffineTransContourXld(ho_Contours,
+                               out modelContourAffine, hv_HomMat2DScale);
+                    //HOperatorSet.SetColor(hwindhanle, "green");
+                    //HOperatorSet.DispObj(modelContourAffine, hwindhanle);
+
+                    HOperatorSet.AffineTransPixel(hv_HomMat2DScale, 0, 0,
+                        out hv_Row3_convert, out hv_Column3_convert);
+                    //HObject temcross = new HObject();
+                    //temcross.Dispose();
+                    //HOperatorSet.GenCrossContourXld(out temcross, hv_Row3_convert, hv_Column3_convert, 100, 0);
+                    //HOperatorSet.DispObj(temcross, hwindhanle);
+                    temmodelMatchStruct.basepoint_Tuple = new HTuple();
+                    temmodelMatchStruct.basepoint_Tuple[0] = hv_Row3_convert;
+                    temmodelMatchStruct.basepoint_Tuple[1] = hv_Column3_convert;
+                }
+                //temmodelMatchStruct.hv_ModelID1 = hv_ModelID;
+                //temmodelMatchStruct.ModelOrigin_Tuple[0] = hv_Row;
+                //temmodelMatchStruct.ModelOrigin_Tuple[1] = hv_Column;
+              
+            }
+
+            catch (Exception er)
+            {
+                errmsg = er.Message;
+                return null;
+            }
+            finally
+            {                          
+                ho_ImageReduced.Dispose();
+                ho_ModelContours.Dispose();         
+                ho_Contours.Dispose();
+             
+            }
+            return modelContourAffine;
+        }
+
+        //保存模板文件
+        public static bool saveModelFile(ModelMatchStruct temmodelMatchStruct,string basedir = "modelfile\\ProductModel")
+        {
+           
+            int index= basedir.LastIndexOf('\\');
+            string m_path = basedir.Substring(0, index);
+            //if (!Directory.Exists("modelfile"))
+            //    Directory.CreateDirectory("modelfile");
+            if (!Directory.Exists(m_path))
+                Directory.CreateDirectory(m_path);
+            if (!Directory.Exists(basedir))
+                 Directory.CreateDirectory(basedir);
+            try
+            {
+                HTuple hv_basepoint = new HTuple();
+                hv_basepoint = ((hv_basepoint.TupleConcat(temmodelMatchStruct.basepoint_Tuple.TupleSelect(0)))).TupleConcat(
+                    temmodelMatchStruct.basepoint_Tuple.TupleSelect(1));
+                HOperatorSet.WriteTuple(hv_basepoint, basedir + "\\basepoint.tup");
+                HOperatorSet.WriteShapeModel(temmodelMatchStruct.hv_ModelID1, basedir + "\\shapemodel1.shm");
+                //if (GuidePositioning_HDevelopExport.ObjectValided(temmodelMatchStruct.modelregion))
+                //    HOperatorSet.WriteRegion(temmodelMatchStruct.modelregion, basedir + "\\modelregion.reg");
+                //HOperatorSet.ClearShapeModel(temmodelMatchStruct.hv_ModelID1);
+                return true;
+            }
+            catch (Exception er) { return false; }
+
+        }
+        //读取模板文件
+        public static void ReadModleFile(string filepath,ref ModelMatchStruct modelMatchStructData
+                   )
+        {
+                 
+            try
+            {
+     
+                HOperatorSet.ReadShapeModel(filepath, out modelMatchStructData.hv_ModelID1);                         
+
+            }
+            catch (HalconException er) { }
+
+
+        }
+
+        //读取模板文件
+        public static bool ReadModleFile(ref ModelMatchStruct modelMatchStructData,
+                 ref string msg,  string basedir = "modelfile\\ProductModel")
+        {
+           
+            //modelMatchStruct modelMatchStructData = new modelMatchStruct();
+
+            HTuple hv_Row6 = new HTuple(), hv_Column6 = new HTuple();
+           
+         
+            try
+            {
+              ;
+                // HOperatorSet.ReadShapeModel("shapemodel1.shm", out modelMatchStructData.hv_ModelID1);
+                if(!File.Exists(basedir + "\\shapemodel1.shm"))
+                {
+                    msg += "模板文件不存在";
+                    return false;
+                }
+                HOperatorSet.ReadShapeModel(basedir + "\\shapemodel1.shm", out modelMatchStructData.hv_ModelID1);
+                //HOperatorSet.ReadTuple("basepoint.tup", out modelMatchStructData.basepoint_Tuple);
+               if(basedir.Contains("modelfile"))
+                  HOperatorSet.ReadTuple(basedir + "\\basepoint.tup", out modelMatchStructData.basepoint_Tuple);
+                HOperatorSet.GetShapeModelOrigin(modelMatchStructData.hv_ModelID1, out hv_Row6, out hv_Column6);
+                //modelMatchStructData.ModelOrigin_Tuple[0] = hv_Row6;
+                //modelMatchStructData.ModelOrigin_Tuple[1] = hv_Column6;
+                //if (File.Exists(basedir + "\\modelregion.reg"))
+                //    HOperatorSet.ReadRegion(out modelMatchStructData.modelregion, basedir + "\\modelregion.reg");
+                return true;
+            }
+            catch (HalconException er) {
+                msg += er.Message;
+                return false;
+            }     
+        }
         //设置正反检测区域
         public static bool set_P_N_inspectArea(HTuple hwindhanle, out HObject ho_Region3)
         {
@@ -1591,6 +1903,129 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
             HOperatorSet.AffineTransPoint2d(hv_HomMat2D, hv_x, hv_y, out hv_Qx, out hv_Qy);
 
             //HOperatorSet.AffineTransPixel(hv_HomMat2D, hv_x, hv_y, out hv_Qx, out hv_Qy);
+        }
+
+        //模板匹配
+        public static bool modelMatchActive(HObject ho_Image, ModelMatchStruct temmodelMatchStruct,
+                     variableSetParmas dparmas, ref outputResultStruct outputResultStructData)
+        {
+
+          
+            HTuple hv_Row5 = null, hv_Column5 = null, hv_Angle1 = null, hv_Scale1 = null, hv_Score1 = null;
+            HTuple hv_HomMat2D = null, hv_HomMat2DScale = null, hv_HomMat2D1 = null;
+           
+            HObject ho_ContoursAffinTrans =new HObject();
+            HObject  ho_Cross =new HObject(); HObject ho_Contours = new HObject();
+
+            outputResultStructData.ho_ContoursAffinTransList.Clear();
+            outputResultStructData.ho_RegionAffineTransList.Clear();
+            outputResultStructData.ho_CrossList.Clear();
+            try
+            {
+               
+                HOperatorSet.FindScaledShapeModel(ho_Image, temmodelMatchStruct.hv_ModelID1, dparmas.StartAngle.TupleRad()
+                , dparmas.RangeAngle.TupleRad(), dparmas.scaleDownLimit, dparmas.scaleUpLimit, dparmas.matchScore, dparmas.matchNumber, 0.5, "least_squares",
+                0, 0.9, out hv_Row5, out hv_Column5, out hv_Angle1, out hv_Scale1, out hv_Score1);
+                //    HOperatorSet.FindShapeModel(ho_Image, temmodelMatchStruct.hv_ModelID1, dparmas.StartAngle.TupleRad()
+                //, endAngle.TupleRad() * 2, dparmas.matchScore, dparmas.matchNumber, 0.5, "least_squares",
+                //0, dparmas.greedValue, out hv_Row5, out hv_Column5, out hv_Angle1, out hv_Score1);
+
+                if (hv_Score1.Length <= 0)
+                {
+                    outputResultStructData.runstatusFlag = false;
+                    return false;    //匹配失败
+                }
+
+                outputResultStructData.pixelrow = hv_Row5;
+                outputResultStructData.pixelcolumn = hv_Column5;
+                outputResultStructData.angle = hv_Angle1;
+                outputResultStructData.hv_Score1 = hv_Score1;
+
+                for (int i = 0; i < hv_Score1.Length; i++)
+                {
+                    HOperatorSet.VectorAngleToRigid(0,
+                                    0,
+                                    0, hv_Row5.TupleSelect(i), hv_Column5.TupleSelect(i), 
+                                    hv_Angle1.TupleSelect(i), out hv_HomMat2D);
+
+                    HOperatorSet.HomMat2dScale(hv_HomMat2D, hv_Scale1.TupleSelect(i), hv_Scale1.TupleSelect(i),
+                        hv_Row5.TupleSelect(i), hv_Column5.TupleSelect(i), out hv_HomMat2DScale);
+                    //HOperatorSet.HomMat2dScale(hv_HomMat2D, 1, 1,
+                    //  hv_Row5.TupleSelect(i), hv_Column5.TupleSelect(i), out hv_HomMat2DScale);
+
+                    ho_Contours.Dispose();
+                    HOperatorSet.GetShapeModelContours(out ho_Contours, temmodelMatchStruct.hv_ModelID1, 1);
+                 
+
+                    HOperatorSet.AffineTransContourXld(ho_Contours,
+                               out ho_ContoursAffinTrans, hv_HomMat2DScale);
+
+                  
+                    HTuple temhv_Row = new HTuple(), temhv_Column = new HTuple();
+                    HOperatorSet.AffineTransPixel(hv_HomMat2DScale,0,
+                                   0,
+                                    out temhv_Row, out temhv_Column);
+                    outputResultStructData.pixelrow[i] = temhv_Row;
+                    outputResultStructData.pixelcolumn[i] = temhv_Column;
+                    ho_Cross.Dispose();
+                    HOperatorSet.GenCrossContourXld(out ho_Cross, temhv_Row, temhv_Column,
+                        200, hv_Angle1.TupleSelect(i));
+
+                    HObject temobj = new HObject();
+                    temobj.Dispose();
+                    HOperatorSet.CopyObj(ho_ContoursAffinTrans, out temobj,
+                       1, -1);
+                    outputResultStructData.ho_ContoursAffinTransList.Add(temobj);             
+                    ho_ContoursAffinTrans.Dispose();
+
+                    HObject temobj2 = new HObject();
+                    temobj2.Dispose();                 
+                    HOperatorSet.CopyObj(ho_Cross, out temobj2, 1, 1);
+                    outputResultStructData.ho_CrossList.Add(temobj2);
+                    ho_Cross.Dispose();           
+                   
+                }                          
+            }
+            catch(Exception ER)
+            {
+                outputResultStructData.runstatusFlag = false;             
+                ho_ContoursAffinTrans.Dispose();
+                ho_Cross.Dispose();
+                ho_Contours.Dispose();
+              
+                return false;
+            }         
+            ho_ContoursAffinTrans.Dispose();
+            ho_Cross.Dispose();
+            ho_Contours.Dispose();        
+            outputResultStructData.runstatusFlag = true;
+            return true;
+        }
+
+        //功能检测
+
+        public static outputResultStruct ActinCheck(HObject ho_Image,ModelMatchStruct temmodelMatchStruct,
+                      variableSetParmas dparmas, HTuple hv_point_HomMat2D,  producParma dproducParma)
+        {
+
+            outputResultStruct outputResultStructData = new outputResultStruct(true);
+           
+            //模板匹配
+            bool modelMatchFlag = modelMatchActive(ho_Image, temmodelMatchStruct, dparmas,ref outputResultStructData);
+            if (!modelMatchFlag)//运行异常
+            {
+                outputResultStructData.runstatusFlag = false;
+                return outputResultStructData;
+            }
+         
+             //坐标转换
+             HTuple hv_Qx = 0, hv_Qy = 0;
+            Transformation_POINT(hv_point_HomMat2D, outputResultStructData.pixelcolumn,
+                outputResultStructData.pixelrow, out hv_Qx, out hv_Qy);
+            outputResultStructData.machine_X = hv_Qx;
+            outputResultStructData.machine_Y = hv_Qy;
+            outputResultStructData.runstatusFlag = true;
+            return outputResultStructData;
         }
 
 
@@ -1808,6 +2243,29 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
         public double robotRprotectDown = 0;
         public double robotRprotectUp = 0;
 
+    }
+    //模板匹配结构数据
+    public struct ModelMatchStruct
+    {
+
+
+        //模板handle
+        public HTuple hv_ModelID1;
+        //模板基准点
+        public HTuple basepoint_Tuple;
+        //模板原点
+        // public HTuple ModelOrigin_Tuple;
+
+        //public HObject modelregion;
+    }
+
+    [Serializable]
+    public class SetModelROIData
+    {
+        public HTuple modelOrigionRow = 0;
+        public HTuple modelOrigionColumn = 0;
+
+        public HObject modelSearchROI = null;
     }
 }
    

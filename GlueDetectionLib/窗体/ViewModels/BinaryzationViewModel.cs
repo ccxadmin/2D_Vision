@@ -29,9 +29,9 @@ namespace GlueDetectionLib.窗体.ViewModels
         //测试
         public CommandBase TestButClickCommand { get; set; }
        //最小灰度值调整
-        public CommandBase NumGrayMinKeyDownCommand { get; set; }
+        //public CommandBase NumGrayMinKeyDownCommand { get; set; }
         //最大灰度值调整
-        public CommandBase NumGrayMaxKeyDownCommand { get; set; }
+        //public CommandBase NumGrayMaxKeyDownCommand { get; set; }
         public BinaryzationViewModel(BaseTool tool) : base(tool)
         {
             dataManage = tool.GetManage();
@@ -55,15 +55,15 @@ namespace GlueDetectionLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            NumGrayMinKeyDownCommand = new CommandBase();
-            NumGrayMinKeyDownCommand.DoExecute = new Action<object>((o) => NumGrayMinKeyDown(o));
-            NumGrayMinKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-            Model.NumGrayMinValueChangeAction = new Action(() => NumGrayMinValueEvent());
+            //NumGrayMinKeyDownCommand = new CommandBase();
+            //NumGrayMinKeyDownCommand.DoExecute = new Action<object>((o) => NumGrayMinKeyDown(o));
+            //NumGrayMinKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            //Model.NumGrayMinValueChangeAction = new Action(() => NumGrayMinValueEvent());
 
-            NumGrayMaxKeyDownCommand = new CommandBase();
-            NumGrayMaxKeyDownCommand.DoExecute = new Action<object>((o) => NumGrayMaxKeyDown(o));
-            NumGrayMaxKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-            Model.NumGrayMaxValueChangeAction = new Action(() => NumGrayMaxValueEvent());
+            //NumGrayMaxKeyDownCommand = new CommandBase();
+            //NumGrayMaxKeyDownCommand.DoExecute = new Action<object>((o) => NumGrayMaxKeyDown(o));
+            //NumGrayMaxKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            //Model.NumGrayMaxValueChangeAction = new Action(() => NumGrayMaxValueEvent());
 
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
@@ -141,33 +141,18 @@ namespace GlueDetectionLib.窗体.ViewModels
             {
                 ShowTool.DispImage((par as BinaryzationParam).OutputImg);
                 ShowTool.D_HImage = (par as BinaryzationParam).OutputImg;
-                ShowTool.DispMessage("OK", 10, width - 600, "green", 100);
-                ShowTool.AddTextBuffer("OK", 10, width - 600, "green", 100);
+                ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
+                ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
 
             }
             else
             {
                 ShowTool.DispImage(imgBuf);
-                ShowTool.DispMessage("NG", 10, width - 600, "red", 100);
-                ShowTool.AddTextBuffer("NG", 10, width - 600, "red", 100);
+                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
         }
-        void NumGrayMinKeyDown(object obj)
-        {
-           
-        }
-        void NumGrayMinValueEvent()
-        {
-          
-        }
-        void NumGrayMaxKeyDown(object obj)
-        {
-
-        }
-        void NumGrayMaxValueEvent()
-        {
-
-        }
+      
     }
 }
