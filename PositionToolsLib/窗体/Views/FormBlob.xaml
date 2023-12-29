@@ -67,54 +67,54 @@
         Margin="10,45,0,0"/>
                             <uc:MyNumUpDown  Width="80" Height="25"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            Margin="100,45,25,25"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMin,Mode=TwoWay}"
-                                     ValueChangeAction="{Binding Model.NumGrayMinValueChangeAction}"  >
+            Margin="100,45,25,25"  DefaultValue="0" MinValue="0" MaxValue="255"
+                                     OffsetValue="1" NumericValue="{Binding Model.NumGrayMin,Mode=TwoWay}"
+                                >
 
-                                <behaviors:Interaction.Triggers>
-                                    <behaviors:EventTrigger EventName="KeyDown">
-                                        <behaviors:InvokeCommandAction Command="{Binding NumGrayMinKeyDownCommand}"                                                                    
-                                       PassEventArgsToCommand="True"/>
-                                    </behaviors:EventTrigger>
-
-                                </behaviors:Interaction.Triggers>
+                           
 
                             </uc:MyNumUpDown>
 
                             <CheckBox Style="{DynamicResource CheckBoxBasic}" HorizontalAlignment="Left"
                               VerticalAlignment="Top" Content="启用位置补正"
-                              Margin="200,60,10,10"/>
+                              Margin="200,60,10,10"
+                              Command="{Binding UsePosiCorrectCheckedCommand}"
+IsChecked="{Binding Model.UsePosiCorrectChecked,Mode=TwoWay}" />
+                            
                             <Label Style="{DynamicResource LabelStyle}" Content="最大灰度值："
 HorizontalAlignment="Left" VerticalAlignment="Top" 
  Margin="10,80,0,0"/>
                             <uc:MyNumUpDown  Width="80" Height="25"
      HorizontalAlignment="Left" VerticalAlignment="Top"
      Margin="100,80,25,25"  DefaultValue="128" MinValue="0" MaxValue="255"
-                                     OffsetValue="1" NumericValue="{Binding Model.GrayMax,Mode=TwoWay}"
-                                      ValueChangeAction="{Binding Model.NumGrayMaxValueChangeAction}">
+                                     OffsetValue="1" NumericValue="{Binding Model.NumGrayMax,Mode=TwoWay}"
+                                    >
 
-                                <behaviors:Interaction.Triggers>
-                                    <behaviors:EventTrigger EventName="KeyDown">
-                                        <behaviors:InvokeCommandAction Command="{Binding NumGrayMaxKeyDownCommand}"                                                                    
-                  PassEventArgsToCommand="True"/>
-                                    </behaviors:EventTrigger>
-
-                                </behaviors:Interaction.Triggers>
                             </uc:MyNumUpDown>
 
                             <ComboBox Style="{DynamicResource MyCbbStyle}" HorizontalAlignment="Left"
                               VerticalAlignment="Top" Margin="200,80,10,10" Width="100"
-                              Height="25"
-                              />
-
-
+                              Height="25"   x:Name="cobxMatrixList"
+                              ItemsSource="{Binding Model.MatrixList}"                          
+SelectedItem="{Binding Model.SelectMatrixName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectMatrixIndex,Mode=TwoWay}"  
+                                           IsEnabled="{Binding Model.MatrixEnable,Mode=TwoWay}"
+                              >
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="SelectionChanged">
+                                        <behaviors:InvokeCommandAction Command="{Binding MatrixSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxMatrixList,Path=SelectedValue}"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
+                            </ComboBox>
                             <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
                               Margin="5,120,5,5" Header="粒子筛选条件" Height="250" VerticalAlignment="Top">
                                 <Grid Margin="1">
 
                                     <Menu   Margin="5,10" VerticalAlignment="Top"  HorizontalAlignment="Stretch"
                                     Style="{DynamicResource WD.DefaultMenu}">
-                                        <MenuItem   Margin="5,1" Header="新增" FontSize="16" VerticalContentAlignment="Center">
+                                        <MenuItem   Margin="5,1" Header="新增" FontSize="16"
+                                                    VerticalContentAlignment="Center"
+                                                      Command="{Binding NewMenuItemClickCommand}">
 
                                             <MenuItem.Icon>
                                                 <Image Source="/PositionToolsLib;component/images/加号.png" />
@@ -122,7 +122,9 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
 
                                         </MenuItem>
                                         <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                        <MenuItem  Margin="5,1" Header="删除" FontSize="16"  VerticalContentAlignment="Center">
+                                        <MenuItem  Margin="5,1" Header="删除" FontSize="16" 
+                                                   VerticalContentAlignment="Center"
+                                                    Command="{Binding DelMenuItemClickCommand}">
 
                                             <MenuItem.Icon>
                                                 <Image Source="/PositionToolsLib;component/images/减号.png" />
@@ -132,12 +134,27 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
                                     </Menu>
                                     <DataGrid  Margin="5,45,5,5"  HorizontalAlignment="Stretch" Width="auto"  Background="#ffffff" 
                                        VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-                                       Style="{DynamicResource datagrid}"  ItemsSource="{Binding}">
+                                       Style="{DynamicResource datagrid}"  SelectedIndex="{Binding Model.DgDataSelectIndex}"
+ ItemsSource="{Binding Model.DgDataOfBlobList,Mode=TwoWay}" >
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="启用" Binding="{Binding FirstName,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
-                                            <DataGridTextColumn Header="类别"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
-                                            <DataGridTextColumn Header="下限"  Binding="{Binding Username,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
-                                            <DataGridTextColumn Header="上限"  Binding="{Binding Username,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                            <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                            <DataGridComboBoxColumn Header="类别" Width="80" x:Name="dgCombox">
+
+                                                <DataGridComboBoxColumn.EditingElementStyle>
+                                                    <Style TargetType="ComboBox">
+                                                        <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
+                                                        <Setter Property="SelectedItem" Value="{Binding Item,Mode=TwoWay}" />
+                                                    </Style>
+                                                </DataGridComboBoxColumn.EditingElementStyle>
+                                                <DataGridComboBoxColumn.ElementStyle>
+                                                    <Style TargetType="ComboBox">
+                                                        <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
+                                                        <Setter Property="SelectedItem" Value="{Binding Item,Mode=TwoWay}" />
+                                                    </Style>
+                                                </DataGridComboBoxColumn.ElementStyle>
+                                            </DataGridComboBoxColumn>
+                                            <DataGridTextColumn Header="下限"  Binding="{Binding LimitDown,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                            <DataGridTextColumn Header="上限"  Binding="{Binding LimitUp,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
                                         </DataGrid.Columns>
 
                                     </DataGrid>
@@ -147,7 +164,9 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
 
                             <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="绘制检测区域"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="20,390,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" />
+Margin="20,390,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                                    IsEnabled="{Binding Model.BtnDrawRegionEnable,Mode=TwoWay}"
+                                    Command="{Binding DrawRegionClickCommand}"/>
 
                             <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="保存"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
@@ -167,12 +186,12 @@ Margin="190,430,10,10" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"  ItemsSource="{Binding}" Background="#ffffff"  >
+             Style="{DynamicResource datagrid}"   ItemsSource="{Binding Model.DgResultOfBlobList,Mode=TwoWay}" Background="#ffffff"  >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding FirstName,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridTextColumn Header="行坐标"  Binding="{Binding LastName,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="列坐标"  Binding="{Binding LastName,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="面积"  Binding="{Binding LastName,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
+                                    <DataGridTextColumn Header="X坐标"  Binding="{Binding X,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="Y坐标"  Binding="{Binding Y,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="面积"  Binding="{Binding Area,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
                                 </DataGrid.Columns>
 
                             </DataGrid>

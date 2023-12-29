@@ -23,149 +23,149 @@ namespace PositionToolsLib.参数
         #region---Property---
         //Input parmas value define --2
 
-        string startRowName = "";
+        string startXName = "";
         /// <summary>
-        /// 起点行坐标名称
+        /// 起点X坐标名称
         /// </summary>
-        [Description("起点行坐标名称"), DefaultValue("")]
-        public string StartRowName
+        [Description("起点X坐标名称"), DefaultValue("")]
+        public string StartXName
         {
-            get => this.startRowName;
+            get => this.startXName;
             set
             {
-                this.startRowName = value;
+                this.startXName = value;
             }
         }
 
-        double row1 = 0;
+        double x1 = 0;
         /// <summary>
-        /// 起点行坐标
+        /// 起点X坐标
         /// </summary>
-        [Description("起点行坐标"), DefaultValue("0")]
-        public double Row1
+        [Description("起点X坐标"), DefaultValue("0")]
+        public double X1
         {
-            get => this.row1;
+            get => this.x1;
             set
             {
-                this.row1 = value;
-            }
-        }
-
-
-        string startColName = "";
-        /// <summary>
-        /// 起点列坐标名称
-        /// </summary>
-        [Description("起点列坐标名称"), DefaultValue("")]
-        public string StartColName
-        {
-            get => this.startColName;
-            set
-            {
-                this.startColName = value;
-            }
-        }
-
-        double col1 = 0;
-        /// <summary>
-        /// 起点列坐标
-        /// </summary>
-        [Description("起点列坐标"), DefaultValue("0")]
-        public double Col1
-        {
-            get => this.col1;
-            set
-            {
-                this.col1 = value;
-            }
-        }
-
-        string endRowName = "";
-        /// <summary>
-        /// 终点行坐标名称
-        /// </summary>
-        [Description("终点行坐标名称"), DefaultValue("")]
-        public string EndRowName
-        {
-            get => this.endRowName;
-            set
-            {
-                this.endRowName = value;
-            }
-        }
-
-        double row2 = 0;
-        /// <summary>
-        /// 终点行坐标
-        /// </summary>
-        [Description("终点行坐标"), DefaultValue("0")]
-        public double Row2
-        {
-            get => this.row2;
-            set
-            {
-                this.row2 = value;
+                this.x1 = value;
             }
         }
 
 
-        string endColName = "";
+        string startYName = "";
         /// <summary>
-        /// 终点列坐标名称
+        /// 起点Y坐标名称
         /// </summary>
-        [Description("终点列坐标名称"), DefaultValue("")]
-        public string EndColName
+        [Description("起点Y坐标名称"), DefaultValue("")]
+        public string StartYName
         {
-            get => this.endColName;
+            get => this.startYName;
             set
             {
-                this.endColName = value;
+                this.startYName = value;
             }
         }
 
-        double col2 = 0;
+        double y1 = 0;
         /// <summary>
-        /// 终点列坐标
+        /// 起点Y坐标
         /// </summary>
-        [Description("终点列坐标"), DefaultValue("0")]
-        public double Col2
+        [Description("起点Y坐标"), DefaultValue("0")]
+        public double Y1
         {
-            get => this.col2;
+            get => this.y1;
             set
             {
-                this.col2 = value;
+                this.y1 = value;
+            }
+        }
+
+        string endXName = "";
+        /// <summary>
+        /// 终点X坐标名称
+        /// </summary>
+        [Description("终点X坐标名称"), DefaultValue("")]
+        public string EndXName
+        {
+            get => this.endXName;
+            set
+            {
+                this.endXName = value;
+            }
+        }
+
+        double x2 = 0;
+        /// <summary>
+        /// 终点X坐标
+        /// </summary>
+        [Description("终点X坐标"), DefaultValue("0")]
+        public double X2
+        {
+            get => this.x2;
+            set
+            {
+                this.x2 = value;
+            }
+        }
+
+
+        string endYName = "";
+        /// <summary>
+        /// 终点Y坐标名称
+        /// </summary>
+        [Description("终点Y坐标名称"), DefaultValue("")]
+        public string EndYName
+        {
+            get => this.endYName;
+            set
+            {
+                this.endYName = value;
+            }
+        }
+
+        double y2 = 0;
+        /// <summary>
+        /// 终点Y坐标
+        /// </summary>
+        [Description("终点Y坐标"), DefaultValue("0")]
+        public double Y2
+        {
+            get => this.y2;
+            set
+            {
+                this.y2 = value;
             }
         }
 
 
         //Output parmas value define ---1
 
-        double centreRow = 0;
+        double centreX = 0;
         /// <summary>
-        ///中心行坐标
+        ///中心X坐标
         /// </summary>
-        [Description("中心行坐标"), DefaultValue("0")]
-        public double CentreRow
+        [Description("中心X坐标"), DefaultValue("0")]
+        public double CentreX
         {
-            get => this.centreRow;
+            get => this.centreX;
             set
             {
-                this.centreRow = value;
+                this.centreX = value;
             }
         }
 
 
-        double centreCol = 0;
+        double centreY = 0;
         /// <summary>
-        ///中心列坐标
+        ///中心Y坐标
         /// </summary>
-        [Description("中心列坐标"), DefaultValue("0")]
-        public double CentreCol
+        [Description("中心Y坐标"), DefaultValue("0")]
+        public double CentreY
         {
-            get => this.centreCol;
+            get => this.centreY;
             set
             {
-                this.centreCol = value;
+                this.centreY = value;
             }
         }
 

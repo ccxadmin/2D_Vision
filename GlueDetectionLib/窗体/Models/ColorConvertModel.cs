@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace GlueDetectionLib.窗体.Models
 {
@@ -126,4 +127,6 @@ namespace GlueDetectionLib.窗体.Models
             return false;
         }
     }
+
+   
 }

@@ -23,117 +23,117 @@ namespace PositionToolsLib.参数
         #region---Property---
         //Input parmas value define --2
 
-        string startRowName = "";
+        string startXName = "";
         /// <summary>
         /// 起点行坐标名称
         /// </summary>
-        [Description("起点行坐标名称"), DefaultValue("")]
-        public string StartRowName
+        [Description("起点X坐标名称"), DefaultValue("")]
+        public string StartXName
         {
-            get => this.startRowName;
+            get => this.startXName;
             set
             {
-                this.startRowName = value;
+                this.startXName = value;
             }
         }
 
-        double row1 = 0;
+        double x1 = 0;
         /// <summary>
-        /// 起点行坐标
+        /// 起点X坐标
         /// </summary>
         [Description("起点行坐标"), DefaultValue("0")]
-        public double Row1
+        public double X1
         {
-            get => this.row1;
+            get => this.x1;
             set
             {
-                this.row1 = value;
+                this.x1 = value;
             }
         }
 
 
-        string startColName = "";
+        string startYName = "";
         /// <summary>
-        /// 起点列坐标名称
+        /// 起点Y坐标名称
         /// </summary>
-        [Description("起点列坐标名称"), DefaultValue("")]
-        public string StartColName
+        [Description("起点Y坐标名称"), DefaultValue("")]
+        public string StartYName
         {
-            get => this.startColName;
+            get => this.startYName;
             set
             {
-                this.startColName = value;
+                this.startYName = value;
             }
         }
 
-        double col1 = 0;
+        double y1 = 0;
         /// <summary>
-        /// 起点列坐标
+        /// 起点Y坐标
         /// </summary>
-        [Description("起点列坐标"), DefaultValue("0")]
-        public double Col1
+        [Description("起点Y坐标"), DefaultValue("0")]
+        public double Y1
         {
-            get => this.col1;
+            get => this.y1;
             set
             {
-                this.col1 = value;
+                this.y1 = value;
             }
         }
 
-        string endRowName = "";
+        string endXName = "";
         /// <summary>
-        /// 终点行坐标名称
+        /// 终点X坐标名称
         /// </summary>
-        [Description("终点行坐标名称"), DefaultValue("")]
-        public string EndRowName
+        [Description("终点X坐标名称"), DefaultValue("")]
+        public string EndXName
         {
-            get => this.endRowName;
+            get => this.endXName;
             set
             {
-                this.endRowName = value;
+                this.endXName = value;
             }
         }
 
-        double row2 = 0;
+        double x2 = 0;
         /// <summary>
-        /// 终点行坐标
+        /// 终点X坐标
         /// </summary>
-        [Description("终点行坐标"), DefaultValue("0")]
-        public double Row2
+        [Description("终点X坐标"), DefaultValue("0")]
+        public double X2
         {
-            get => this.row2;
+            get => this.x2;
             set
             {
-                this.row2 = value;
+                this.x2 = value;
             }
         }
 
 
-        string endColName = "";
+        string endYName = "";
         /// <summary>
-        /// 终点列坐标名称
+        /// 终点Y标名称
         /// </summary>
-        [Description("终点列坐标名称"), DefaultValue("")]
-        public string EndColName
+        [Description("终点Y坐标名称"), DefaultValue("")]
+        public string EndYName
         {
-            get => this.endColName;
+            get => this.endYName;
             set
             {
-                this.endColName = value;
+                this.endYName = value;
             }
         }
 
-        double col2 = 0;
+        double y2 = 0;
         /// <summary>
-        /// 终点列坐标
+        /// 终点Y坐标
         /// </summary>
-        [Description("终点列坐标"), DefaultValue("0")]
-        public double Col2
+        [Description("终点Y坐标"), DefaultValue("0")]
+        public double Y2
         {
-            get => this.col2;
+            get => this.y2;
             set
             {
-                this.col2 = value;
+                this.y2 = value;
             }
         }
 

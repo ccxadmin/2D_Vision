@@ -307,9 +307,9 @@ namespace PositionToolsLib.窗体.ViewModels
             })
            .ContinueWith(t => {
                //Dispatcher.Invoke(new Action(() => {
-
-               Model.BaseRowText = (baseTool.GetParam() as MatchParam).ModelBaseRow.ToString("f3");
-               Model.BaseColumnText = (baseTool.GetParam() as MatchParam).ModelBaseCol.ToString("f3");
+              
+               Model.BaseXText = (baseTool.GetParam() as MatchParam).ModelBaseCol.ToString("f3");
+               Model.BaseYText = (baseTool.GetParam() as MatchParam).ModelBaseRow.ToString("f3");
                Model.BaseAngleText = ((baseTool.GetParam() as MatchParam).ModelBaseRadian * 180.0 / Math.PI).ToString("f3");
                //}));
            });
@@ -428,9 +428,9 @@ namespace PositionToolsLib.窗体.ViewModels
                   ), 200, 10, "green", 16);
               
                 Model.DgResultOfMatchList.Add(new DgResultOfMatch(0,
-                    (par as MatchParam).MatchResultScores.TupleSelect(0).D,             
-               (par as MatchParam).MatchResultRows.TupleSelect(0).D,
-                (par as MatchParam).MatchResultColumns.TupleSelect(0).D,
+                    (par as MatchParam).MatchResultScores.TupleSelect(0).D,
+                      (par as MatchParam).MatchResultColumns.TupleSelect(0).D,
+               (par as MatchParam).MatchResultRows.TupleSelect(0).D,             
              (par as MatchParam).MatchResultRadians.TupleSelect(0).TupleDeg().D));
 
             }

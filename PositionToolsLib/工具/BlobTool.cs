@@ -119,9 +119,9 @@ namespace PositionToolsLib.工具
                 //粒子筛选
                 foreach (var s in (toolParam as BlobParam).ParticleFeaturesDataList)
                 {
-                    if (!s.isUse) continue;
+                    if (!s.Use) continue;
                     HOperatorSet.SelectShape(emptyRegionBuf, out HObject selectRegions,
-                           s.features,"and", int.Parse(s.minValue), int.Parse(s.maxValue));
+                           s.Item,"and", s.LimitDown, s.LimitUp);
                     HOperatorSet.CopyObj(selectRegions,out emptyRegionBuf,1,-1);
                     selectRegions.Dispose();
 
@@ -225,9 +225,9 @@ namespace PositionToolsLib.工具
                 {
                     StuBlobFeaturesResult dat = (toolParam as BlobParam).BlobFeaturesResult[0];
                     if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(dat.row, dat.column, 0));
+                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(dat.column, dat.row, 0));
                     else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(dat.row, dat.column, 0);
+                        dm.PositionDataDic[toolName] = new StuCoordinateData(dat.column, dat.row, 0);
 
                 }
                else

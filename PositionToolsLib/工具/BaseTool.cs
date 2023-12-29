@@ -24,10 +24,10 @@ namespace PositionToolsLib.工具
         [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
-            if (toolParam.Hv_HomMat2D==null)
-            {
-                toolParam.Hv_HomMat2D = new HTuple(); 
-            }
+            //if (toolParam.Hv_HomMat2D==null)
+            //{
+            //    toolParam.Hv_HomMat2D = new HTuple(); 
+            //}
 
         }
         public delegate DataManage GetManageHandle();
@@ -40,6 +40,14 @@ namespace PositionToolsLib.工具
                 return new DataManage();
             else
                 return OnGetManageHandle.Invoke();
+        }
+        /// <summary>
+        /// 获取标定关系矩阵
+        /// </summary>
+        /// <param name="homMat2D"></param>
+        virtual  public void GetMatrix(HTuple homMat2D)
+        {
+            toolParam.hv_HomMat2D = homMat2D;
         }
         /// <summary>
         /// 计算直线角度 -180~180
@@ -114,11 +122,38 @@ namespace PositionToolsLib.工具
            
             Rx = Ry = 0;
             if (toolParam == null) return false;
-            if (toolParam.Hv_HomMat2D != null && toolParam.Hv_HomMat2D.Length > 0)
-                HOperatorSet.AffineTransPoint2d(toolParam.Hv_HomMat2D, Px, Py,
+            if (toolParam.hv_HomMat2D != null && toolParam.hv_HomMat2D.Length > 0)
+                HOperatorSet.AffineTransPoint2d(toolParam.hv_HomMat2D, Px, Py,
                    out Rx, out Ry);
             else
             {              
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// 机械坐标转像素坐标
+        /// </summary>
+        /// <param name="Rx"></param>
+        /// <param name="Ry"></param>
+        /// <param name="Px"></param>
+        /// <param name="Py"></param>
+        /// <returns></returns>
+        public bool Transformation_POINT_INV(HTuple Rx, HTuple Ry,
+                      out HTuple Px, out HTuple Py)
+        {
+
+            Px = Py = 0;
+            if (toolParam == null) return false;
+            if (toolParam.hv_HomMat2D != null && toolParam.hv_HomMat2D.Length > 0)
+            {
+                HOperatorSet.HomMat2dInvert(toolParam.hv_HomMat2D, out HTuple homMat2DInvert);
+                HOperatorSet.AffineTransPoint2d(homMat2DInvert, Rx, Ry,
+                      out Px, out Py);
+            }               
+            else
+            {
                 return false;
             }
             return true;

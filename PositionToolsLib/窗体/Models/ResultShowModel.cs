@@ -136,69 +136,69 @@ namespace PositionToolsLib.窗体.Models
 
 
      
-        private ObservableCollection<string> rowCoorList = new ObservableCollection<string>();
-        public ObservableCollection<string> RowCoorList
+        private ObservableCollection<string> xCoorList = new ObservableCollection<string>();
+        public ObservableCollection<string> XCoorList
         {
-            get { return this.rowCoorList; }
+            get { return this.xCoorList; }
             set
             {
-                rowCoorList = value;
+                xCoorList = value;
                 DoNotify();
             }
         }
      
-        private string selectRowCoorName;
-        public string SelectRowCoorName
+        private string selectXCoorName;
+        public string SelectXCoorName
         {
-            get { return this.selectRowCoorName; }
+            get { return this.selectXCoorName; }
             set
             {
-                selectRowCoorName = value;
+                selectXCoorName = value;
                 DoNotify();
             }
         }
       
-        private int selectRowCoorIndex;
-        public int SelectRowCoorIndex
+        private int selectXCoorIndex;
+        public int SelectXCoorIndex
         {
-            get { return this.selectRowCoorIndex; }
+            get { return this.selectXCoorIndex; }
             set
             {
-                selectRowCoorIndex = value;
+                selectXCoorIndex = value;
                 DoNotify();
             }
         }
 
 
-        private ObservableCollection<string> colCoorList = new ObservableCollection<string>();
-        public ObservableCollection<string> ColCoorList
+        private ObservableCollection<string> yCoorList = new ObservableCollection<string>();
+        public ObservableCollection<string> YCoorList
         {
-            get { return this.colCoorList; }
+            get { return this.yCoorList; }
             set
             {
-                colCoorList = value;
+                yCoorList = value;
                 DoNotify();
             }
         }
 
-        private string selectColCoorName;
-        public string SelectColCoorName
+        private string selectYCoorName;
+        public string SelectYCoorName
         {
-            get { return this.selectColCoorName; }
+            get { return this.selectYCoorName; }
             set
             {
-                selectColCoorName = value;
+                selectYCoorName = value;
                 DoNotify();
             }
         }
 
-        private int selectColCoorIndex;
-        public int SelectColCoorIndex
+        private int selectYCoorIndex;
+        public int SelectYCoorIndex
         {
-            get { return this.selectColCoorIndex; }
+            get { return this.selectYCoorIndex; }
             set
             {
-                selectColCoorIndex = value;
+                selectYCoorIndex = value;
                 DoNotify();
             }
         }
@@ -282,18 +282,18 @@ namespace PositionToolsLib.窗体.Models
     [Serializable]
     public class DgResultOfResultShow
     {
-        public DgResultOfResultShow(int id,  double row,
-                         double column, double angle)
+        public DgResultOfResultShow(int id,  double x,
+                         double y, double angle)
         {
             ID = id;         
-            Row = row;
-            Column = column;
+            X = x;
+            Y = y;
             Angle = angle;
         }
         public int ID { get; set; }
      
-        public double Row { get; set; }
-        public double Column { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
         public double Angle { get; set; }
 
     }

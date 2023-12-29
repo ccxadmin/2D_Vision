@@ -1,0 +1,291 @@
+﻿<Window x:Class="MainFormLib.Views.FormCalibAssistant"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:local="clr-namespace:MainFormLib.Views"
+        xmlns:model="clr-namespace:MainFormLib.Models"
+ xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
+xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
+xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
+  
+Style="{x:Null}" FocusVisualStyle="{x:Null}"
+mc:Ignorable="d"  Loaded="Window_Loaded" Title="标定助手"
+Height="700" Width="1000">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/ControlShareResources;component/Control.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="350"/>
+        </Grid.ColumnDefinitions>
+        <DockPanel Margin="1" >
+            <Grid>
+                <Rectangle Stroke="#ff6d3c" StrokeThickness="1.5" Margin="0"/>
+                <WindowsFormsHost Name="host" Margin="2" >
+                    <!--<WindowsFormsHost.Child>
+                        <vision:VisionShowTool Dock="Fill" x:Name="{Binding Model.VisionShowToolName}"/>
+                    </WindowsFormsHost.Child>-->
+                </WindowsFormsHost>
+            </Grid>
+        </DockPanel>
+
+        <!--<StackPanel Grid.Column="1"  Margin="1">-->
+
+
+        <ScrollViewer   Grid.Column="1"  Margin="1"
+                            HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto">
+
+            <Grid Margin="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <!--<Rectangle Stroke="#ff6d3c" StrokeThickness="1.5" Margin="0"/>-->
+                <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="相机参数"
+                          Grid.Row="0">
+                    <Grid>
+                        <Label Style="{DynamicResource LabelStyle}" Content="焦距F："
+           HorizontalAlignment="Left" VerticalAlignment="Top" 
+            Margin="10,10,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                                Margin="65,10,0,0" Text="{Binding Model.TxbF,Mode=TwoWay}"/>
+                        <Label Style="{DynamicResource LabelStyle}" Content="畸变K："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,10,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,10,0,0" Text="0"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" Content="像元Sx："
+           HorizontalAlignment="Left" VerticalAlignment="Top" 
+            Margin="10,50,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                                Margin="65,50,0,0" Text="{Binding Model.TxbSx,Mode=TwoWay}"/>
+                        <Label Style="{DynamicResource LabelStyle}" Content="像元Sy："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,50,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,50,0,0" Text="{Binding Model.TxbSy,Mode=TwoWay}"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" Content="中心Cx："
+           HorizontalAlignment="Left" VerticalAlignment="Top" 
+            Margin="10,90,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                                Margin="65,90,0,0" Text="{Binding Model.TxbCx,Mode=TwoWay}"/>
+                        <Label Style="{DynamicResource LabelStyle}" Content="中心Cy："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,90,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,90,0,0" Text="{Binding Model.TxbCy,Mode=TwoWay}"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" Content="图像宽："
+           HorizontalAlignment="Left" VerticalAlignment="Top" 
+            Margin="10,130,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                                Margin="65,130,0,0" Text="{Binding Model.TxbWidth,Mode=TwoWay}"/>
+                        <Label Style="{DynamicResource LabelStyle}" Content="图像高："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,130,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,130,0,10"  Text="{Binding Model.TxbHeight,Mode=TwoWay}"/>
+
+
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Style="{DynamicResource GroupBoxStyle}" Header="标定板参数"
+                         Grid.Row="1">
+                    <Grid>
+                        <Label Style="{DynamicResource LabelStyle}" Content="列数量："
+           HorizontalAlignment="Left" VerticalAlignment="Top" 
+            Margin="10,10,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                                Margin="65,10,0,0"  Text="{Binding Model.TxbBoardXNum,Mode=TwoWay}" />
+                        <Label Style="{DynamicResource LabelStyle}" Content="行数量："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,10,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,10,0,0" Text="{Binding Model.TxbBoardYNum,Mode=TwoWay}"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" Content="中心距："
+           HorizontalAlignment="Left" VerticalAlignment="Top" 
+            Margin="10,50,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                                Margin="65,50,0,0" Text="{Binding Model.TxbBoardMarkDis,Mode=TwoWay}"/>
+                        <Label Style="{DynamicResource LabelStyle}" Content="距离比："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,50,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,50,0,0" Text="{Binding Model.TxbBoardMarkDisRotia,Mode=TwoWay}"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" Content="标定板描述文件："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="10,90,0,0"/>
+                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
+                                HorizontalAlignment="Left" VerticalAlignment="Top" Content="文件生成"
+                                Margin="210,90,0,0" Width="100" Height="25" Command="{Binding GenBoardFileBtnClickCommand}"/>
+
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+ HorizontalAlignment="Left" VerticalAlignment="Top" Width="300"  TextWrapping="Wrap" 
+Margin="10,120,0,5" Height="70" ScrollViewer.VerticalScrollBarVisibility="Visible"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"  
+                                 IsReadOnly="True" HorizontalContentAlignment="Left"
+                                 VerticalContentAlignment="Top" Text="{Binding Model.TxbBoardFilePath,Mode=TwoWay}">
+                        </TextBox>
+
+
+                    </Grid>
+                </GroupBox>
+
+                <GroupBox Style="{DynamicResource GroupBoxStyle}" Header="标定信息列表" Grid.Row="2">
+                    <GroupBox.Resources>
+                        <model:ColorValueConvert x:Key="ColorConvert" />
+                    </GroupBox.Resources>
+                    <DataGrid  MinHeight="200"  Margin="2"  HorizontalAlignment="Stretch" Width="auto"  Background="#ffffff" 
+                                      VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
+                                      Style="{DynamicResource datagrid}"   x:Name="dgCalibImageInfo"  IsReadOnly="True"
+                               SelectedIndex="{Binding Model.DgDataSelectIndex,Mode=TwoWay}" AllowDrop="True"
+ItemsSource="{Binding Model.DgImageCorrectInfoList,Mode=TwoWay}" 
+                               DragDrop.DragEnter="dgCalibImageInfo_DragEnter"
+                               DragDrop.Drop="dgCalibImageInfo_Drop">
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#ff6d3c"/>
+                                        <Setter Property="BorderBrush" Value="#ff6d3c"/>
+                                    </Trigger>
+
+                                    <DataTrigger Binding="{Binding ImageInfo}" 
+        Value="标定成功">
+                                        <Setter Property="Foreground" Value="Green"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ImageInfo}" 
+        Value="标定失败">
+                                        <Setter Property="Foreground" Value="Red"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        
+                        <DataGrid.Columns>
+                            <DataGridCheckBoxColumn Header="启用" Binding="{Binding IsUse,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="60" ElementStyle="{StaticResource datagridtextblock}"/>
+                            <DataGridTextColumn Header="名称"  Binding="{Binding Name,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                            <DataGridTextColumn  x:Name="iinfo"  Header="图像信息"  Binding="{Binding ImageInfo,Mode=TwoWay}" 
+                                                Width="120" ElementStyle="{StaticResource datagridtextblock}" >                                                                       
+                                                
+                                <!--<DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="#ff6d3c"/>
+                                                <Setter Property="BorderBrush" Value="#ff6d3c"/>
+                                            </Trigger>
+
+                                            <DataTrigger Binding="{Binding ImageInfo}" 
+                                         Value="标定成功">
+                                                <Setter Property="Foreground" Value="Green"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ImageInfo}" 
+                                         Value="标定失败">
+                                                <Setter Property="Foreground" Value="Red"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>-->
+
+                            </DataGridTextColumn>
+
+                        </DataGrid.Columns>
+                    
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="MouseDoubleClick">
+                                <behaviors:InvokeCommandAction Command="{Binding DgMouseDoubleClickCommand}" CommandParameter="{Binding ElementName=dgCalibImageInfo,Path=SelectedIndex}"/>
+                            </behaviors:EventTrigger>
+                            <!--<behaviors:EventTrigger EventName="Drop">
+                                <behaviors:InvokeCommandAction Command="{Binding DgDragDropCommand}" CommandParameter="{Binding ElementName=dgCalibImageInfo,Path=DataContext  }"/>
+                            </behaviors:EventTrigger>-->
+                            <!--<behaviors:EventTrigger EventName="DragEnter">
+                                <behaviors:InvokeCommandAction Command="{Binding DgDragEnterCommand}" CommandParameter="{Binding ElementName=dgCalibImageInfo,Path= DataContext}"/>
+                            </behaviors:EventTrigger>-->
+                        </behaviors:Interaction.Triggers>
+
+                        <DataGrid.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="删除"  Command="{Binding DeleteMenuItemClickCommand}"/>
+                                <MenuItem Header="清除"  Command="{Binding ClearMenuItemClickCommand}"/>
+                            </ContextMenu>
+                        </DataGrid.ContextMenu>
+                    </DataGrid>
+
+                </GroupBox>
+
+                <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="标定结果显示" 
+                          Grid.Row="3">
+                    <Grid>
+                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
+                                HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"
+                                Margin="20,10,0,0" Content="标定准备"
+                                IsEnabled="{Binding Model.BtnReadyCalibEnable,Mode=TwoWay}"
+                                Command="{Binding ReadyCalibClickCommand}"/>
+
+                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
+        HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"
+        Margin="190,10,0,0" Content="标定结束"  Command="{Binding CalibFinishClickCommand}"/>
+
+                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
+        HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"
+        Margin="20,60,0,10" Content="手动标定"  
+                                 IsEnabled="{Binding Model.BtnManualCalibEnable,Mode=TwoWay}"
+                                Command="{Binding ManualCalibClickCommand}"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" HorizontalAlignment="Left"
+                               VerticalAlignment="Top" Content="标定误差系数：" Margin="190,35,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" HorizontalAlignment="Left"
+                                 VerticalAlignment="Top" attach:TexboxAttach.TextBoxCornerRadius="3"
+                                 Margin="200,60,0,0" Width="110" IsReadOnly="True" Text="{Binding Model.TxbCalibRMS,Mode=TwoWay}"/>
+
+                    </Grid>
+                </GroupBox>
+
+                <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="参数保存"
+                              HorizontalAlignment="Left" VerticalAlignment="Center"
+  Grid.Row="4" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                            Command="{Binding SaveButClickCommand}" Margin="30,5,0,5"/>
+                <!--<Button  Height="30" Style="{DynamicResource PrimaryButton}" Content="畸变校正"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+ Grid.Row="4"  Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                           Command="{Binding TestButClickCommand}" Margin="200,5,0,5"/>-->
+
+            </Grid>
+        </ScrollViewer>
+
+
+        <!--</StackPanel>-->
+    </Grid>
+
+</Window>

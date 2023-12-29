@@ -51,12 +51,12 @@ namespace PositionToolsLib.参数
             }
         }
 
-        double offsetDistance = 0;
+        int offsetDistance = 0;
         /// <summary>
         ///偏移距离
         /// </summary>
         [Description("偏移距离"), DefaultValue(0)]
-        public double OffsetDistance
+        public int OffsetDistance
         {
             get => this.offsetDistance;
             set

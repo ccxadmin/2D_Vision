@@ -14,6 +14,7 @@
     <None Remove="images\加号.png" />
     <None Remove="images\左箭头 %281%29.png" />
     <None Remove="images\左箭头 %282%29.png" />
+    <None Remove="窗体\Views\FormCoordConvert.xaml~RF1f5e3d93.TMP" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,6 +56,10 @@
     <Resource Include="images\左箭头 (2).png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="窗体\Pages\" />
   </ItemGroup>
 
 </Project>

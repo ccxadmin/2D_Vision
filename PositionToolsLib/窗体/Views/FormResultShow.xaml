@@ -44,175 +44,176 @@ Height="700" Width="1000">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                       VerticalScrollBarVisibility="Auto">
                         <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
-                           
-                                <Grid   VerticalAlignment="Top">
-                                    <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
+
+                            <Grid   VerticalAlignment="Top">
+                                <Label Style="{DynamicResource LabelStyle}" Content="输入图像："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="10,20"/>
-                                    <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
+                                <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="80,20,25,25"  Height="25"
                                 ItemsSource="{Binding Model.ImageList}"                          
   SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
                     SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
 
-                                        <behaviors:Interaction.Triggers>
-                                            <behaviors:EventTrigger EventName="SelectionChanged">
-                                                <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
-                                            </behaviors:EventTrigger>
-                                        </behaviors:Interaction.Triggers>
-                                    </ComboBox>
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="SelectionChanged">
+                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        </behaviors:EventTrigger>
+                                    </behaviors:Interaction.Triggers>
+                                </ComboBox>
 
-                                    <CheckBox Style="{DynamicResource CheckBoxBasic}" Content="是否显示检测区域"
+                                <CheckBox Style="{DynamicResource CheckBoxBasic}" Content="是否显示检测区域"
                                   HorizontalAlignment="Left" VerticalAlignment="Top"
                                   Margin="10,60,10,10"
                                    IsChecked="{Binding Model.ShowInspectRegChecked,Mode=TwoWay}"/>
 
-                                    <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
+                                <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
                               Margin="5,90,5,5" Header="打印汇总信息" Height="350" VerticalAlignment="Top">
-                                        <Grid Margin="1">
+                                    <Grid Margin="1">
 
-                                            <Label Style="{DynamicResource  LabelStyle}" Content="起始坐标："
+                                        <Label Style="{DynamicResource  LabelStyle}" Content="起始坐标："
                                      HorizontalAlignment="Left"
                                     VerticalAlignment="Top" Margin="10,10,0,0"  
                                     />
-                                            <Label Style="{DynamicResource  LabelStyle}" Content="X："
+                                        <Label Style="{DynamicResource  LabelStyle}" Content="X："
       HorizontalAlignment="Left"
      VerticalAlignment="Top" Margin="10,40,0,0"  
      />
-                                            <uc:MyNumUpDown HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        <uc:MyNumUpDown HorizontalAlignment="Left" VerticalAlignment="Top"
                                                 Margin="40,40,0,0" Height="25"
                                                  OffsetValue="1" DecimalPlaces="0"
                                                 DefaultValue="0" MinValue="0" MaxValue="3000"
                                                 NumericValue="{Binding Model.NmCoorX,Mode=TwoWay}"/>
 
-                                            <Label Style="{DynamicResource  LabelStyle}" Content="Y："
+                                        <Label Style="{DynamicResource  LabelStyle}" Content="Y："
  HorizontalAlignment="Left"
 VerticalAlignment="Top" Margin="160,40,0,0"  
 />
-                                            <uc:MyNumUpDown HorizontalAlignment="Left" VerticalAlignment="Top"
+                                        <uc:MyNumUpDown HorizontalAlignment="Left" VerticalAlignment="Top"
                                            Margin="190,40,0,0" Height="25"
                                                  OffsetValue="1" DecimalPlaces="0"
 DefaultValue="0" MinValue="0" MaxValue="3000"
 NumericValue="{Binding Model.NmCoorY,Mode=TwoWay}"/>
 
-                                            <Menu   Margin="10,80,10,0" VerticalAlignment="Top"
+                                        <Menu   Margin="10,80,10,0" VerticalAlignment="Top"
                                     Style="{DynamicResource WD.DefaultMenu}" >
-                                                <MenuItem   Margin="5,1" Header="新增" FontSize="16" 
+                                            <MenuItem   Margin="5,1" Header="新增" FontSize="16" 
                                                 VerticalContentAlignment="Center"
                                                  Command="{Binding NewMenuItemClickCommand}">
 
-                                                    <MenuItem.Icon>
-                                                        <Image Source="/GlueDetectionLib;component/images/加号.png" />
-                                                    </MenuItem.Icon>
+                                                <MenuItem.Icon>
+                                                    <Image Source="/GlueDetectionLib;component/images/加号.png" />
+                                                </MenuItem.Icon>
 
-                                                </MenuItem>
-                                                <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                                <MenuItem  Margin="5,1" Header="删除" FontSize="16" 
+                                            </MenuItem>
+                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                            <MenuItem  Margin="5,1" Header="删除" FontSize="16" 
                                                VerticalContentAlignment="Center"
                                                 Command="{Binding DelMenuItemClickCommand}">
 
-                                                    <MenuItem.Icon>
-                                                        <Image Source="/GlueDetectionLib;component/images/减号.png" />
-                                                    </MenuItem.Icon>
+                                                <MenuItem.Icon>
+                                                    <Image Source="/GlueDetectionLib;component/images/减号.png" />
+                                                </MenuItem.Icon>
 
-                                                </MenuItem>
-                                            </Menu>
-                                            <DataGrid  Margin="10,111,10,10" Width="auto" Name="dg"  Background="Transparent"
+                                            </MenuItem>
+                                        </Menu>
+                                        <DataGrid  Margin="10,111,10,10" Width="auto" Name="dg"  Background="Transparent"
                                        VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ff6d3c"
                                        Style="{DynamicResource datagrid}"   Grid.ColumnSpan="2"
                                              SelectedIndex="{Binding Model.DgDataSelectIndex}"
   ItemsSource="{Binding Model.DgDataOfResultShowList,Mode=TwoWay}" >
-                                                <DataGrid.Columns>
+                                            <DataGrid.Columns>
                                                 <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
-                                                    <DataGridComboBoxColumn Header="工具名称" Width="120" x:Name="dgCombox">
+                                                <DataGridComboBoxColumn Header="工具名称" Width="120" x:Name="dgCombox">
 
-                                                        <DataGridComboBoxColumn.EditingElementStyle>
-                                                            <Style TargetType="ComboBox">
-                                                                <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
-                                                                <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
-                                                            </Style>
-                                                        </DataGridComboBoxColumn.EditingElementStyle>
-                                                        <DataGridComboBoxColumn.ElementStyle>
-                                                            <Style TargetType="ComboBox">
-                                                                <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
-                                                                <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
-                                                            </Style>
-                                                        </DataGridComboBoxColumn.ElementStyle>
-                                                    </DataGridComboBoxColumn>
-                                                    <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
-                                                </DataGrid.Columns>
+                                                    <DataGridComboBoxColumn.EditingElementStyle>
+                                                        <Style TargetType="ComboBox">
+                                                            <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
+                                                            <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                        </Style>
+                                                    </DataGridComboBoxColumn.EditingElementStyle>
+                                                    <DataGridComboBoxColumn.ElementStyle>
+                                                        <Style TargetType="ComboBox">
+                                                            <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
+                                                            <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                        </Style>
+                                                    </DataGridComboBoxColumn.ElementStyle>
+                                                </DataGridComboBoxColumn>
+                                                <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                            </DataGrid.Columns>
 
-                                            </DataGrid>
+                                        </DataGrid>
 
-                                        </Grid>
-                                    </GroupBox>
+                                    </Grid>
+                                </GroupBox>
 
-                                    <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
-       Margin="5,460,5,5" Header="输入结果" Height="130" VerticalAlignment="Top">
-                                        <Grid>
-                                            <Label Style="{DynamicResource LabelStyle}" Content="行坐标："
-                                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5"/>
-                                            <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
-                                          Margin="100,5,5,5" Height="25" Width="130"  
-                                         ItemsSource="{Binding Model.RowCoorList,Mode=TwoWay}"
-                                          SelectedItem="{Binding Model.SelectRowCoorName,Mode=TwoWay}"
-                                         SelectedIndex="{Binding Model.SelectRowCoorIndex,Mode=TwoWay}" 
-                                        x:Name="cobxRowCoorList"  >
-                                                <behaviors:Interaction.Triggers>
-                                                    <behaviors:EventTrigger EventName="SelectionChanged">
-                                                        <behaviors:InvokeCommandAction Command="{Binding RowCoorSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxRowCoorList,Path=SelectedValue}"/>
-                                                    </behaviors:EventTrigger>
-                                                </behaviors:Interaction.Triggers>
-                                            </ComboBox>
+                                <GroupBox BorderBrush="#ff6d3c"  Foreground="#ff6d3c"
+       Margin="5,460,5,5" Header="输出结果" Height="130" VerticalAlignment="Top">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="314*"/>
+                                            <ColumnDefinition Width="253*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Style="{DynamicResource LabelStyle}" Content="X坐标：" VerticalAlignment="Top" Margin="10,5,0,0"/>
+                                        <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
+                                          Margin="100,5,0,0" Height="25" Width="130"  
+                                         ItemsSource="{Binding Model.XCoorList,Mode=TwoWay}"
+                                          SelectedItem="{Binding Model.SelectXCoorName,Mode=TwoWay}"
+                                         SelectedIndex="{Binding Model.SelectXCoorIndex,Mode=TwoWay}" 
+                                        x:Name="cobxXCoorList"  >
+                                            <behaviors:Interaction.Triggers>
+                                                <behaviors:EventTrigger EventName="SelectionChanged">
+                                                    <behaviors:InvokeCommandAction Command="{Binding XCoorSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxXCoorList,Path=SelectedValue}"/>
+                                                </behaviors:EventTrigger>
+                                            </behaviors:Interaction.Triggers>
+                                        </ComboBox>
 
 
-                                            <Label Style="{DynamicResource LabelStyle}" Content="列坐标："
-    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,5,5"/>
-                                            <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
-           Margin="100,40,5,5" Height="25" Width="130"  
-                                           ItemsSource="{Binding Model.ColCoorList,Mode=TwoWay}"
-  SelectedItem="{Binding Model.SelectColCoorName,Mode=TwoWay}"
- SelectedIndex="{Binding Model.SelectColCoorIndex,Mode=TwoWay}" 
-x:Name="cobxColCoorList" 
+                                        <Label Style="{DynamicResource LabelStyle}" Content="Y坐标：" VerticalAlignment="Top" Margin="10,40,0,0"/>
+                                        <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
+           Margin="100,40,0,0" Height="25" Width="130"  
+                                           ItemsSource="{Binding Model.YCoorList,Mode=TwoWay}"
+  SelectedItem="{Binding Model.SelectYCoorName,Mode=TwoWay}"
+ SelectedIndex="{Binding Model.SelectYCoorIndex,Mode=TwoWay}" 
+x:Name="cobxYCoorList" 
           >
-                                                <behaviors:Interaction.Triggers>
-                                                    <behaviors:EventTrigger EventName="SelectionChanged">
-                                                        <behaviors:InvokeCommandAction Command="{Binding ColCoorSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxColCoorList,Path=SelectedValue}"/>
-                                                    </behaviors:EventTrigger>
-                                                </behaviors:Interaction.Triggers>
+                                            <behaviors:Interaction.Triggers>
+                                                <behaviors:EventTrigger EventName="SelectionChanged">
+                                                    <behaviors:InvokeCommandAction Command="{Binding YCoorSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxYCoorList,Path=SelectedValue}"/>
+                                                </behaviors:EventTrigger>
+                                            </behaviors:Interaction.Triggers>
 
-                                            </ComboBox>
-                                            <Label Style="{DynamicResource LabelStyle}" Content="角度："
-HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
-                                            <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
-           Margin="100,76,5,5" Height="25" Width="130" 
+                                        </ComboBox>
+                                        <Label Style="{DynamicResource LabelStyle}" Content="角度：" VerticalAlignment="Top" Margin="10,76,0,0"/>
+                                        <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
+           Margin="100,76,0,0" Height="25" Width="130" 
                                                                                      ItemsSource="{Binding Model.AngCoorList,Mode=TwoWay}"
   SelectedItem="{Binding Model.SelectAngCoorName,Mode=TwoWay}"
  SelectedIndex="{Binding Model.SelectAngCoorIndex,Mode=TwoWay}" 
 x:Name="cobxAngCoorList" 
           />
-                                            <behaviors:Interaction.Triggers>
-                                                <behaviors:EventTrigger EventName="SelectionChanged">
+                                        <behaviors:Interaction.Triggers>
+                                            <behaviors:EventTrigger EventName="SelectionChanged">
                                                 <behaviors:InvokeCommandAction Command="{Binding AngCoorSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxAngCoorList,Path=SelectedValue}"/>
-                                                </behaviors:EventTrigger>
-                                            </behaviors:Interaction.Triggers>
+                                            </behaviors:EventTrigger>
+                                        </behaviors:Interaction.Triggers>
 
-                                        </Grid>
+                                    </Grid>
 
-                                    </GroupBox>
+                                </GroupBox>
 
-                                    <Button Style="{DynamicResource PrimaryButton}"  Content="保存"
+                                <Button Style="{DynamicResource PrimaryButton}"  Content="保存"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
   Margin="40,610,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
                             Command="{Binding SaveButClickCommand}"/>
-                                    <Button  Style="{DynamicResource PrimaryButton}" Content="测试"
+                                <Button  Style="{DynamicResource PrimaryButton}" Content="测试"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
 Margin="180,610,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
                               Command="{Binding TestButClickCommand}"/>
 
-                                </Grid>
-                          
+                            </Grid>
+
                         </GroupBox>
 
 
@@ -229,8 +230,8 @@ Margin="180,610,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3"
                                ItemsSource="{Binding Model.DgResultOfResultShowList,Mode=TwoWay}"  Background="#ffffff"  >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridTextColumn Header="行坐标"  Binding="{Binding Row,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="列坐标"  Binding="{Binding Column,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="X坐标"  Binding="{Binding X,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="Y坐标"  Binding="{Binding Y,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
                                     <DataGridTextColumn Header="角度"  Binding="{Binding Angle,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
                                 </DataGrid.Columns>
 

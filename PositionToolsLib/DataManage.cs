@@ -47,14 +47,18 @@ namespace PositionToolsLib
         /// </summary>
          public Dictionary<string, StuLineData> LineDataDic = new Dictionary<string, StuLineData>();
         /// <summary>
-        ///结果缓存集合: 定位坐标结果 
+        ///结果缓存集合: 定位坐标结果 (像素坐标或物理坐标)（x,y,angle）
         /// </summary>
          public Dictionary<string, StuCoordinateData> PositionDataDic = new Dictionary<string, StuCoordinateData>();
-        
+        /// <summary>
+        ///结果缓存集合: 定位坐标结果 (像素坐标+物理坐标)
+        /// </summary>
+     //   public Dictionary<string, StuTotalData> PositionAllDataDic = new Dictionary<string, StuTotalData>();
+
         /// <summary>
         /// 缓存集合复位
         /// </summary>
-        public  void  ResetBuf()
+        public void  ResetBuf()
         {
             Dictionary<string, HObject> temData = DeepCopy2< Dictionary<string, HObject> > (imageBufDic);
             foreach (var s in temData)
@@ -295,293 +299,46 @@ namespace PositionToolsLib
     [Serializable]
     public struct StuCoordinateData
     {
-        public StuCoordinateData(double _row, double _column, double _angle)
+        public StuCoordinateData(double _x, double _y, double _angle)
         {
-            row = _row;
-            column = _column;
+            x = _x;
+            y = _y;
             angle = _angle;
          
         }
-        public double row;
-        public double column;
+        public double x;
+        public double y;
         public double angle;
        
       
 
-    } /// <summary>
-      /// 定位检测坐标全数据
-      /// </summary>
-    [Serializable]
-    public struct StuTotalData
-    {
-        public StuTotalData(double _row, double _column, double _angle, double x, double y)
-        {
-            row = _row;
-            column = _column;
-            angle = _angle;
-            X = x;
-            Y = y;
-        }
-        public double row;
-        public double column;
-        public double angle;
-
-        public double X;
-        public double Y;
-
     }
 
+    #region----暂不使用----
 
-    [Serializable]
-    public class LineReslutData
-    {
-        public LineReslutData(double _row1, double _column1, double _row2, double _column2,
-          double _angle)
-        {
-            row1 = _row1.ToString("f3");
-            column1 = _column1.ToString("f3");
-            row2 = _row2.ToString("f3");
-            column2 = _column2.ToString("f3");
-            angle = _angle.ToString("f3");
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-        public string row1 { get; set; }
-        public string column1 { get; set; }
-        public string row2 { get; set; }
-        public string column2 { get; set; }
-        public string angle { get; set; }
+    /// <summary>
+    /// 定位检测坐标全数据
+    /// </summary>
+    //[Serializable]
+    //public struct StuTotalData
+    //{
+    //    public StuTotalData(double _px, double _py, double _angle, double _rx, double _ry)
+    //    {
+    //        px = _px;
+    //        py = _py;
+    //        angle = _angle;
+    //        rx = _rx;
+    //        ry = _ry;
+    //    }
+    //    public double px;
+    //    public double py;
+    //    public double angle;
 
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
+    //    public double rx;
+    //    public double ry;
 
-            dgrow.SetValues(
-                    id,
-                    row1,
-                    column1,
-                     row2,
-                    column2,
-                    angle
-                 );
-        }
+    //}
 
-    }
-    [Serializable]
-    public class FitLineReslutData
-    {
-        public FitLineReslutData(
-          double _angle)
-        {
-          
-            angle = _angle.ToString("f3");
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-     
-        public string angle { get; set; }
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                  
-                    angle
-                 );
-        }
-
-    }
-    [Serializable]
-    public class LineCentreReslutData
-    {
-        public LineCentreReslutData(
-          double _centreRow, double _centreCol)
-        {
-
-            centreRow = _centreRow.ToString("f3");
-            centreCol = _centreCol.ToString("f3");
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-
-        public string centreRow { get; set; }
-        public string centreCol { get; set; }
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                    centreRow,
-                    centreCol
-                 );
-        }
-
-    }
-
-    [Serializable]
-    public class LineIntersectionData
-    {
-        public LineIntersectionData(double _row1, double _column1)
-        {
-            row1 = _row1.ToString("f3");
-            column1 = _column1.ToString("f3");
-          
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-        public string row1 { get; set; }
-        public string column1 { get; set; }
-     
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                    row1,
-                    column1
-                 
-                 );
-        }
-
-    }
-
-    [Serializable]
-    public class ParallelLineData
-    {
-        public ParallelLineData(double _row1, double _column1, double _row2, double _column2,
-          double _angle)
-        {
-            row1 = _row1.ToString("f3");
-            column1 = _column1.ToString("f3");
-            row2 = _row2.ToString("f3");
-            column2 = _column2.ToString("f3");
-            angle = _angle.ToString("f3");
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-        public string row1 { get; set; }
-        public string column1 { get; set; }
-        public string row2 { get; set; }
-        public string column2 { get; set; }
-        public string angle { get; set; }
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                    row1,
-                    column1,
-                     row2,
-                    column2,
-                    angle
-                 );
-        }
-    }
-
-   
-
-    [Serializable]
-    public class CircleReslutData
-    {
-        public CircleReslutData(double _row, double _column, 
-          double _radius)
-        {
-            row = _row.ToString("f3");
-            column = _column.ToString("f3");
-            radius = _radius.ToString("f3");       
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-        public string row { get; set; }
-        public string column { get; set; }     
-        public string radius { get; set; }
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                    row,
-                    column,
-                     radius               
-                 );
-        }
-
-    }
-    [Serializable]
-    public class ParticleFeaturesData
-    {
-        public ParticleFeaturesData(bool t_isUse, string t_features,
-            string t_minValue, string t_maxValue)
-        {
-            isUse = t_isUse;
-            features = t_features;
-            minValue = t_minValue;
-            maxValue = t_maxValue;
-        }
-        public bool isUse { get; set; }
-        public  string  features{ get; set; }
-        public string minValue { get; set; }
-        public string maxValue { get; set; }
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    isUse,
-                    features,
-                    minValue,
-                    maxValue
-                 );
-        }
-
-    }
-
-    [Serializable]
-    public class BlobFeaturesResultData
-    {
-        public BlobFeaturesResultData(double _row, double _column,
-            double _area)
-        {
-            row = _row.ToString("f3");
-            column = _column.ToString("f3");
-            area = _area.ToString("f3");
-            ID++;
-            id = ID.ToString();
-        }
-        static int ID = 0;
-        public string id { get; set; }
-        public string row { get; set; }
-        public string column { get; set; }
-        public string area { get; set; }
-
-        public void dataToRow(ref DataGridViewRow dgrow)
-        {
-
-            dgrow.SetValues(
-                    id,
-                    row,
-                    column,
-                    area
-                 );
-        }
-
-    }
-
-    
+    #endregion
 
 }

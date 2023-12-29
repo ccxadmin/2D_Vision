@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HalconDotNet;
+using PositionToolsLib.窗体.Models;
 
 namespace PositionToolsLib.参数
 {
@@ -92,12 +93,12 @@ namespace PositionToolsLib.参数
             }
         }
 
-        int grayMax = 128;
+        byte grayMax = 128;
         /// <summary>
         /// 最大灰度值
         /// </summary>
         [Description("最大灰度值"), DefaultValue(128)]
-        public int GrayMax
+        public byte GrayMax
         {
             get => this.grayMax;
             set

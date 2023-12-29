@@ -79,16 +79,16 @@ namespace PositionToolsLib.工具
                 }
                 (toolParam as ResultShowParam).OutputImg = (toolParam as ResultShowParam).InputImg;//输出图像 
 
-                double row = 0, column = 0, angle = 0;
-                if(dm.resultFlagDic[(toolParam as ResultShowParam).InputRowCoorName])
+                double X = 0, Y = 0, angle = 0;
+                if(dm.resultFlagDic[(toolParam as ResultShowParam).InputXCoorName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputRowCoorName];
-                    row = rowDat.row;
+                    StuCoordinateData xDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputXCoorName];
+                    X = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as ResultShowParam).InputColCoorName])
+                if (dm.resultFlagDic[(toolParam as ResultShowParam).InputYCoorName])
                 {
-                    StuCoordinateData colDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputColCoorName];
-                    column = colDat.column;
+                    StuCoordinateData yDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputYCoorName];
+                    Y = yDat.y;
                 }
                 if (dm.resultFlagDic[(toolParam as ResultShowParam).InputAngleCoorName])
                 {
@@ -96,7 +96,7 @@ namespace PositionToolsLib.工具
                     angle = angleDat.angle;
                 }
                  
-                (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(row, column, angle);
+                (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(X, Y, angle);
 
                 HObject emptyObj = null;
                 HOperatorSet.GenEmptyObj(out emptyObj);

@@ -69,14 +69,14 @@ Height="700" Width="1000">
                          Margin="60,75"/>
                             <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="140,75,0,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                            Margin="140,75,0,0"  Height="25"    x:Name="cobxLine1Select"
+                              ItemsSource="{Binding Model.LineList}"                          
+SelectedItem="{Binding Model.SelectLine1Name,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectLine1Index,Mode=TwoWay}"   >
 
                                 <behaviors:Interaction.Triggers>
                                     <behaviors:EventTrigger EventName="SelectionChanged">
-                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        <behaviors:InvokeCommandAction Command="{Binding Line1SelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxLine1Select,Path=SelectedValue}"/>
                                     </behaviors:EventTrigger>
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
@@ -86,19 +86,19 @@ SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
                          Margin="60,110,10,10"/>
                             <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="140,110,0,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                            Margin="140,110,0,0"  Height="25"   x:Name="cobxLine2Select"
+                              ItemsSource="{Binding Model.LineList}"                          
+SelectedItem="{Binding Model.SelectLine2Name,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectLine2Index,Mode=TwoWay}" >
 
                                 <behaviors:Interaction.Triggers>
                                     <behaviors:EventTrigger EventName="SelectionChanged">
-                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        <behaviors:InvokeCommandAction Command="{Binding Line2SelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxLine2Select,Path=SelectedValue}"/>
                                     </behaviors:EventTrigger>
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
 
-                       
+
                             <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="保存"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
   Margin="60,160,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
@@ -115,14 +115,18 @@ Margin="60,205,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3"
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">
                         <Grid Margin="2">
-                            <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
-                            <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="17*"/>
+                                <ColumnDefinition Width="95*"/>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Stroke="#ff6d3c" StrokeThickness="1" Grid.ColumnSpan="2"/>
+                            <DataGrid  Margin="3,3,3,3" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"  ItemsSource="{Binding}" Background="#ffffff"  >
+             Style="{DynamicResource datagrid}" ItemsSource="{Binding Model.LineIntersectionDataList,Mode=TwoWay}"   Background="#ffffff" Grid.ColumnSpan="2"  >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding FirstName,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridTextColumn Header="行坐标"  Binding="{Binding LastName,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="列坐标"  Binding="{Binding LastName,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
+                                    <DataGridTextColumn Header="X坐标"  Binding="{Binding X1,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="Y坐标"  Binding="{Binding Y1,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
                                 </DataGrid.Columns>
 
                             </DataGrid>
@@ -136,5 +140,5 @@ Margin="60,205,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3"
         </Grid>
         <!--</StackPanel>-->
     </Grid>
-    
+
 </Window>

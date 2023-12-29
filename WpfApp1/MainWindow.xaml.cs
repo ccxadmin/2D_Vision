@@ -26,7 +26,7 @@ using GlueDetectionLib.窗体;
 using GlueDetectionLib.窗体.ViewModels;
 using GlueDetectionLib.工具;
 using PositionToolsLib.窗体.Views;
-using visionForm.Views;
+using MainFormLib.Views;
 using GlueDetectionLib.参数;
 
 namespace WpfApp1
@@ -165,9 +165,9 @@ namespace WpfApp1
             //lightSource.Open(port);
             //LightSourceWindow f = new LightSourceWindow(lightSource);
             //f.ShowDialog();
-            PositionToolsLib.工具.ResultShowTool tool = new PositionToolsLib.工具.ResultShowTool();
-            PositionToolsLib.窗体.Views.FormResultShow f = 
-                new PositionToolsLib.窗体.Views.FormResultShow(tool);
+
+            MainFormLib.Views.FormNinePointsCalib f = 
+                new MainFormLib.Views.FormNinePointsCalib("");
             //BinaryzationViewModel.This.OnSaveParamHandle += new BaseViewModel.SaveParamHandle(OnSaveParamEvent);
             //BinaryzationViewModel.This.OnSaveManageHandle = new BaseViewModel.SaveManageHandle(SaveManageOfGlue);
             f.ShowDialog();

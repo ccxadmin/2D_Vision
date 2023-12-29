@@ -175,11 +175,11 @@ namespace PositionToolsLib.工具
                     (toolParam as CalParallelLineParam).ParallelLineAngle = Angle.D;
 
                     if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(parallenlRow1.D,
-                            parallenlCol1.D, Angle.D));
+                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(
+                            parallenlCol1.D, parallenlRow1.D, Angle.D));
                     else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(parallenlRow1.D,
-                            parallenlCol1.D, Angle.D);
+                        dm.PositionDataDic[toolName] = new StuCoordinateData(
+                            parallenlCol1.D, parallenlRow1.D, Angle.D);
                     //在添加
                     if (!dm.LineDataDic.ContainsKey(toolName))
                         dm.LineDataDic.Add(toolName, new StuLineData(parallenlRow1.D, parallenlCol1.D,

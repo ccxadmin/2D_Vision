@@ -21,9 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueDetectionLib", "GlueDet
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PositionToolsLib", "PositionToolsLib\PositionToolsLib.csproj", "{FDC279F5-04FB-4ECF-982D-99EDB0921824}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "visionForm", "visionForm\visionForm.csproj", "{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DlasaCameraLib", "DlasaCameraLib\DlasaCameraLib.csproj", "{6C195EB7-3BC1-468A-8C11-D27074A6F303}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DlasaCameraLib", "DlasaCameraLib\DlasaCameraLib.csproj", "{6C195EB7-3BC1-468A-8C11-D27074A6F303}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MainFormLib", "MainFormLib\MainFormLib.csproj", "{63A575F1-369E-4E72-A58A-CEE3639073F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,14 +67,14 @@ Global
 		{FDC279F5-04FB-4ECF-982D-99EDB0921824}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDC279F5-04FB-4ECF-982D-99EDB0921824}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FDC279F5-04FB-4ECF-982D-99EDB0921824}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5B801B2-7C6B-47C8-848A-50DD6319C3CC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C195EB7-3BC1-468A-8C11-D27074A6F303}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

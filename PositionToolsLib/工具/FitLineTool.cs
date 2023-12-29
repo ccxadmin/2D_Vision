@@ -73,46 +73,48 @@ namespace PositionToolsLib.工具
                     return result;
                 }
 
-                HTuple row1 = 0, column1= 0;
-                if (dm.resultFlagDic[(toolParam as FitLineParam).StartRowName])
+                double x1 = 0, y1= 0;
+                if (dm.resultFlagDic[(toolParam as FitLineParam).StartXName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as FitLineParam).StartRowName];
-                    row1 = rowDat.row;                   
+                    StuCoordinateData xDat = dm.PositionDataDic[(toolParam as FitLineParam).StartXName];
+                    x1 = xDat.x;                   
                 }
-                if (dm.resultFlagDic[(toolParam as FitLineParam).StartColName])
+                if (dm.resultFlagDic[(toolParam as FitLineParam).StartYName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as FitLineParam).StartColName];
-                    column1 = rowDat.column;
+                    StuCoordinateData yDat = dm.PositionDataDic[(toolParam as FitLineParam).StartYName];
+                    y1 = yDat.y;
                 }
-                HTuple row2 = 0, column2 = 0;
-                if (dm.resultFlagDic[(toolParam as FitLineParam).EndRowName])
+                double x2 = 0, y2 = 0;
+                if (dm.resultFlagDic[(toolParam as FitLineParam).EndXName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as FitLineParam).EndRowName];
-                    row2 = rowDat.row;
+                    StuCoordinateData xDat = dm.PositionDataDic[(toolParam as FitLineParam).EndXName];
+                    x2 = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as FitLineParam).EndColName])
+                if (dm.resultFlagDic[(toolParam as FitLineParam).EndYName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as FitLineParam).EndColName];
-                    column2 = rowDat.column;
+                    StuCoordinateData yDat = dm.PositionDataDic[(toolParam as FitLineParam).EndYName];
+                    y2 = yDat.y;
                 }
 
                
-                HOperatorSet.GenContourPolygonXld(out  HObject line, row1.TupleConcat(row2),
-                       column1.TupleConcat(column2));
+                HOperatorSet.GenContourPolygonXld(out  HObject line,new HTuple(y1).TupleConcat(y2),
+                      new HTuple( x1).TupleConcat(x2));
 
-                //计算物理坐标系下的角度
-                HTuple Rx, Ry, Rx2, Ry2, Angle = 0;
-                bool transFlag = Transformation_POINT(column1, row1, out Rx, out Ry);
-                bool transFlag2 = Transformation_POINT(column2, row2, out Rx2, out Ry2);
-                //角度
-                if (transFlag && transFlag2)
-                    Angle = calAngleOfLx(Rx, Ry, Rx2, Ry2);
-                else
-                {
-                    HOperatorSet.AngleLx(row1, column1, row2, column2, out HTuple angle);
-                    Angle = angle.TupleDeg().D;
-                }
-             
+                ////计算物理坐标系下的角度
+                //HTuple Rx, Ry, Rx2, Ry2, Angle = 0;
+                //bool transFlag = Transformation_POINT(x1, y1, out Rx, out Ry);
+                //bool transFlag2 = Transformation_POINT(x2, y2, out Rx2, out Ry2);
+                ////角度
+                //if (transFlag && transFlag2)
+                //    Angle = calAngleOfLx(Rx, Ry, Rx2, Ry2);
+                //else
+                //{
+                //    HOperatorSet.AngleLx(y1, x1, y2, x2, out HTuple angle);
+                //    Angle = angle.TupleDeg().D;
+                //}
+                HTuple Angle = 0;
+                HOperatorSet.AngleLx(y1, x1, y2, x2, out HTuple angle);
+                Angle = angle.TupleDeg().D;
                 (toolParam as FitLineParam).LineAngle = Angle.D;
              
 
@@ -139,20 +141,27 @@ namespace PositionToolsLib.工具
                 (toolParam as FitLineParam).OutputImg = objectsConcat2;
               
                
-                    //坐标点位
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(row1.D,
-                            column1.D, Angle.D));
+                    //坐标点位1
+                    if (!dm.PositionDataDic.ContainsKey(toolName+ "起点"))
+                    dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(x1,
+                           y1, Angle.D));
                     else
-                    dm.PositionDataDic[toolName] = new StuCoordinateData(row1.D,
-                            column1.D, Angle.D);
-                    //在添加
-                    if (!dm.LineDataDic.ContainsKey(toolName))
-                    dm.LineDataDic.Add(toolName, new StuLineData(row1.D, column1.D,
-                            row2.D, column2.D));
+                    dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(x1,
+                            y1, Angle.D);
+                //坐标点位2
+                if (!dm.PositionDataDic.ContainsKey(toolName+ "终点"))
+                    dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(x2,
+                           y2, Angle.D));
+                else
+                    dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(x2,
+                            y2, Angle.D);
+
+
+                //在添加
+                if (!dm.LineDataDic.ContainsKey(toolName))
+                    dm.LineDataDic.Add(toolName, new StuLineData(y1,x1,y2, x2));
                     else
-                    dm.LineDataDic[toolName] = new StuLineData(row1.D, column1.D,
-                            row2.D, column2.D);
+                    dm.LineDataDic[toolName] = new StuLineData(y1, x1, y2, x2);
 
 
                 result.runFlag = true;

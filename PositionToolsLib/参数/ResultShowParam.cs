@@ -19,37 +19,37 @@ namespace PositionToolsLib.参数
         #region---Property---
         //Input parmas value define --2
 
-        string inputRowCoorName = "";
+        string inputXCoorName = "";
         /// <summary>
-        /// 输入行坐标名称
+        /// 输出X坐标名称
         /// </summary>
-        [Description("输入行坐标名称"), DefaultValue("")]
-        public string InputRowCoorName
+        [Description("输出X坐标名称"), DefaultValue("")]
+        public string InputXCoorName
         {
-            get => this.inputRowCoorName;
+            get => this.inputXCoorName;
             set
             {
-                this.inputRowCoorName = value;
+                this.inputXCoorName = value;
             }
         }
 
-        string inputColCoorName = "";
+        string inputYCoorName = "";
         /// <summary>
-        /// 输入列坐标名称
+        /// 输出Y坐标名称
         /// </summary>
-        [Description("输入列坐标名称"), DefaultValue("")]
-        public string InputColCoorName
+        [Description("输入Y坐标名称"), DefaultValue("")]
+        public string InputYCoorName
         {
-            get => this.inputColCoorName;
+            get => this.inputYCoorName;
             set
             {
-                this.inputColCoorName = value;
+                this.inputYCoorName = value;
             }
         }
 
         string inputAngleCoorName = "";
         /// <summary>
-        /// 输入角度坐标名称
+        /// 输出角度坐标名称
         /// </summary>
         [Description("输入角度坐标名称"), DefaultValue("")]
         public string InputAngleCoorName

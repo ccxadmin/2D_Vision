@@ -162,23 +162,23 @@ namespace PositionToolsLib.窗体.Models
             }
         }
 
-        private string baseRowText = "0.000";
-        public string BaseRowText
+        private string baseXText = "0.000";
+        public string BaseXText
         {
-            get { return this.baseRowText; }
+            get { return this.baseXText; }
             set
             {
-                baseRowText = value;
+                baseXText = value;
                 DoNotify();
             }
         }
-        private string baseColumnText = "0.000";
-        public string BaseColumnText
+        private string baseYText = "0.000";
+        public string BaseYText
         {
-            get { return this.baseColumnText; }
+            get { return this.baseYText; }
             set
             {
-                baseColumnText = value;
+                baseYText = value;
                 DoNotify();
             }
         }
@@ -212,19 +212,19 @@ namespace PositionToolsLib.窗体.Models
     [Serializable]
     public class DgResultOfMatch
     {
-        public DgResultOfMatch( int id,double score, double row,
-                         double column, double angle)
+        public DgResultOfMatch( int id,double score, double x,
+                         double y, double angle)
         {
             ID = id;
             Score = score;
-            Row = row;
-            Column = column;
+            X = x;
+            Y = y;
             Angle = angle;
         }
         public int  ID { get; set; }
         public double Score { get; set; }
-        public double  Row { get; set; }
-        public double Column { get; set; }
+        public double  X { get; set; }
+        public double Y { get; set; }
         public double Angle { get; set; }
 
     }

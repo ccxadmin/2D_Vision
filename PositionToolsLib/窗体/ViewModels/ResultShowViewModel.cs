@@ -29,8 +29,8 @@ namespace PositionToolsLib.窗体.ViewModels
      
         public CommandBase SaveButClickCommand { get; set; }
         public CommandBase TestButClickCommand { get; set; }
-        public CommandBase RowCoorSelectionChangedCommand { get; set; }
-        public CommandBase ColCoorSelectionChangedCommand { get; set; }
+        public CommandBase XCoorSelectionChangedCommand { get; set; }
+        public CommandBase YCoorSelectionChangedCommand { get; set; }
         public CommandBase AngCoorSelectionChangedCommand { get; set; }
 
         public ResultShowViewModel(BaseTool tool) : base(tool)
@@ -65,13 +65,13 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            RowCoorSelectionChangedCommand = new CommandBase();
-            RowCoorSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxRowCoorList_SelectedIndexChanged(o));
-            RowCoorSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            XCoorSelectionChangedCommand = new CommandBase();
+            XCoorSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxXCoorList_SelectedIndexChanged(o));
+            XCoorSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            ColCoorSelectionChangedCommand = new CommandBase();
-            ColCoorSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxColCoorList_SelectedIndexChanged(o));
-            ColCoorSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            YCoorSelectionChangedCommand = new CommandBase();
+            YCoorSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxYCoorList_SelectedIndexChanged(o));
+            YCoorSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
             AngCoorSelectionChangedCommand = new CommandBase();
             AngCoorSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxAngleCoorList_SelectedIndexChanged(o));
@@ -84,18 +84,18 @@ namespace PositionToolsLib.窗体.ViewModels
             string imageName = (par as ResultShowParam).InputImageName;
             int index = Model.ImageList.IndexOf(imageName);
             Model.SelectImageIndex = index;
-            //row
+            //X
             foreach (var s in dataManage.PositionDataDic)
-                Model.RowCoorList.Add(s.Key);
-            string rowName = (par as ResultShowParam).InputRowCoorName;
-            int index2 = Model.RowCoorList.IndexOf(rowName);
-            Model.SelectRowCoorIndex = index2;
-            //column
+                Model.XCoorList.Add(s.Key);
+            string rowName = (par as ResultShowParam).InputXCoorName;
+            int index2 = Model.XCoorList.IndexOf(rowName);
+            Model.SelectXCoorIndex = index2;
+            //Y
             foreach (var s in dataManage.PositionDataDic)
-                Model.ColCoorList.Add(s.Key);
-            string columnName = (par as ResultShowParam).InputColCoorName;
-            int index3 = Model.ColCoorList.IndexOf(columnName);
-            Model.SelectColCoorIndex = index3;
+                Model.YCoorList.Add(s.Key);
+            string columnName = (par as ResultShowParam).InputYCoorName;
+            int index3 = Model.YCoorList.IndexOf(columnName);
+            Model.SelectYCoorIndex = index3;
             //angle
             foreach (var s in dataManage.PositionDataDic)
                 Model.AngCoorList.Add(s.Key);
@@ -149,9 +149,8 @@ namespace PositionToolsLib.窗体.ViewModels
             foreach (var s in resultShowDataList)
             {
                 if (dataManage.enumerableTooDic.Count <= 0) break;
-                if (!dataManage.enumerableTooDic.Contains(s.ToolName)) continue;
-                DgDataOfResultShow dat = new DgDataOfResultShow(s.Use, s.ToolName, s.ToolStatus);
-                Model.DgDataOfResultShowList.Add(dat);
+                if (!dataManage.enumerableTooDic.Contains(s.ToolName)) continue;             
+                Model.DgDataOfResultShowList.Add(s);
 
             }
             if (Model.DgDataOfResultShowList.Count > 0)
@@ -210,8 +209,8 @@ namespace PositionToolsLib.窗体.ViewModels
             }
             BaseParam par = baseTool.GetParam();
             (par as ResultShowParam).ResultShowDataList = resultShowDataList;
-            (par as ResultShowParam).InputRowCoorName = Model.SelectRowCoorName;
-            (par as ResultShowParam).InputColCoorName = Model.SelectColCoorName;
+            (par as ResultShowParam).InputXCoorName = Model.SelectXCoorName;
+            (par as ResultShowParam).InputYCoorName = Model.SelectYCoorName;
             (par as ResultShowParam).InputAngleCoorName = Model.SelectAngCoorName;
             StuCoordinateData data = new StuCoordinateData(rowCoor, colCoor, angleCoor);
             (par as ResultShowParam).CoordinateData = data;
@@ -238,8 +237,8 @@ namespace PositionToolsLib.窗体.ViewModels
             }
             BaseParam par = baseTool.GetParam();
             (par as ResultShowParam).ResultShowDataList = resultShowDataList;
-            (par as ResultShowParam).InputRowCoorName = Model.SelectRowCoorName;
-            (par as ResultShowParam).InputColCoorName = Model.SelectColCoorName;
+            (par as ResultShowParam).InputXCoorName = Model.SelectXCoorName;
+            (par as ResultShowParam).InputYCoorName = Model.SelectYCoorName;
             (par as ResultShowParam).InputAngleCoorName = Model.SelectAngCoorName;
 
             RunResult rlt = baseTool.Run();
@@ -263,12 +262,12 @@ namespace PositionToolsLib.窗体.ViewModels
                     ShowTool.AddTextBuffer(info[i].info, 10 + i * 150, 10, info[i].flag ? "green" : "red", 16);
                 }
 
-                ShowTool.DispMessage(string.Format("特征点坐标,x:{0:f3},y:{1:f3},a:{2:f3}", data.column, data.row, data.angle),
+                ShowTool.DispMessage(string.Format("特征点坐标,x:{0:f3},y:{1:f3},a:{2:f3}", data.x, data.y, data.angle),
                     10 + num * 150, 10, "green", 16);
-                ShowTool.AddTextBuffer(string.Format("特征点坐标,x:{0:f3},y:{1:f3},a:{2:f3}", data.column, data.row, data.angle),
+                ShowTool.AddTextBuffer(string.Format("特征点坐标,x:{0:f3},y:{1:f3},a:{2:f3}", data.x, data.y, data.angle),
                     10 + num * 150, 10, "green", 16);
 
-                HOperatorSet.GenCrossContourXld(out HObject cross, data.row, data.column, 20, data.angle);
+                HOperatorSet.GenCrossContourXld(out HObject cross, data.y, data.x, 20, data.angle);
                 if (BaseTool.ObjectValided(cross))
                 {
                     ShowTool.DispRegion(cross, "red");
@@ -286,22 +285,22 @@ namespace PositionToolsLib.窗体.ViewModels
             }
         }
 
-        private void cobxRowCoorList_SelectedIndexChanged(object o)
+        private void cobxXCoorList_SelectedIndexChanged(object o)
         {
-            if (Model.SelectRowCoorName == "") return;
-            StuCoordinateData data = dataManage.PositionDataDic[Model.SelectRowCoorName];
-            rowCoor = data.row;
+            if (Model.SelectXCoorName == "") return;
+            StuCoordinateData data = dataManage.PositionDataDic[Model.SelectXCoorName];
+            rowCoor = data.x;
             BaseParam par = baseTool.GetParam();
-            (par as ResultShowParam).InputRowCoorName = Model.SelectRowCoorName;
+            (par as ResultShowParam).InputXCoorName = Model.SelectXCoorName;
         }
 
-        private void cobxColCoorList_SelectedIndexChanged(object o)
+        private void cobxYCoorList_SelectedIndexChanged(object o)
         {
-            if (Model.SelectColCoorName == "") return;
-            StuCoordinateData data = dataManage.PositionDataDic[Model.SelectColCoorName];
-            colCoor = data.column;
+            if (Model.SelectYCoorName == "") return;
+            StuCoordinateData data = dataManage.PositionDataDic[Model.SelectYCoorName];
+            colCoor = data.y;
             BaseParam par = baseTool.GetParam();
-            (par as ResultShowParam).InputColCoorName = Model.SelectColCoorName;
+            (par as ResultShowParam).InputYCoorName = Model.SelectYCoorName;
         }
 
         private void cobxAngleCoorList_SelectedIndexChanged(object o)

@@ -73,37 +73,37 @@ namespace PositionToolsLib.工具
                     return result;
                 }
 
-                HTuple row1 = 0, column1= 0;
-                if (dm.resultFlagDic[(toolParam as LineCentreParam).StartRowName])
+                double x1 = 0, y1= 0;
+                if (dm.resultFlagDic[(toolParam as LineCentreParam).StartXName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as LineCentreParam).StartRowName];
-                    row1 = rowDat.row;                   
+                    StuCoordinateData xDat = dm.PositionDataDic[(toolParam as LineCentreParam).StartXName];
+                    x1 = xDat.x;                   
                 }
-                if (dm.resultFlagDic[(toolParam as LineCentreParam).StartColName])
+                if (dm.resultFlagDic[(toolParam as LineCentreParam).StartYName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as LineCentreParam).StartColName];
-                    column1 = rowDat.column;
+                    StuCoordinateData yDat = dm.PositionDataDic[(toolParam as LineCentreParam).StartYName];
+                    y1 = yDat.y;
                 }
-                HTuple row2 = 0, column2 = 0;
-                if (dm.resultFlagDic[(toolParam as LineCentreParam).EndRowName])
+                double x2 = 0, y2 = 0;
+                if (dm.resultFlagDic[(toolParam as LineCentreParam).EndXName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as LineCentreParam).EndRowName];
-                    row2 = rowDat.row;
+                    StuCoordinateData xDat = dm.PositionDataDic[(toolParam as LineCentreParam).EndXName];
+                    x2 = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as LineCentreParam).EndColName])
+                if (dm.resultFlagDic[(toolParam as LineCentreParam).EndYName])
                 {
-                    StuCoordinateData rowDat = dm.PositionDataDic[(toolParam as LineCentreParam).EndColName];
-                    column2 = rowDat.column;
+                    StuCoordinateData yDat = dm.PositionDataDic[(toolParam as LineCentreParam).EndYName];
+                    y2 = yDat.y;
                 }
 
-                double rc = (row1.D + row2.D) / 2.0;
-                double cc = (column1.D + column2.D) / 2.0;
+                double cx = (x1 + x2) / 2.0;
+                double cy = (y1 + y2) / 2.0;
 
-                HOperatorSet.GenCrossContourXld(out  HObject cross, rc, cc,20,0);
+                HOperatorSet.GenCrossContourXld(out  HObject cross, cy, cx,20,0);
               
 
-                (toolParam as LineCentreParam).CentreRow = rc;
-                (toolParam as LineCentreParam).CentreCol = cc;
+                (toolParam as LineCentreParam).CentreX = cx;
+                (toolParam as LineCentreParam).CentreY = cy;
 
                 if (!dm.resultBufDic.ContainsKey(toolName))
                     dm.resultBufDic.Add(toolName, cross.Clone());
@@ -126,29 +126,14 @@ namespace PositionToolsLib.工具
 
                 HOperatorSet.ConcatObj((toolParam as LineCentreParam).InputImg, cross, out HObject objectsConcat2);
                 (toolParam as LineCentreParam).OutputImg = objectsConcat2;
-              
-                if (row1.TupleLength() > 0)
-                {
-                    //坐标点位
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(rc,
-                            cc, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(rc,
-                            cc, 0);
-                  
-                }
-                else
-                {
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
-                            0, 0);
 
-                  
-                }
+                //坐标点位
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(cx,
+                        cy, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(cx,
+                        cy, 0);
 
                 result.runFlag = true;
                 (toolParam as LineCentreParam).LineCentreRunStatus = true;

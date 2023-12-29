@@ -70,7 +70,8 @@ Height="700" Width="1000">
                             <uc:MyNumUpDown   Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
                             Margin="140,55,0,0"  Height="25"
-                             >
+                           MinValue="0" MaxValue="255" DecimalPlaces="0" OffsetValue="1"
+                                              DefaultValue="20" NumericValue="{Binding Model.NumEdgeThd,Mode=TwoWay}">
 
                             </uc:MyNumUpDown>
 
@@ -79,7 +80,8 @@ Height="700" Width="1000">
                          Margin="60,90,10,10"/>
                             <uc:MyNumUpDown   Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="140,90,0,0"  Height="25" >
+                            Margin="140,90,0,0"  Height="25"   MinValue="5" MaxValue="999" DecimalPlaces="0" OffsetValue="1"
+                     DefaultValue="20" NumericValue="{Binding Model.NumCaliperCount,Mode=TwoWay}">
 
 
                             </uc:MyNumUpDown>
@@ -89,7 +91,8 @@ Height="700" Width="1000">
         Margin="60,125,10,10"/>
                             <uc:MyNumUpDown   Width="120"
            HorizontalAlignment="Left" VerticalAlignment="Top"
-           Margin="140,125,0,0"  Height="25" >
+           Margin="140,125,0,0"  Height="25"   MinValue="5" MaxValue="999" DecimalPlaces="0" OffsetValue="1"
+                     DefaultValue="20" NumericValue="{Binding Model.NumCaliperWidth,Mode=TwoWay}">
 
 
                             </uc:MyNumUpDown>
@@ -100,7 +103,8 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
  Margin="60,160,10,10"/>
                             <uc:MyNumUpDown   Width="120"
     HorizontalAlignment="Left" VerticalAlignment="Top"
-    Margin="140,160,0,0"  Height="25" >
+    Margin="140,160,0,0"  Height="25"   MinValue="5" MaxValue="999" DecimalPlaces="0" OffsetValue="1"
+                     DefaultValue="20" NumericValue="{Binding Model.NumCaliperHeight,Mode=TwoWay}">
 
 
 
@@ -113,8 +117,8 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
                             Margin="140,195,0,0"  Height="25"
                                                     
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+SelectedItem="{Binding Model.SelectTransitionName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectTransitionIndex,Mode=TwoWay}"  >
 
                                 <ComboBoxItem Content="positive"/>
                                 <ComboBoxItem Content="negative"/>
@@ -129,8 +133,8 @@ SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
                             Margin="140,230,0,0"  Height="25"
                                                     
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+SelectedItem="{Binding Model.SelectEdgeName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectEdgeIndex,Mode=TwoWay}"  >
 
                                 <ComboBoxItem Content="first"/>
                                 <ComboBoxItem Content="last"/>
@@ -140,25 +144,33 @@ SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
 
                             <CheckBox Style="{DynamicResource CheckBoxBasic}" Content="启用位置补正"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="60,270,10,10"/>
+                              Margin="60,270,10,10"   Command="{Binding UsePosiCorrectCheckedCommand}"
+IsChecked="{Binding Model.UsePosiCorrectChecked,Mode=TwoWay}"/>
                             <ComboBox Style="{DynamicResource MyCbbStyle}" Width="180"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="80,290,0,0"  Height="25"                                                    
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
-
+                            Margin="80,290,0,0"  Height="25"  x:Name="cobxMatrixList"
+                              ItemsSource="{Binding Model.MatrixList}"                          
+SelectedItem="{Binding Model.SelectMatrixName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectMatrixIndex,Mode=TwoWay}"  
+                                           IsEnabled="{Binding Model.MatrixEnable,Mode=TwoWay}" >
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="SelectionChanged">
+                                        <behaviors:InvokeCommandAction Command="{Binding MatrixSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxMatrixList,Path=SelectedValue}"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
                             </ComboBox>
 
                             <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="绘制检测区域"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
 Margin="60,340,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
-                          Command="{Binding SaveButClickCommand}"/>
+                          IsEnabled="{Binding Model.BtnDrawRegionEnable,Mode=TwoWay}"
+ Command="{Binding DrawRegionClickCommand}"/>
 
 
                             <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="保存"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
   Margin="60,390,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
-                           />
+                           Command="{Binding SaveButClickCommand}" />
                             <Button  Height="30" Style="{DynamicResource PrimaryButton}" Content="测试"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
 Margin="60,440,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
@@ -173,12 +185,12 @@ Margin="60,440,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"  ItemsSource="{Binding}" Background="#ffffff"  >
+             Style="{DynamicResource datagrid}"  ItemsSource="{Binding Model.DgResultOfCircleList,Mode=TwoWay}"  Background="#ffffff"  >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding FirstName,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridTextColumn Header="行坐标"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="列坐标"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="半径"  Binding="{Binding LastName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>
+                                    <DataGridTextColumn Header="X坐标"  Binding="{Binding X,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="Y坐标"  Binding="{Binding Y,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="半径"  Binding="{Binding Radius,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
                                   
                                 </DataGrid.Columns>
 

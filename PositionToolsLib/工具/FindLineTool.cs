@@ -137,14 +137,20 @@ namespace PositionToolsLib.工具
                     out HTuple hv_ResultRow, out HTuple hv_ResultColumn);
                 //至少两点或以上才可拟合直线
                 if (hv_ResultRow.TupleLength() <= 1)
-                {
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                {  //坐标点位1
+                    if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
+                        dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
                            0, 0));
                     else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
                             0, 0);
-
+                    //坐标点位2
+                    if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
+                        dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(
+                            0, 0, 0));
+                    else
+                        dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(
+                           0,0, 0);
                     //在添加
                     if (!dm.LineDataDic.ContainsKey(toolName))
                         dm.LineDataDic.Add(toolName, new StuLineData(0, 0,
@@ -169,13 +175,20 @@ namespace PositionToolsLib.工具
                
                 if (hv_Row11.TupleLength() <= 0)
                 {
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                    //坐标点位1
+                    if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
+                        dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
                            0, 0));
                     else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
                             0, 0);
-
+                    //坐标点位2
+                    if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
+                        dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(
+                            0, 0, 0));
+                    else
+                        dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(
+                           0, 0, 0);
                     //在添加
                     if (!dm.LineDataDic.ContainsKey(toolName))
                         dm.LineDataDic.Add(toolName, new StuLineData(0, 0,
@@ -230,29 +243,39 @@ namespace PositionToolsLib.工具
                 (toolParam as FindLineParam).EndPointRow = hv_Row21.D;
                 (toolParam as FindLineParam).EndPointColumn = hv_Column21.D;
 
-                //计算物理坐标系下的角度
-                HTuple Rx, Ry, Rx2, Ry2, Angle = 0;
-                bool transFlag = Transformation_POINT(hv_Column11, hv_Row11, out Rx, out Ry);
-                bool transFlag2 = Transformation_POINT(hv_Column21, hv_Row21, out Rx2, out Ry2);
-                //角度
-                if (transFlag && transFlag2)
-                    Angle = calAngleOfLx(Rx, Ry, Rx2, Ry2);
+                ////计算物理坐标系下的角度
+                //HTuple Rx, Ry, Rx2, Ry2, Angle = 0;
+                //bool transFlag = Transformation_POINT(hv_Column11, hv_Row11, out Rx, out Ry);
+                //bool transFlag2 = Transformation_POINT(hv_Column21, hv_Row21, out Rx2, out Ry2);
+                ////角度
+                //if (transFlag && transFlag2)
+                //    Angle = calAngleOfLx(Rx, Ry, Rx2, Ry2);
+                //else
+                //{
+                //    HOperatorSet.AngleLx(hv_Row11, hv_Column11, hv_Row21, hv_Column21, out HTuple angle);
+                //    Angle = angle.TupleDeg().D;
+                //}
+               
+                HOperatorSet.AngleLx(hv_Row11, hv_Column11, hv_Row21, hv_Column21, out HTuple angle);              
+                (toolParam as FindLineParam).LineAngle = angle.TupleDeg().D;
+
+
+                //坐标点位1
+                if (!dm.PositionDataDic.ContainsKey(toolName+"起点"))
+                    dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(
+                        hv_Column11.D, hv_Row11.D, angle.TupleDeg().D));
                 else
-                {
-                    HOperatorSet.AngleLx(hv_Row11, hv_Column11, hv_Row21, hv_Column21, out HTuple angle);
-                    Angle = angle.TupleDeg().D;
-                }
+                    dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(
+                        hv_Column11.D, hv_Row11.D, angle.TupleDeg().D);
 
-                (toolParam as FindLineParam).LineAngle = Angle.D;
-
-
-                //坐标点位
-                if (!dm.PositionDataDic.ContainsKey(toolName))
-                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(hv_Row11.D,
-                        hv_Column11.D, Angle.D));
+                //坐标点位2
+                if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
+                    dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(
+                        hv_Column21.D, hv_Row21.D, angle.TupleDeg().D));
                 else
-                    dm.PositionDataDic[toolName] = new StuCoordinateData(hv_Row11.D,
-                        hv_Column11.D, Angle.D);
+                    dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(
+                        hv_Column21.D, hv_Row21.D, angle.TupleDeg().D);
+
                 //在添加
                 if (!dm.LineDataDic.ContainsKey(toolName))
                     dm.LineDataDic.Add(toolName, new StuLineData(hv_Row11.D, hv_Column11.D,

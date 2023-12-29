@@ -10,25 +10,18 @@ using HalconDotNet;
 namespace PositionToolsLib.参数
 {
     /// <summary>
-    /// 胶水检测工具参数
+    /// 定位检测工具参数
     /// </summary>
     [Serializable]
     public class BaseParam
     {
-
-        HTuple hv_HomMat2D = new HTuple ();
         /// <summary>
-        /// 坐标转换矩阵
+        /// 坐标转换矩阵:通过外部配方变换实时更新
         /// </summary>
-        [Description("坐标转换矩阵"), DefaultValue(null)]
-        public HTuple Hv_HomMat2D
-        {
-            get => this.hv_HomMat2D;
-            set
-            {
-                this.hv_HomMat2D = value;
-            }
-        }
+        [NonSerialized]
+        public HTuple hv_HomMat2D ;
+        
+       
 
         string inputImageName = "原始图像";
         /// <summary>

@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Views\frmRecipe.xaml.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="images\打开 %282%29.png" />
+    <None Remove="imgs\保存.png" />
+    <None Remove="imgs\保存项目.png" />
+    <None Remove="imgs\删除.png" />
+    <None Remove="imgs\另存为.png" />
+    <None Remove="imgs\打开.png" />
+    <None Remove="imgs\打开项目.png" />
+    <None Remove="imgs\新建.png" />
+    <None Remove="imgs\标定助手.png" />
+    <None Remove="imgs\清空_清空.png" />
+    <None Remove="imgs\点点点.png" />
+    <None Remove="imgs\试运行.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Views\frmRecipe.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.77" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
+    <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FilesRAWLibrary">
+      <HintPath>..\ROIGenerateLib\dll\FilesRAWLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="halcondotnet">
+      <HintPath>..\ROIGenerateLib\dll\halcondotnet.dll</HintPath>
+    </Reference>
+    <Reference Include="OSLogLib">
+      <HintPath>..\ROIGenerateLib\dll\OSLogLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="images\打开 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\保存.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\保存项目.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\另存为.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\打开.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\打开项目.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\新建.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\标定助手.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\清空_清空.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\点点点.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\试运行.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>

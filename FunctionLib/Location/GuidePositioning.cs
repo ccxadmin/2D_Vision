@@ -1307,9 +1307,9 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
 
                 HTuple rowx = new HTuple(), columnx = new HTuple();
                 if (hwindhanle.D > 100000)
-                    HOperatorSet.SetFont(hwindhanle, "Courier New-" +"12");
+                    HOperatorSet.SetFont(hwindhanle, "Arial-" + "12");
                 else
-                    HOperatorSet.SetFont(hwindhanle, "-Courier New-" + "12" + "-*-*-*-*-1-");
+                    HOperatorSet.SetFont(hwindhanle, "-Arial-" + "12" + "-*-*-*-*-1-");
                 disp_message(hwindhanle, "请用鼠标左键在图像上选取一个点作为模型原点！",
                     "image", row - 100, column, "red", "false");
 

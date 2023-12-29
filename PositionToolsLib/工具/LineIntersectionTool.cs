@@ -147,11 +147,11 @@ namespace PositionToolsLib.工具
                 if (row.TupleLength() > 0)
                 {
                     if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(row.D,
-                            column.D, 0));
+                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(column.D, row.D,
+                            0));
                     else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(row.D,
-                            column.D, 0);
+                        dm.PositionDataDic[toolName] = new StuCoordinateData(column.D, row.D,
+                            0);
                     (toolParam as LineIntersectionParam).IntersectionRow = row.D;
                     (toolParam as LineIntersectionParam).IntersectionColumn = column.D;
                 }

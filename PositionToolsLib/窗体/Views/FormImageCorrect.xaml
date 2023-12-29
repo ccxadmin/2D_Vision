@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                          xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
- xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
+        xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
+               xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"  
+     
 xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
-xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
-  
 Style="{x:Null}" FocusVisualStyle="{x:Null}"
 mc:Ignorable="d"  Loaded="Window_Loaded" Title="{Binding Model.TitleName ,Mode=TwoWay}"
 Height="700" Width="1000">
@@ -37,162 +36,56 @@ Height="700" Width="1000">
         </DockPanel>
 
         <!--<StackPanel Grid.Column="1"  Margin="1">-->
-      
-
-            <ScrollViewer   Grid.Column="1"  Margin="1"
-                            HorizontalScrollBarVisibility="Auto"
-                                  VerticalScrollBarVisibility="Auto">
-
-                <Grid Margin="2">
-                <GroupBox Style="{DynamicResource GroupBoxStyle}" HorizontalAlignment="Left"
-                          VerticalAlignment="Top" Header="相机参数" Height="195" Width="340">
-                    <Grid>
-                        <Label Style="{DynamicResource LabelStyle}" Content="焦距F："
-           HorizontalAlignment="Left" VerticalAlignment="Top" 
-            Margin="10,10,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                                Margin="65,10,0,0"/>
-                        <Label Style="{DynamicResource LabelStyle}" Content="畸变K："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="175,10,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                     Margin="230,10,0,0"/>
-
-                        <Label Style="{DynamicResource LabelStyle}" Content="像元Sx："
-           HorizontalAlignment="Left" VerticalAlignment="Top" 
-            Margin="10,50,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                                Margin="65,50,0,0"/>
-                        <Label Style="{DynamicResource LabelStyle}" Content="像元Sy："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="175,50,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                     Margin="230,50,0,0"/>
-
-                        <Label Style="{DynamicResource LabelStyle}" Content="中心Cx："
-           HorizontalAlignment="Left" VerticalAlignment="Top" 
-            Margin="10,90,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                                Margin="65,90,0,0"/>
-                        <Label Style="{DynamicResource LabelStyle}" Content="中心Cy："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="175,90,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                     Margin="230,90,0,0"/>
-
-                        <Label Style="{DynamicResource LabelStyle}" Content="图像宽："
-           HorizontalAlignment="Left" VerticalAlignment="Top" 
-            Margin="10,130,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                                Margin="65,130,0,0"/>
-                        <Label Style="{DynamicResource LabelStyle}" Content="图像高："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="175,130,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                     Margin="230,130,0,0"/>
+        <Grid Grid.Column="1"  Margin="1">
 
 
-                    </Grid>
-                </GroupBox>
-
-                <GroupBox Style="{DynamicResource GroupBoxStyle}" HorizontalAlignment="Left"
-           VerticalAlignment="Top" Header="标定板参数" Height="225" Width="340" Margin="3,210,3,3">
-                    <Grid>
-                        <Label Style="{DynamicResource LabelStyle}" Content="列数量："
-           HorizontalAlignment="Left" VerticalAlignment="Top" 
-            Margin="10,10,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                                Margin="65,10,0,0"/>
-                        <Label Style="{DynamicResource LabelStyle}" Content="行数量："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="175,10,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                     Margin="230,10,0,0"/>
-
-                        <Label Style="{DynamicResource LabelStyle}" Content="中心距："
-           HorizontalAlignment="Left" VerticalAlignment="Top" 
-            Margin="10,50,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                                Margin="65,50,0,0"/>
-                        <Label Style="{DynamicResource LabelStyle}" Content="距离比："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="175,50,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
-                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
-                     Margin="230,50,0,0"/>
-
-                        <Label Style="{DynamicResource LabelStyle}" Content="标定板描述文件："
-HorizontalAlignment="Left" VerticalAlignment="Top" 
- Margin="10,90,0,0"/>
-                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
-                                HorizontalAlignment="Left" VerticalAlignment="Top" Content="文件生成"
-                                Margin="210,90,0,0" Width="100" Height="25"/>
-
-                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
- HorizontalAlignment="Left" VerticalAlignment="Top" Width="300"  TextWrapping="Wrap"
-Margin="10,120,0,0" Height="70" ScrollViewer.VerticalScrollBarVisibility="Visible"
-                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"   >
-                        </TextBox>
-
-
-                    </Grid>
-                </GroupBox>
-
-                <GroupBox Style="{DynamicResource GroupBoxStyle}" HorizontalAlignment="Left"
-VerticalAlignment="Top" Header="标定信息列表" Height="180" Width="340" Margin="3,450,3,3">
-                    <Grid>
-                    </Grid>
-                </GroupBox>
-
-                <GroupBox Style="{DynamicResource GroupBoxStyle}" HorizontalAlignment="Left"
-VerticalAlignment="Top" Header="标定结果显示" Height="125" Width="340" Margin="3,650,3,3">
-                    <Grid>
-                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
-                                HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"
-                                Margin="20,10,0,0" Content="标定准备"/>
-
-                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
-        HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"
-        Margin="190,10,0,0" Content="标定准备"/>
-
-                        <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
-        HorizontalAlignment="Left" VerticalAlignment="Top" Width="120"
-        Margin="20,60,0,0" Content="手动标定"/>
-
-                        <Label Style="{DynamicResource LabelStyle}" HorizontalAlignment="Left"
-                               VerticalAlignment="Top" Content="标定误差系数：" Margin="190,35,0,0"/>
-                        <TextBox Style="{DynamicResource baseInput}" HorizontalAlignment="Left"
-                                 VerticalAlignment="Top" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                 Margin="200,60,0,0" Width="110" IsReadOnly="True"/>
-
-                    </Grid>
-                </GroupBox>
-              
-                <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="参数保存"
+            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
+            <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
+                <Grid>
+                    <Label Style="{DynamicResource LabelStyle}" Content="输入图像：" VerticalAlignment="Top" 
+                           Margin="20,22,0,0"/>
+                    <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-  Margin="35,790,0,10" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                              Margin="100,22,0,0"  Height="30"
+                                ItemsSource="{Binding Model.ImageList}"                          
+  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="SelectionChanged">
+                                <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>
+                    </ComboBox>
+
+                    <Label Style="{DynamicResource LabelStyle}" Content="标定文件：" VerticalAlignment="Top" 
+ Margin="20,62,0,0"/>
+                    <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
+                                HorizontalAlignment="Left" VerticalAlignment="Top" Content="文件选择"
+                                Margin="100,62,0,0" Width="120" Height="25"
+                            Command="{Binding OpenFileCommand}"/>
+
+                    <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+ HorizontalAlignment="Left" VerticalAlignment="Top" Width="220"  TextWrapping="Wrap"
+Margin="100,90,0,0" Height="70" ScrollViewer.VerticalScrollBarVisibility="Visible"
+            IsReadOnly="true"          ScrollViewer.HorizontalScrollBarVisibility="Disabled"  
+                             Text="{Binding Model.CalibFilePath,Mode=TwoWay}">
+                    </TextBox>
+
+                    <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="保存"
+                              HorizontalAlignment="Left" VerticalAlignment="Top"
+  Margin="20,187,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
                             Command="{Binding SaveButClickCommand}"/>
-                <Button  Height="30" Style="{DynamicResource PrimaryButton}" Content="畸变校正"
+                    <Button  Height="30" Style="{DynamicResource PrimaryButton}" Content="测试"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="200,790,0,10" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
-                           Command="{Binding TestButClickCommand}"/>
-
+Margin="20,237,0,0" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3" 
+                              Command="{Binding TestButClickCommand}"/>
                 </Grid>
-            </ScrollViewer>
+            </GroupBox>
 
-       
+        </Grid>
         <!--</StackPanel>-->
+
+
     </Grid>
-    
 </Window>

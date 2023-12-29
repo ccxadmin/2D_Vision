@@ -64,70 +64,70 @@ Height="700" Width="1000">
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
 
-                            <Label Style="{DynamicResource LabelStyle}" Content="起点行坐标："
+                            <Label Style="{DynamicResource LabelStyle}" Content="起点X坐标："
                         HorizontalAlignment="Left" VerticalAlignment="Top" 
                          Margin="60,75"/>
                             <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="140,75,0,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                            Margin="140,75,0,0"  Height="25" x:Name="cobxStartXList"
+                              ItemsSource="{Binding Model.PositionDataList}"                          
+SelectedItem="{Binding Model.SelectStartXName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectStartXIndex,Mode=TwoWay}"  >
 
                                 <behaviors:Interaction.Triggers>
                                     <behaviors:EventTrigger EventName="SelectionChanged">
-                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        <behaviors:InvokeCommandAction Command="{Binding StartXSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxStartXList,Path=SelectedValue}"/>
                                     </behaviors:EventTrigger>
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
 
-                            <Label Style="{DynamicResource LabelStyle}" Content="起点列坐标："
+                            <Label Style="{DynamicResource LabelStyle}" Content="起点Y坐标："
                         HorizontalAlignment="Left" VerticalAlignment="Top" 
                          Margin="60,110,10,10"/>
                             <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="140,110,0,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                            Margin="140,110,0,0"  Height="25" x:Name="cobxStartYList"
+                              ItemsSource="{Binding Model.PositionDataList}"                          
+SelectedItem="{Binding Model.SelectStartYName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectStartYIndex,Mode=TwoWay}"  >
 
                                 <behaviors:Interaction.Triggers>
                                     <behaviors:EventTrigger EventName="SelectionChanged">
-                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        <behaviors:InvokeCommandAction Command="{Binding StartYSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxStartYList,Path=SelectedValue}"/>
                                     </behaviors:EventTrigger>
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
 
-                            <Label Style="{DynamicResource LabelStyle}" Content="终点行坐标："
+                            <Label Style="{DynamicResource LabelStyle}" Content="终点X坐标："
                         HorizontalAlignment="Left" VerticalAlignment="Top" 
                          Margin="60,145,10,10"/>
                             <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                            Margin="140,145,0,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                            Margin="140,145,0,0"  Height="25" x:Name="cobxEndXList"
+                              ItemsSource="{Binding Model.PositionDataList}"                          
+SelectedItem="{Binding Model.SelectEndXName,Mode=TwoWay}"
+                  SelectedIndex="{Binding Model.SelectEndXIndex,Mode=TwoWay}"  >
 
                                 <behaviors:Interaction.Triggers>
                                     <behaviors:EventTrigger EventName="SelectionChanged">
-                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        <behaviors:InvokeCommandAction Command="{Binding EndXSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxEndXList,Path=SelectedValue}"/>
                                     </behaviors:EventTrigger>
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
 
-                            <Label Style="{DynamicResource LabelStyle}" Content="终点列坐标："
+                            <Label Style="{DynamicResource LabelStyle}" Content="终点Y坐标："
                         HorizontalAlignment="Left" VerticalAlignment="Top" 
                          Margin="60,180,10,10"/>
                             <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="120"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
                             Margin="140,180,0,0"  Height="25"
-                              ItemsSource="{Binding Model.ImageList}"                          
-SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                  SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                              ItemsSource="{Binding Model.PositionDataList}"                          
+SelectedItem="{Binding Model.SelectEndYName,Mode=TwoWay}" x:Name="cobxEndYList"
+                  SelectedIndex="{Binding Model.SelectEndYIndex,Mode=TwoWay}"  >
 
                                 <behaviors:Interaction.Triggers>
                                     <behaviors:EventTrigger EventName="SelectionChanged">
-                                        <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                        <behaviors:InvokeCommandAction Command="{Binding EndYSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxEndYList,Path=SelectedValue}"/>
                                     </behaviors:EventTrigger>
                                 </behaviors:Interaction.Triggers>
                             </ComboBox>
@@ -152,10 +152,10 @@ Margin="60,280,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"  ItemsSource="{Binding}" Background="#ffffff"  >
+             Style="{DynamicResource datagrid}"   ItemsSource="{Binding Model.DgResultOfFitLineList,Mode=TwoWay}"  Background="#ffffff"  >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="ID" Binding="{Binding FirstName,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridTextColumn Header="角度"  Binding="{Binding LastName,Mode=TwoWay}" Width="auto" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}"/>
+                                    <DataGridTextColumn Header="角度"  Binding="{Binding Angle,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
                                    
                                 </DataGrid.Columns>
 

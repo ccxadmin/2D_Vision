@@ -194,11 +194,11 @@ namespace PositionToolsLib.工具
                 if(hv_RowCenter.TupleLength() > 0)
                 {
                     if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(hv_RowCenter.D,
-                            hv_ColCenter.D, 0));
+                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(
+                            hv_ColCenter.D, hv_RowCenter.D, 0));
                     else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(hv_RowCenter.D,
-                            hv_ColCenter.D, 0);
+                        dm.PositionDataDic[toolName] = new StuCoordinateData(
+                            hv_ColCenter.D, hv_RowCenter.D, 0);
 
                 }
                 else
