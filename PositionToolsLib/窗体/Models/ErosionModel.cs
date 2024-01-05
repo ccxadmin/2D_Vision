@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.Models
 {
-    internal class ErosionModel : NotifyBase
+    public class ErosionModel : NotifyBase
     {
         /// <summary>
         /// 窗体标题

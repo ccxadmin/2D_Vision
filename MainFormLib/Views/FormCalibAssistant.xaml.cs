@@ -22,10 +22,10 @@ namespace MainFormLib.Views
     /// </summary>
     public partial class FormCalibAssistant : Window
     {
-        public FormCalibAssistant(string path)
+        public FormCalibAssistant(string path, string _calibName = "default")
         {
             InitializeComponent();
-            var model = new CalibAssistantViewModel(path);
+            var model = new CalibAssistantViewModel(path, _calibName);
             DataContext = model;
         }
 
@@ -43,7 +43,16 @@ namespace MainFormLib.Views
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
         }
-
+        /// <summary>
+        /// 装载winform控件，主动释放方式内存泄漏
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            host.Child.Dispose();
+            host.Child = null;
+            base.OnClosed(e);
+        }
         private void dgCalibImageInfo_Drop(object sender, DragEventArgs e)
         {
             CalibAssistantViewModel.This.DgDragDropCommand.DoExecute.Invoke(e);

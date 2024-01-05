@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class FindLineViewModel : BaseViewModel
+    public class FindLineViewModel : BaseViewModel
     {
         HObject inspectXLD = null;//直线检测轮廓
         HTuple matrix2D = null;

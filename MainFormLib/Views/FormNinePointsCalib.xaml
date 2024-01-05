@@ -209,7 +209,7 @@ Style="{DynamicResource datagrid}"  SelectedIndex="{Binding Model.DgRobotPointSe
                                      Margin="70,20,0,0" Width="80"
                                      Text="{Binding Model.TxbSx,Mode=TwoWay}"/>
 
-                            <Label Style="{DynamicResource LabelStyle}" Content="X缩放："
+                            <Label Style="{DynamicResource LabelStyle}" Content="Y缩放："
 HorizontalAlignment="Left" VerticalAlignment="Top" 
  Margin="180,20,0,0"/>
                             <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
@@ -257,14 +257,14 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
 
                             <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
                                      HorizontalAlignment="Left" VerticalAlignment="Top"
-                                     Margin="60,210,0,0" Width="60"/>
+                                     Margin="60,210,0,0" Width="60"  Text="{Binding Model.TxbMarkPixelX,Mode=TwoWay}"/>
 
                             <Label Style="{DynamicResource LabelStyle}"
 Content="Y：" HorizontalAlignment="Left"
 VerticalAlignment="Top" Margin="30,250,0,0"/>
                             <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
           HorizontalAlignment="Left" VerticalAlignment="Top"
-          Margin="60,250,0,0" Width="60"/>
+          Margin="60,250,0,0" Width="60"  Text="{Binding Model.TxbMarkPixelY,Mode=TwoWay}"/>
 
                             <Button HorizontalAlignment="Left" VerticalAlignment="Top"
                                    Background="Transparent"    BorderBrush="#ff6d3c" BorderThickness="0"  
@@ -297,14 +297,14 @@ VerticalAlignment="Top" Margin="30,250,0,0"/>
 
                             <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
                                      HorizontalAlignment="Left" VerticalAlignment="Top"
-                                     Margin="260,210,0,0" Width="60"/>
+                                     Margin="260,210,0,0" Width="60" Text="{Binding Model.TxbMarkRobotX,Mode=TwoWay}"/>
 
                             <Label Style="{DynamicResource LabelStyle}"
 Content="Y：" HorizontalAlignment="Left"
 VerticalAlignment="Top" Margin="230,250,0,0"/>
                             <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
           HorizontalAlignment="Left" VerticalAlignment="Top"
-          Margin="260,250,0,0" Width="60"/>
+          Margin="260,250,0,0" Width="60"  Text="{Binding Model.TxbMarkRobotY,Mode=TwoWay}"/>
 
 
 

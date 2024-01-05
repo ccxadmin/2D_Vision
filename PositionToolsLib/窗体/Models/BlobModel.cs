@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace PositionToolsLib.窗体.Models
 {
-    internal class BlobModel : NotifyBase
+    public class BlobModel : NotifyBase
     { 
         /// <summary>
       /// 窗体标题

@@ -43,14 +43,15 @@ namespace MainFormLib.ViewModels
         List<int> DoneStepList = new List<int>();
         int totalStep = 0;
         int i = 0;
-     
+        private string currCalibName = "default";//标定文件夹名称
         private string rootFolder = Environment.CurrentDirectory; //根目录
         //图像字典
         Dictionary<string, HObject> ImagesDic = new Dictionary<string, HObject>();
-        public CalibAssistantViewModel(string _rootFolder) 
+        public CalibAssistantViewModel(string _rootFolder,string _calibName = "default") 
         {
             if(Directory.Exists(_rootFolder))
                 rootFolder = _rootFolder;
+            currCalibName = _calibName;
             HOperatorSet.GenEmptyObj(out imgBuf);
             This = this;
             Model = new CalibAssistantModel();
@@ -107,6 +108,27 @@ namespace MainFormLib.ViewModels
             showImageCorrectData();
         }
         /// <summary>
+        /// 设置当前标定助手文件夹名称
+        /// </summary>
+        /// <param name="name"></param>
+        public void SetCalibName(string name)
+        {
+            currCalibName = name;
+        }
+        /// <summary>
+        /// 重新加载数据
+        /// </summary>
+        /// <param name="_rootFolder"></param>
+        /// <param name="_calibName"></param>
+        public void ReLoadData(string _rootFolder, string _calibName = "default")
+        {
+            if (Directory.Exists(_rootFolder))
+                rootFolder = _rootFolder;
+            currCalibName = _calibName;
+            LoadImageCorrectParam();
+            showImageCorrectData();
+        }
+        /// <summary>
         /// 加载参数
         /// </summary>
         /// <returns></returns>
@@ -114,9 +136,11 @@ namespace MainFormLib.ViewModels
         {
             try
             {
-                string filePath = rootFolder + "\\标定矩阵\\标定助手";
+                string filePath = rootFolder + "\\标定矩阵\\标定助手\\"+ currCalibName;
                 if (!Directory.Exists(rootFolder + "\\标定矩阵"))
                     Directory.CreateDirectory(rootFolder + "\\标定矩阵");
+                if (!Directory.Exists(rootFolder + "\\标定矩阵\\标定助手"))
+                    Directory.CreateDirectory(rootFolder + "\\标定矩阵\\标定助手");           
                 if (!Directory.Exists(filePath))
                     Directory.CreateDirectory(filePath);
                 hv_CamParam = CalibAssistantTool.ReadCalibData(filePath);
@@ -197,7 +221,9 @@ namespace MainFormLib.ViewModels
                 Directory.CreateDirectory(rootFolder + "\\标定矩阵");
             if (!Directory.Exists(rootFolder + "\\标定矩阵\\标定助手"))
                 Directory.CreateDirectory(rootFolder + "\\标定矩阵\\标定助手");
-            string filePath = rootFolder + "\\标定矩阵\\标定助手";
+            if (!Directory.Exists(rootFolder + "\\标定矩阵\\标定助手\\"+ currCalibName))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵\\标定助手\\"+ currCalibName);           
+            string filePath = rootFolder + "\\标定矩阵\\标定助手\\" + currCalibName;
             calTab.XNum = Model.TxbBoardXNum;
             calTab.YNum = Model.TxbBoardYNum;
             calTab.MarkDist = Model.TxbBoardMarkDis;
@@ -434,9 +460,11 @@ namespace MainFormLib.ViewModels
         {
             try
             {
-                string filePath = rootFolder + "\\标定矩阵\\标定助手";
+                string filePath = rootFolder + "\\标定矩阵\\标定助手\\"+ currCalibName;
                 if (!Directory.Exists(rootFolder + "\\标定矩阵"))
                     Directory.CreateDirectory(rootFolder + "\\标定矩阵");
+                if (!Directory.Exists(rootFolder + "\\标定矩阵\\标定助手"))
+                    Directory.CreateDirectory(rootFolder + "\\标定矩阵\\标定助手");
                 if (!Directory.Exists(filePath))
                     Directory.CreateDirectory(filePath);
 

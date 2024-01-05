@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class CoordConvertViewModel : BaseViewModel
+    public class CoordConvertViewModel : BaseViewModel
     {
         public static CoordConvertViewModel This { get; set; }
         public CoordConvertModel Model { get; set; }

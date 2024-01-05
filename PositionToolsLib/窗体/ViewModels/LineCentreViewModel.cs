@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class LineCentreViewModel : BaseViewModel
+    public class LineCentreViewModel : BaseViewModel
     {
         public static LineCentreViewModel This { get; set; }
         public LineCentreModel Model { get; set; }

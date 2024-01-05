@@ -12,7 +12,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class LineIntersectionViewModel : BaseViewModel
+    public class LineIntersectionViewModel : BaseViewModel
     {
         public static LineIntersectionViewModel This { get; set; }
         public LineIntersectionModel Model { get; set; }

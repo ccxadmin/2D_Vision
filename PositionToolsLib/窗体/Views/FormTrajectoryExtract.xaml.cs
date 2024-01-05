@@ -28,7 +28,16 @@ namespace PositionToolsLib.窗体.Views
         {
 
         }
-
+        /// <summary>
+        /// 装载winform控件，主动释放方式内存泄漏
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            host.Child.Dispose();
+            host.Child = null;
+            base.OnClosed(e);
+        }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             fra.Source=new Uri("../pages/LinePage.xaml", UriKind.RelativeOrAbsolute);

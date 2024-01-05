@@ -13,6 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="images\上移.ico" />
+    <None Remove="images\上移.png" />
+    <None Remove="images\下移.ico" />
+    <None Remove="images\下移.png" />
+    <None Remove="images\删除.ico" />
+    <None Remove="images\删除.png" />
+    <None Remove="images\备注 %281%29.png" />
     <None Remove="images\打开 %282%29.png" />
     <None Remove="imgs\保存.png" />
     <None Remove="imgs\保存项目.png" />
@@ -37,7 +44,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\DlasaCameraLib\DlasaCameraLib.csproj" />
+    <ProjectReference Include="..\ExternalFunctionLib\ExternalFunctionLib.csproj" />
     <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
+    <ProjectReference Include="..\GlueDetectionLib\GlueDetectionLib.csproj" />
+    <ProjectReference Include="..\LightSourceController\LightSourceController.csproj" />
+    <ProjectReference Include="..\PositionToolsLib\PositionToolsLib.csproj" />
+    <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />
     <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
   </ItemGroup>
 
@@ -54,6 +67,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="images\上移.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\上移.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\下移.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\下移.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\删除.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\备注 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="images\打开 (2).png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

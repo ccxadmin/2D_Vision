@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace PositionToolsLib.窗体.Models
 {
-    internal class FitLineModel : NotifyBase
+    public class FitLineModel : NotifyBase
     {
         /// <summary>
         /// 窗体标题

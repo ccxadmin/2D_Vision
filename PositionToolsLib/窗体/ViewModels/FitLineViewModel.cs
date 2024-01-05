@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class FitLineViewModel : BaseViewModel
+    public class FitLineViewModel : BaseViewModel
     {
         public static FitLineViewModel This { get; set; }
         public FitLineModel Model { get; set; }

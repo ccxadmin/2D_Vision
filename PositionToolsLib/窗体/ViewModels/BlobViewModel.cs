@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class BlobViewModel : BaseViewModel
+    public class BlobViewModel : BaseViewModel
     {
         public static BlobViewModel This { get; set; }
         public BlobModel Model { get; set; }

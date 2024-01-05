@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class ErosionViewModel : BaseViewModel
+    public class ErosionViewModel : BaseViewModel
     {
         public static ErosionViewModel This { get; set; }
         public ErosionModel Model { get; set; }

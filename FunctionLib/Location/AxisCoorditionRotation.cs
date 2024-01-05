@@ -56,7 +56,7 @@ namespace FunctionLib.Location
         /// <summary>
         /// 多点拟合圆
         /// </summary>
-        static public fitcircleData MulPoints_GetRorateCenter(HTuple hv_Rows, HTuple hv_Columns)
+        static public fitcircleData MulPoints_GetRotateCenter(HTuple hv_Rows, HTuple hv_Columns)
         {
 
             fitcircleData  d_fitcircleData = new fitcircleData();

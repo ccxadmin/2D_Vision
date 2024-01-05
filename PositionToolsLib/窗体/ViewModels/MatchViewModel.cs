@@ -14,7 +14,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class MatchViewModel : BaseViewModel
+    public class MatchViewModel : BaseViewModel
     {
         HObject modelSearchRegion = null;//搜索区域
         HObject modelRegion = null;//模板区域
@@ -175,7 +175,7 @@ namespace PositionToolsLib.窗体.ViewModels
                 HOperatorSet.SetColor(ShowTool.HWindowsHandle, "green");
 
                 SetModelROIData _setModelROIData =
-                        GuidePositioning_HDevelopExport.setModelROI(ShowTool.HWindowsHandle, imgBuf);
+                        GuidePositioning_HDevelopExport.SetModelROI(ShowTool.HWindowsHandle, imgBuf);
 
                 HOperatorSet.GenCrossContourXld(out HObject cross, _setModelROIData.modelOrigionRow,
                     _setModelROIData.modelOrigionColumn, 30, 0);

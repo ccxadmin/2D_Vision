@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class ColorConvertViewModel : BaseViewModel
+    public class ColorConvertViewModel : BaseViewModel
     {
         public static ColorConvertViewModel This { get; set; }
         public ColorConvertModel Model { get; set; }

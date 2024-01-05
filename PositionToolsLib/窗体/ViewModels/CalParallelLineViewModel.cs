@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class CalParallelLineViewModel : BaseViewModel
+    public class CalParallelLineViewModel : BaseViewModel
     {
         public static CalParallelLineViewModel This { get; set; }
         public CalParallelLineModel Model { get; set; }

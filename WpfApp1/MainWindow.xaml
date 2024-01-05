@@ -21,194 +21,41 @@
 
 
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="300"/>
-        </Grid.ColumnDefinitions>
-        <WindowsFormsHost x:Name="winHost"/>
+        <TabControl Style="{DynamicResource TabControlStyle}" Margin="2">
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="00000">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                   VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="panel0"/>
+                </ScrollViewer>
+            </TabItem>
 
-        <Grid Grid.Column="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="11111">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">
+                    <DockPanel x:Name="panel1"/>
+                </ScrollViewer>
+            </TabItem>
 
-            <ScrollViewer  
-                          Style="{DynamicResource ScrollViewerStyle}" >
-                <view:UIROIoperation  Margin="2" Name="RoiEditer">
-                     
-                </view:UIROIoperation>
-            </ScrollViewer>
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="22222">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">
+                    <DockPanel x:Name="panel2"/>
+                </ScrollViewer>
+            </TabItem>
 
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="33333">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">
+                    <DockPanel x:Name="panel3"/>
+                </ScrollViewer>
+            </TabItem>
 
-           
-            <StackPanel Grid.Row="1">
-                <uc:MyNumUpDown   Width="120"  Height="30"
-                   NumericValue="10.0" OffsetValue="0.1" IsInteger="False"
-                   MaxValue="999.0" MinValue="0" />
-               
-
-                <Button Style="{DynamicResource PrimaryButton}" 
-                        attach:ButtonAttach.ButtonCornerRadius="5" 
-                        Content="&#xf06e;"  Click="Button_Click"/>
-                <CheckBox Content="勾选" Style="{DynamicResource CheckBoxFrame}" Margin="2"
-                          attach:ButtonAttach.ButtonCornerRadius="5"
-                          attach:CheckBoxAttach.FrameSize="small" />
-
-                <GroupBox Header="12345" Visibility="Visible"  Style="{DynamicResource GroupBoxStyle}">
-                    <Grid Margin="1">
-
-                       <Label Style="{DynamicResource LabelStyle}" Content="测试" />
-                        <ProgressBar Margin="50,0,2,0" Value="40"  Style="{DynamicResource ProgressBarStyle}"/>
-                    </Grid>
-              
-                </GroupBox>
-                <ListBox Margin="2,0" Style="{StaticResource ListBoxStyle}">
-                    <ListBoxItem Content="item1"  />
-                    <ListBoxItem Content="item2" />
-                    <ListBoxItem Content="item3" />
-                </ListBox>
-                <ListView 
-                    Style="{DynamicResource ListViewStyle}"  ItemsSource="{Binding}">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn Header="编号" Width="40" DisplayMemberBinding="{Binding Path=ID}"/>
-                            <GridViewColumn Header="姓名" Width="80" DisplayMemberBinding="{Binding Path=Name}"/>
-                            <GridViewColumn Header="年龄" Width="60" DisplayMemberBinding="{Binding Path=Age}"/>
-                        </GridView>
-                    </ListView.View>
-                    <ListView.ContextMenu>
-                        <ContextMenu  Style="{x:Null}">
-                            <MenuItem Header="clear" Style="{x:Null}"/>
-                        </ContextMenu>
-                    </ListView.ContextMenu>
-                </ListView>
-
-                <Menu Margin="5"   Style="{DynamicResource WD.DefaultMenu}">
-                    <MenuItem Header="add" Style="{DynamicResource WD.DefaultMenuItem}">
-                        <MenuItem Header="aaf" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                        <MenuItem Header="aaf2" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                        <MenuItem Header="aaf3" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                    </MenuItem>
-                    <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                    <MenuItem Header="sss" Style="{DynamicResource WD.DefaultMenuItem}">
-                        <MenuItem Header="aaf12" Style="{DynamicResource WD.DefaultMenuItem}">
-                            <MenuItem Header="aaf22" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                        </MenuItem>
-                        <MenuItem Header="aaf23" Style="{DynamicResource WD.DefaultMenuItem}">
-                            <MenuItem Header="aaf22" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                        </MenuItem>
-                    </MenuItem>
-                </Menu>
-                <PasswordBox Style="{DynamicResource PasswordBoxStyle}"
-                             attach:TexboxAttach.Placeholder="请输入密码"
-                             attach:TexboxAttach.TextBoxCornerRadius="3"/>
-
-                <RadioButton  Content="默认项"  Style="{DynamicResource RadioButtonStyleBasics}"/>
-                <RadioButton  Content="备选项"  Style="{DynamicResource RadioButtonStyleBasics}"/>
-                <RepeatButton Style="{DynamicResource WD.DefaultRepeatButton}" Content="Test"
-                              attach:ButtonAttach.ButtonCornerRadius="3"/>
-                             
-            </StackPanel>
-
-          
-        </Grid>
-        <StackPanel Grid.Column="2">
-            <Expander Header="TableShow" Style="{DynamicResource ExpanderStyle}"
-                       attach:ButtonAttach.ButtonCornerRadius="5" >
-                <Expander.Content>
-                    <DataGrid Width="270" Name="dg" Style="{DynamicResource datagrid}" Margin="5" ItemsSource="{Binding}">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="First Name" Binding="{Binding FirstName}" Width="90" ElementStyle="{StaticResource datagridtextblock}"/>
-                            <DataGridTextColumn Header="Last Name"  Binding="{Binding LastName}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                            <DataGridTextColumn Header="Username"  Binding="{Binding Username}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Expander.Content>
-            </Expander>
-
-            <TreeView  Name="treeview"   Style="{StaticResource DefaultTreeView}">
-                                  
-                <!--加载treeview数据-->
-                <TreeView.ItemTemplate>
-                    <HierarchicalDataTemplate ItemsSource="{ Binding Path=Children,Mode=TwoWay}">
-                        <Grid  Background="Transparent">
-                            <Grid.Resources>
-                                <convert:BoolToVisible x:Key="boolToVisible"/>
-                                <convert:VisibleToReverse x:Key="visibleToReverse"/>
-                            </Grid.Resources>
-                            <Grid MinHeight="30" x:Name="userinfo" Background="Transparent" Margin="-5 0 0 0" Visibility="{Binding Visibility,ElementName=groupinginfo,Converter={StaticResource visibleToReverse}}">
-                                <Grid Height="50" x:Name="grid">
-                                    <Border Background="#ff6d3c" Width="40" Height="40" CornerRadius="4" HorizontalAlignment="Left" Margin="0 0 0 0">
-                                        <TextBlock Text="{Binding SurName}" FontSize="23" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                    </Border>
-                                    <TextBlock Text="{Binding Name}" Margin="50 7 0 0" FontSize="13"/>
-                                    <TextBlock Text="{Binding Info}" Foreground="#808080" Margin="50 30 0 0"/>
-                                    <TextBlock Text="{Binding Count,StringFormat={}{0}人}" Foreground="#808080" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0 0 5 0"/>
-                                </Grid>
-                            </Grid>
-                            <StackPanel MinHeight="25" x:Name="groupinginfo" Orientation="Horizontal" Background="Transparent" HorizontalAlignment="Left" Visibility="{Binding IsGrouping,Converter={StaticResource boolToVisible}}">
-
-                                <TextBlock Text="{Binding DisplayName}" Margin="3 0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                            </StackPanel>
-                        </Grid>
-                    </HierarchicalDataTemplate>
-                </TreeView.ItemTemplate>
-             
-            </TreeView>
-
-            <TextBox Style="{DynamicResource baseInput}"
-                     attach:TexboxAttach.Placeholder="请输入内容" 
-                     attach:TexboxAttach.TextBoxCornerRadius="3"/>
-
-            <TabControl Style="{DynamicResource  TabControlStyle}" >
-
-                <TabItem  Cursor="Hand" Header="音乐电台" Style="{DynamicResource TabItemStyle}" >
-                        <Grid Background="#33ffffff" >
-                            <TextBlock Text="音乐电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </TabItem>
-                <TabItem  Cursor="Hand" Header="Mv电台"  Style="{DynamicResource TabItemStyle}">
-                        <Grid Background="#33ffffff">
-                            <TextBlock Text="Mv电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </TabItem>
-                <TabItem  Cursor="Hand" Header="Mc电台" Style="{DynamicResource TabItemStyle}" >
-                        <Grid Background="#33ffffff">
-                            <TextBlock Text="Mc电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </TabItem>
-                <TabItem  Cursor="Hand" Header="Md电台"  Style="{DynamicResource TabItemStyle}">
-                        <Grid Background="#33ffffff">
-                            <TextBlock Text="Md电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </TabItem>
-                <TabItem  Cursor="Hand" Header="Me电台"  Style="{DynamicResource TabItemStyle}">
-                        <Grid Background="#33ffffff">
-                            <TextBlock Text="Me电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </TabItem>
-                <TabItem  Cursor="Hand" Header="Mf电台"  Style="{DynamicResource TabItemStyle}">
-                        <Grid Background="#33ffffff">
-                            <TextBlock Text="Mf电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        </Grid>
-                    </TabItem>
-                <TabItem  Cursor="Hand" Header="Mg电台"  Style="{DynamicResource TabItemStyle}">
-                    <Grid Background="#33ffffff">
-                        <TextBlock Text="Mg电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Grid>
-                </TabItem>
-                <TabItem  Cursor="Hand" Header="Mh电台" Style="{DynamicResource TabItemStyle}" >
-                    <Grid Background="#33ffffff">
-                        <TextBlock Text="Mh电台" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Grid>
-                </TabItem>
-
-            </TabControl>
-
-        
-        </StackPanel>
-
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="44444">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">
+                    <DockPanel x:Name="panel4"/>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class DilationViewModel : BaseViewModel
+    public class DilationViewModel : BaseViewModel
     {
         public static DilationViewModel This { get; set; }
         public DilationModel Model { get; set; }

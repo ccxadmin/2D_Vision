@@ -23,10 +23,10 @@ namespace MainFormLib.Views
     /// </summary>
     public partial class FormNinePointsCalib : Window
     {
-        public FormNinePointsCalib(string path)
+        public FormNinePointsCalib(string path, string _calibName = "default")
         {
             InitializeComponent();
-            var model = new NinePointsCalibViewModel(path);
+            var model = new NinePointsCalibViewModel(path, _calibName);
             DataContext = model;
         }
 
@@ -44,6 +44,16 @@ namespace MainFormLib.Views
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
 
+        }
+        /// <summary>
+        /// 装载winform控件，主动释放方式内存泄漏
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            host.Child.Dispose();
+            host.Child = null;
+            base.OnClosed(e);
         }
     }
 }

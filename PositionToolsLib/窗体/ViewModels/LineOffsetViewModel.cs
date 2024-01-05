@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class LineOffsetViewModel : BaseViewModel
+    public class LineOffsetViewModel : BaseViewModel
     {
         public static LineOffsetViewModel This { get; set; }
         EumSizeUnits sizeUnits = EumSizeUnits.pixel;//尺寸单位

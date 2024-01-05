@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.Models
 {
-    internal class LineOffsetModel : NotifyBase
+    public class LineOffsetModel : NotifyBase
     {
 
         /// <summary>

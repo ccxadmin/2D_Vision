@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class ImageCorrectViewModel : BaseViewModel
+    public class ImageCorrectViewModel : BaseViewModel
     {
         public static ImageCorrectViewModel This { get; set; }
         public ImageCorrectModel Model { get; set; }

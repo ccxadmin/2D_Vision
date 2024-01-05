@@ -177,7 +177,7 @@ namespace GlueDetectionLib.窗体.ViewModels
                 HOperatorSet.SetColor(ShowTool.HWindowsHandle, "green");
 
                SetModelROIData _setModelROIData =
-                       GuidePositioning_HDevelopExport.setModelROI(ShowTool.HWindowsHandle, imgBuf);
+                       GuidePositioning_HDevelopExport.SetModelROI(ShowTool.HWindowsHandle, imgBuf);
 
                 HOperatorSet.GenCrossContourXld(out HObject cross, _setModelROIData.modelOrigionRow,
                     _setModelROIData.modelOrigionColumn, 30, 0);

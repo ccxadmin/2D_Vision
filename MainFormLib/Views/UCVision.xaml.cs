@@ -1,7 +1,8 @@
-﻿using System;
+﻿using HalconDotNet;
+using MainFormLib.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,35 +12,39 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-using HalconDotNet;
-using MainFormLib.ViewModels;
 using VisionShowLib.UserControls;
 
 namespace MainFormLib.Views
 {
     /// <summary>
-    /// frmCalibration.xaml 的交互逻辑
+    /// UCVision.xaml 的交互逻辑
     /// </summary>
-    public partial class FormVision : Window
+    public partial class UCVision : UserControl
     {
-        static FormVision  formVision = null;
+        static UCVision uCVision = null;
         VisionViewModel model = null;
-        private FormVision(string camStationName = "camStationName_1")
+        public UCVision(string camStationName = "camStationName_1")
         {
             InitializeComponent();
-            model = new VisionViewModel(camStationName);
+             model = new VisionViewModel(camStationName);
             DataContext = model;
-            
+
+        }
+        ~UCVision()
+        {
+            host.Child.Dispose();
+            host.Child = null;
         }
         /// <summary>
         /// 创建实例
         /// </summary>
         /// <param name="camStationName"></param>
         /// <returns></returns>
-        public static FormVision CreateInstance(string camStationName = "camStationName_1")            
+        public static UCVision CreateInstance(string camStationName = "camStationName_1")
         {
-            return new FormVision(camStationName);
+            return new UCVision(camStationName);
         }
 
         /// <summary>
@@ -47,37 +52,29 @@ namespace MainFormLib.Views
         /// </summary>
         /// <param name="camStationName"></param>
         /// <returns></returns>
-        public static FormVision CreateSingleton(string camStationName = "camStationName_1")
+        public static UCVision CreateSingleton(string camStationName = "camStationName_1")
         {
-            if (formVision == null)
-                formVision = new FormVision(camStationName);
-            return formVision;
+            if (uCVision == null)
+                uCVision = new UCVision(camStationName);
+            return uCVision;
         }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+                    
             HOperatorSet.SetSystem("temporary_mem_cache", "false");
             HOperatorSet.SetSystem("clip_region", "false");
-
-            var tool = model.ShowTool;
-            //tool.SetColorOfTopBottomTitle(System.Drawing.Color.FromArgb(255, 109, 60));
+            HOperatorSet.SetLineWidth(model.ShowTool.HWindowsHandle, 2);
+            var tool = model.ShowTool;  
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
 
             tool.SetBackgroundColor(EumControlBackColor.white);
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
+
+            model.WindowsLoadedCommand.DoExecute?.Invoke(sender);
         }
-        /// <summary>
-        /// 装载winform控件，主动释放方式内存泄漏
-        /// </summary>
-        /// <param name="e"></param>
-        protected override void OnClosed(EventArgs e)
-        {
-            host.Child.Dispose();
-            host.Child = null;
-            base.OnClosed(e);
-        }
+        
         private void ListViewItem__MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             model.ToolsOfPosDoubleClickCommand.DoExecute?.Invoke(sender);
@@ -92,6 +89,6 @@ namespace MainFormLib.Views
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             model.ToolsOfPosition_ContextMenuCommand.DoExecute?.Invoke(sender);
-        }
+        }     
     }
 }

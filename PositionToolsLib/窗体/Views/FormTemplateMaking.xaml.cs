@@ -46,7 +46,16 @@ namespace PositionToolsLib.窗体.Views
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
         }
-
+        /// <summary>
+        /// 装载winform控件，主动释放方式内存泄漏
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            host.Child.Dispose();
+            host.Child = null;
+            base.OnClosed(e);
+        }
         private void mySlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
             TemplateMakingViewModel.This.BarPanSizeValueChangedCommand.DoExecute?.Invoke(sender);

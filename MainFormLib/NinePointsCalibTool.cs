@@ -1,12 +1,17 @@
-﻿using FunctionLib.Location;
+﻿using FilesRAW.Common;
+using FunctionLib.Location;
 using HalconDotNet;
+using MainFormLib.Models;
 using MainFormLib.Views;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VisionShowLib.UserControls;
 
 namespace MainFormLib
 {
@@ -87,18 +92,147 @@ namespace MainFormLib
         /// <summary>
         /// 计算旋转中心(像素中心转物理中心)
         /// </summary>
-        static public void CalRotateCenter(HTuple hv_MulPixelsX,
-            HTuple hv_MulPixelsY, HTuple hv_HomMat2D,out double Cx,out double Cy)
+        static public bool CalRotateCenter(ref NinePointsCalibModel model, out string info)
         {
-            Cx = 0;Cy = 0;
-            fitcircleData d_fitcircleData = AxisCoorditionRotation.MulPoints_GetRorateCenter(
-                 hv_MulPixelsY, hv_MulPixelsX);//圆心为像素坐标
-                                                           //
-            Transformation_POINT(d_fitcircleData.center_Column,
-                d_fitcircleData.center_Row, hv_HomMat2D,
-                out HTuple temmachineX, out HTuple temmachineY);//然后转换成机器人坐标
-            Cx = temmachineX.D;
-            Cy = temmachineY.D;
+            info = "";
+            if (model.DgRotatePointDataList.Count < 5)
+            {
+                info = "点位坐标数据不足5条，请确认!";
+                return false;
+            }
+            
+            HTuple hv_MulRotate_PixelRow = new HTuple();
+            HTuple hv_MulRotate_PixelColumn = new HTuple();
+      
+            foreach (var s in model.DgRotatePointDataList)
+            {
+                hv_MulRotate_PixelRow.Append(s.Y);
+                hv_MulRotate_PixelColumn.Append(s.X);
+             
+            }
+            fitcircleData d_fitcircleData =
+                AxisCoorditionRotation.MulPoints_GetRotateCenter(hv_MulRotate_PixelRow,
+                hv_MulRotate_PixelColumn);//圆心为像素坐标
+
+            HTuple temmachineX = new HTuple(); HTuple temmachineY = new HTuple();
+           Transformation_POINT(d_fitcircleData.center_Column,
+                d_fitcircleData.center_Row, model.Hv_HomMat2D, out temmachineX, out temmachineY);//然后转换成机器人坐标
+            model.TxbRotateCenterX = temmachineX.D;
+            model.TxbRotateCenterY = temmachineY.D;
+            return true;
+                
+        }
+
+        /// <summary>
+        /// 九点标定矩阵生成
+        /// </summary>
+        /// <param name="Model"></param>
+        /// <param name="info"></param>
+        /// <returns></returns>
+        static public bool GenNineCaliMatrix(ref NinePointsCalibModel model, out string info)
+        {
+            info = "";
+            if (model.DgPixelPointDataList.Count != 9 ||
+                            model.DgRobotPointDataList.Count != 9)
+            {
+                info = "点位坐标数据不足9条，请确认!";
+                return false;
+            }
+            HTuple hv_PixelPointx = new HTuple();
+            HTuple hv_PixelPointy = new HTuple();
+            foreach (var s in model.DgPixelPointDataList)
+            {
+                hv_PixelPointx.Append(s.X);
+                hv_PixelPointy.Append(s.Y);
+
+            }
+            HTuple hv_MechinePointX = new HTuple();
+            HTuple hv_MechinePointY = new HTuple();
+            foreach (var s in model.DgRobotPointDataList)
+            {
+                hv_MechinePointX.Append(s.X);
+                hv_MechinePointY.Append(s.Y);
+            }
+
+            GuidePositioning_HDevelopExport.Transformation_matrix(hv_PixelPointx, hv_PixelPointy,
+                hv_MechinePointX, hv_MechinePointY, out  HTuple hv_HomMat2D, out HTuple hv_ParArray);
+            model.Hv_HomMat2D = hv_HomMat2D;
+            if (hv_ParArray != null)
+            {
+                model.TxbSx = hv_ParArray[0].D;
+                model.TxbSy = hv_ParArray[1].D;
+                model.TxbPhi = hv_ParArray[2].D;
+                model.TxbTheta = hv_ParArray[3].D;
+                model.TxbTx = hv_ParArray[4].D;
+                model.TxbTy = hv_ParArray[5].D;
+
+            }
+            return true;
+        }
+        /// <summary>
+        /// 保存九点标定的数据
+        /// </summary>
+        static public bool SaveNineCaliData(NinePointsCalibModel model,
+             string rootFolder, string currCalibName = "default")
+        {
+            string filePath = rootFolder + "\\标定矩阵\\九点标定\\" + currCalibName;
+            if (!Directory.Exists(rootFolder + "\\标定矩阵"))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵");
+            if (!Directory.Exists(rootFolder + "\\标定矩阵\\九点标定"))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵\\九点标定");
+            if (!Directory.Exists(filePath))
+                Directory.CreateDirectory(filePath);
+            try
+            {  //九点标定关系参数保存
+                GeneralUse.WriteSerializationFile<ObservableCollection<DgPixelPointData>>(filePath + "\\PixelPoint", model.DgPixelPointDataList);
+                GeneralUse.WriteSerializationFile<ObservableCollection<DgRobotPointData>>(filePath + "\\RobotPoint", model.DgRobotPointDataList);
+                GeneralUse.WriteValue("九点标定", "X缩放", model.TxbSx.ToString(), "config", filePath);
+                GeneralUse.WriteValue("九点标定", "Y缩放", model.TxbSy.ToString(), "config", filePath);
+                GeneralUse.WriteValue("九点标定", "旋转弧", model.TxbPhi.ToString(), "config", filePath);
+                GeneralUse.WriteValue("九点标定", "倾斜弧", model.TxbTheta.ToString(), "config", filePath);
+                GeneralUse.WriteValue("九点标定", "X偏移量", model.TxbTx.ToString(), "config", filePath);
+                GeneralUse.WriteValue("九点标定", "Y偏移量", model.TxbTy.ToString(), "config", filePath);
+                if (model.Hv_HomMat2D != null &&
+                        model.Hv_HomMat2D.Length > 0)
+                    HOperatorSet.WriteTuple(model.Hv_HomMat2D, filePath + "\\hv_HomMat2D.tup");
+
+                return true;
+
+            }
+            catch (Exception er)
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 保存旋转相关数据
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="rootFolder"></param>
+        /// <param name="currCalibName"></param>
+        /// <returns></returns>
+        static public bool SaveRatateData(NinePointsCalibModel model,
+            string rootFolder,string currCalibName="default")
+        {
+            string filePath = rootFolder + "\\标定矩阵\\九点标定\\" + currCalibName;
+            if (!Directory.Exists(rootFolder + "\\标定矩阵"))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵");
+            if (!Directory.Exists(rootFolder + "\\标定矩阵\\九点标定"))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵\\九点标定");
+            if (!Directory.Exists(filePath))
+                Directory.CreateDirectory(filePath);
+            try
+            {
+
+                GeneralUse.WriteValue("九点标定", "旋转中心X", model.TxbRotateCenterX.ToString(), "config", filePath);
+                GeneralUse.WriteValue("九点标定", "旋转中心Y", model.TxbRotateCenterY.ToString(), "config", filePath);
+                GeneralUse.WriteSerializationFile<ObservableCollection<DgRotatePointData>>(filePath + "\\RotatePoint", model.DgRotatePointDataList);
+                return true;
+            }
+            catch (Exception er)
+            {
+                return false;
+            }
         }
     }
 

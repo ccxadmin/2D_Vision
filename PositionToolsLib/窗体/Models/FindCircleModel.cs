@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace PositionToolsLib.窗体.Models
 {
-    internal class FindCircleModel : NotifyBase
+    public class FindCircleModel : NotifyBase
     {
         /// <summary>
       /// 窗体标题

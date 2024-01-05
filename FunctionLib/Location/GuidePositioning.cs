@@ -1245,7 +1245,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
 
         }
         //设置模板创建区域
-        public static SetModelROIData setModelROI(HTuple hwindhanle, HObject ho_Image)
+        public static SetModelROIData SetModelROI(HTuple hwindhanle, HObject ho_Image)
         {
             SetModelROIData _setModelROIData = new SetModelROIData();
 
@@ -1559,7 +1559,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
 
 
         //创建模板
-        public static HObject createModel(HTuple hwindhanle, HObject ho_Image,HObject modelSearchROI,
+        public static HObject CreateModel(HTuple hwindhanle, HObject ho_Image,HObject modelSearchROI,
                       SetModelROIData _setModelROIData, variableSetParmas dparmas,
                       ref ModelMatchStruct temmodelMatchStruct,ref  string errmsg)
         {
@@ -1690,7 +1690,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
         }
 
         //保存模板文件
-        public static bool saveModelFile(ModelMatchStruct temmodelMatchStruct,string basedir = "modelfile\\ProductModel")
+        public static bool SaveModelFile(ModelMatchStruct temmodelMatchStruct,string basedir = "modelfile\\ProductModel")
         {
            
             int index= basedir.LastIndexOf('\\');
@@ -1768,7 +1768,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
             }     
         }
         //设置正反检测区域
-        public static bool set_P_N_inspectArea(HTuple hwindhanle, out HObject ho_Region3)
+        public static bool Set_P_N_inspectArea(HTuple hwindhanle, out HObject ho_Region3)
         {
             HObject ho_PolygonRegion = null, ho_Skeleton1 = null, ho_Contours2 = null;
             HObject ho_max_coutour = null;
@@ -1805,12 +1805,12 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
             return true;
         }
         //保存正反检测区域到文件
-        public static void save_P_N_inspectAreaFile(HObject saveRegion)
+        public static void Save_P_N_inspectAreaFile(HObject saveRegion)
         {
             HOperatorSet.WriteRegion(saveRegion, AppDomain.CurrentDomain.BaseDirectory + "PolygonRegion1.reg");
         }
         //读取正反检测区域从文件
-        public static void read_P_N_inspectAreaFile(out HObject ho_Region2)
+        public static void Read_P_N_inspectAreaFile(out HObject ho_Region2)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "PolygonRegion1.reg";
             if (!File.Exists(path))
@@ -1906,7 +1906,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
         }
 
         //模板匹配
-        public static bool modelMatchActive(HObject ho_Image, ModelMatchStruct temmodelMatchStruct,
+        public static bool ModelMatchActive(HObject ho_Image, ModelMatchStruct temmodelMatchStruct,
                      variableSetParmas dparmas, ref outputResultStruct outputResultStructData)
         {
 
@@ -2011,7 +2011,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
             outputResultStruct outputResultStructData = new outputResultStruct(true);
            
             //模板匹配
-            bool modelMatchFlag = modelMatchActive(ho_Image, temmodelMatchStruct, dparmas,ref outputResultStructData);
+            bool modelMatchFlag = ModelMatchActive(ho_Image, temmodelMatchStruct, dparmas,ref outputResultStructData);
             if (!modelMatchFlag)//运行异常
             {
                 outputResultStructData.runstatusFlag = false;
@@ -2207,7 +2207,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
         //近邻噪点
         public HTuple NeighbourNoise { get; set; } = 100;
 
-        public EumModelType ModelType { get; set; } = EumModelType.ProductModel_1;
+       
     }
     public enum eumPolarity
     {
@@ -2215,19 +2215,7 @@ HTuple hv_Winhandle, HTuple hv_Linewidth, bool IsCircle = true)
         light
     }
 
-    public enum EumModelType
-    {
-      
-        None=-1,
-      
-        ProductModel_1,  //当前为产品1模板 ,default
-
-        ProductModel_2,  //当前为产品1模板 ,default
-
-        CaliBoardModel, //当前为标定板模板
-      
-        GluetapModel   //点胶阀
-    }
+   
     [Serializable]
     public class producParma
     {

@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class FindCircleViewModel : BaseViewModel
+    public class FindCircleViewModel : BaseViewModel
     {
         HObject inspectXLD = null;//圆检测轮廓
         HTuple matrix2D = null;

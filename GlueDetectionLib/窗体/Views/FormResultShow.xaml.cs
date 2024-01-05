@@ -47,5 +47,15 @@ namespace GlueDetectionLib.窗体.Views
             host.Child = tool;
 
         }
+        /// <summary>
+        /// 装载winform控件，主动释放方式内存泄漏
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnClosed(EventArgs e)
+        {
+            host.Child.Dispose();
+            host.Child = null;
+            base.OnClosed(e);
+        }
     }
 }

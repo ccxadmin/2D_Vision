@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
-    internal class AngleConvertViewModel : BaseViewModel
+    public class AngleConvertViewModel : BaseViewModel
     {
         public static AngleConvertViewModel This { get; set; }
         public AngleConvertModel Model { get; set; }

@@ -1,4 +1,5 @@
 ﻿using ControlShareResources.Common;
+using HalconDotNet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,6 +11,17 @@ namespace MainFormLib.Models
 {
     public class NinePointsCalibModel : NotifyBase
     {
+        private HTuple hv_HomMat2D;
+        public HTuple Hv_HomMat2D
+        {
+            get { return this.hv_HomMat2D; }
+            set
+            {
+                hv_HomMat2D = value;
+                DoNotify();
+
+            }
+        }
         private double txbPixelX;
         public double TxbPixelX
         {
@@ -184,6 +196,53 @@ namespace MainFormLib.Models
             set
             {
                 txbTy = value;
+                DoNotify();
+
+            }
+        }
+
+        private double txbMarkPixelX;
+        public double TxbMarkPixelX
+        {
+            get { return this.txbMarkPixelX; }
+            set
+            {
+                txbMarkPixelX = value;
+                DoNotify();
+
+            }
+        }
+        private double txbMarkPixelY;
+        public double TxbMarkPixelY
+        {
+            get { return this.txbMarkPixelY; }
+            set
+            {
+                txbMarkPixelY = value;
+                DoNotify();
+
+            }
+        }
+
+        private double txbMarkRobotX;
+        public double TxbMarkRobotX
+        {
+            get { return this.txbMarkRobotX; }
+            set
+            {
+                txbMarkRobotX = value;
+                DoNotify();
+
+            }
+        }
+
+        private double txbMarkRobotY;
+        public double TxbMarkRobotY
+        {
+            get { return this.txbMarkRobotY; }
+            set
+            {
+                txbMarkRobotY = value;
                 DoNotify();
 
             }

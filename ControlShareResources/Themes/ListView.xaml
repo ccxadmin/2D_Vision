@@ -17,7 +17,7 @@
         <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="true">
-                <Setter Property="Background" Value="#ff6d3c"/>
+                <Setter Property="Background" Value="#dddddd"/>
             </Trigger>
             <Trigger Property="IsSelected" Value="true">
                 <Setter Property="Background" Value="#ff6d3c"/>
