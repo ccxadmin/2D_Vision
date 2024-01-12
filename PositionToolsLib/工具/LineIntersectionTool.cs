@@ -11,7 +11,7 @@ using System.Runtime.Serialization;
 namespace PositionToolsLib.工具
 {
     /// <summary>
-    /// 直线相交工具
+    /// 直线交点工具
     /// </summary>
     [Serializable]
     public  class LineIntersectionTool : BaseTool, IDisposable
@@ -21,7 +21,7 @@ namespace PositionToolsLib.工具
         public LineIntersectionTool()
         {
             toolParam = new LineIntersectionParam();
-            toolName = "直线相交" + inum;
+            toolName = "直线交点" + inum;
             inum++;
         }
 
@@ -31,20 +31,20 @@ namespace PositionToolsLib.工具
         }
 
         //工具日志:同类型工具日志信息放一起      
-        static private Log log = new Log("直线相交");
+        static private Log log = new Log("直线交点");
 
         [OnDeserialized()]
         internal void OnDeserializedMethod(StreamingContext context)
         {
 
-            int number = int.Parse(toolName.Replace("直线相交", ""));
+            int number = int.Parse(toolName.Replace("直线交点", ""));
             if (number > inum)
                 inum = number;
-            //toolName = "直线相交" + number;
+            //toolName = "直线交点" + number;
             inum++;
         }
         /// <summary>
-        /// 直线相交工具运行
+        /// 直线交点工具运行
         /// </summary>
         /// <returns></returns>
         override public RunResult Run()

@@ -244,9 +244,9 @@ namespace PositionToolsLib.窗体.Models
           double radius)
         {
             ID = id;
-            X = x;
-            Y = y;
-            Radius = radius;
+            X =Math.Round( x,3);
+            Y =Math.Round( y,3);
+            Radius =Math.Round( radius,3);
         
         }
      

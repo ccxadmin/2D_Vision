@@ -216,10 +216,10 @@ namespace PositionToolsLib.窗体.Models
                          double y, double angle)
         {
             ID = id;
-            Score = score;
-            X = x;
-            Y = y;
-            Angle = angle;
+            Score =Math.Round( score,3);
+            X = Math.Round(x,3);
+            Y = Math.Round(y,3);
+            Angle = Math.Round(angle,3);
         }
         public int  ID { get; set; }
         public double Score { get; set; }

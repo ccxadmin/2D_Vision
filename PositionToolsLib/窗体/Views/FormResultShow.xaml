@@ -122,25 +122,27 @@ NumericValue="{Binding Model.NmCoorY,Mode=TwoWay}"/>
                                        VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ff6d3c"
                                        Style="{DynamicResource datagrid}"   Grid.ColumnSpan="2"
                                              SelectedIndex="{Binding Model.DgDataSelectIndex}"
-  ItemsSource="{Binding Model.DgDataOfResultShowList,Mode=TwoWay}" >
+  ItemsSource="{Binding Model.DgDataOfResultShowList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                                             <DataGrid.Columns>
-                                                <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                                <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
                                                 <DataGridComboBoxColumn Header="工具名称" Width="120" x:Name="dgCombox">
 
                                                     <DataGridComboBoxColumn.EditingElementStyle>
                                                         <Style TargetType="ComboBox">
+                                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
                                                             <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
-                                                            <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                            <Setter Property="SelectedItem" Value="{Binding ToolName,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
                                                         </Style>
                                                     </DataGridComboBoxColumn.EditingElementStyle>
                                                     <DataGridComboBoxColumn.ElementStyle>
                                                         <Style TargetType="ComboBox">
+                                                            <Setter Property="VerticalContentAlignment" Value="Center"/>
                                                             <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
-                                                            <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                            <Setter Property="SelectedItem" Value="{Binding ToolName,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" />
                                                         </Style>
                                                     </DataGridComboBoxColumn.ElementStyle>
                                                 </DataGridComboBoxColumn>
-                                                <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                                <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
                                             </DataGrid.Columns>
 
                                         </DataGrid>
@@ -204,12 +206,12 @@ x:Name="cobxAngCoorList"
                                 </GroupBox>
 
                                 <Button Style="{DynamicResource PrimaryButton}"  Content="保存"
-                              HorizontalAlignment="Left" VerticalAlignment="Top"
+                              HorizontalAlignment="Left" VerticalAlignment="Top" Height="30"
   Margin="40,610,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
                             Command="{Binding SaveButClickCommand}"/>
                                 <Button  Style="{DynamicResource PrimaryButton}" Content="测试"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="180,610,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" 
+Margin="180,610,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" Height="30"
                               Command="{Binding TestButClickCommand}"/>
 
                             </Grid>

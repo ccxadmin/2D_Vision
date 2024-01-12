@@ -26,6 +26,17 @@ namespace PositionToolsLib.窗体.Models
             }
         }
 
+        private string testInfo;
+        public string TestInfo
+        {
+            get { return this.testInfo; }
+            set
+            {
+                testInfo = value;
+                DoNotify();
+            }
+        }
+
         private int selectConvertWayIndex;
         public int SelectConvertWayIndex
         {
@@ -126,8 +137,8 @@ new ObservableCollection<CoordConvertData>();
 
         {
             ID = id;
-            X = x;
-            Y = y;
+            X =Math.Round( x,3);
+            Y =Math.Round( y,3);
         }
         public int ID { get; set; }
         public double X { get; set; }

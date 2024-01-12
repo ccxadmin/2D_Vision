@@ -16,7 +16,7 @@ using VisionShowLib.UserControls;
 
 namespace GlueDetectionLib.窗体.ViewModels
 {
-    internal class MatchViewModel : BaseViewModel
+    public class MatchViewModel : BaseViewModel
     {
         HObject modelSearchRegion = null;//搜索区域
         HObject modelRegion = null;//模板区域
@@ -43,8 +43,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-
+           
             #region Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -80,9 +79,50 @@ namespace GlueDetectionLib.窗体.ViewModels
 
 
             #endregion
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
 
         }
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+            if (BaseTool.ObjectValided((par as MatchParam).InspectROI))
+            {
+                modelSearchRegion.Dispose();
+                HOperatorSet.CopyObj((par as MatchParam).InspectROI, out modelSearchRegion, 1, -1);
+            }
+            if (BaseTool.ObjectValided((par as MatchParam).MaskROI))
+            {
+                maskRegion.Dispose();
+                HOperatorSet.CopyObj((par as MatchParam).MaskROI, out maskRegion, 1, -1);
+            }
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as MatchParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
 
+            Model.SelectImageName = (par as MatchParam).InputImageName;
+            Model.StartAngle = (par as MatchParam).StartAngle;
+            Model.RangeAngle = (par as MatchParam).RangeAngle;
+            Model.Contrast = (par as MatchParam).ContrastValue;
+            Model.MatchScore = (par as MatchParam).MatchScore;
+            Model.ScaleDownLimit = (par as MatchParam).MatchDownScale;
+            Model.ScaleUpLimit = (par as MatchParam).MatchUpScale;
+            Model.BaseXText = (par as MatchParam).ModelBaseCol.ToString("f3");
+            Model.BaseYText = (par as MatchParam).ModelBaseRow.ToString("f3");
+            Model.BaseAngleText = ((par as MatchParam).ModelBaseRadian * 180.0 / Math.PI).ToString("f3");//弧度转角度显示
+
+            eumModelSearch = (par as MatchParam).ModelSearch;
+            Model.SearchModelROISelectIndex = (int)eumModelSearch;
+            if (eumModelSearch == EumModelSearch.全图搜索)
+            {
+                if (modelSearchRegion != null)
+                    modelSearchRegion.Dispose();
+                Model.BtnDrawModelSearchRegionEnable = false;
+            }
+
+        }
         /// <summary>
         /// 图像加载
         /// </summary>
@@ -102,7 +142,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object o)
         {
-          
+            if (Model.SelectImageIndex == -1) return;
             if (!MatchTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -119,6 +159,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxSearchModelROI_SelectedIndexChanged(object o)
         {
+            if (Model.SearchModelROISelectIndex == -1) return;
             if (Model.SearchModelROISelectIndex == 0)
             {
                 eumModelSearch = EumModelSearch.全图搜索;
@@ -310,8 +351,8 @@ namespace GlueDetectionLib.窗体.ViewModels
            .ContinueWith(t => {
              //Dispatcher.Invoke(new Action(() => {
 
-                  Model.BaseRowText = (baseTool.GetParam() as MatchParam).ModelBaseRow.ToString("f3");
-                  Model.BaseColumnText = (baseTool.GetParam() as MatchParam).ModelBaseCol.ToString("f3");
+                  Model.BaseXText = (baseTool.GetParam() as MatchParam).ModelBaseCol.ToString("f3");
+                  Model.BaseYText = (baseTool.GetParam() as MatchParam).ModelBaseRow.ToString("f3");
                   Model.BaseAngleText = ((baseTool.GetParam() as MatchParam).ModelBaseRadian * 180.0 / Math.PI).ToString("f3");
                //}));
            });

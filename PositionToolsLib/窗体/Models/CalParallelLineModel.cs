@@ -149,11 +149,11 @@ namespace PositionToolsLib.窗体.Models
 
         {
             ID = id;
-            X1 = x1;
-            Y1 = y1;
-            X2 = x2;
-            Y2 = y2;
-            Angle = angle;
+            X1 =Math.Round( x1,3);
+            Y1 =Math.Round( y1,3);
+            X2 =Math.Round( x2,3);
+            Y2 =Math.Round( y2,3);
+            Angle =Math.Round( angle,3);
 
         }
 

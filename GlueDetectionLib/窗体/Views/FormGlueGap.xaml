@@ -107,15 +107,15 @@ Height="700" Width="1000">
           HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,70,10,10" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,70,10,10"
             HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.SelectPolarityIndex,Mode=TwoWay}"  Height="25" Width="80"
-                                          SelectedItem="{Binding Model.SelectPolarityName,Mode=TwoWay}"
+                                      
                                            IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" >
                                     <ComboBoxItem Content="白色"/>
                                     <ComboBoxItem Content="黑色"/>
                                 </ComboBox>
 
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="10,106,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"   
-                                          SelectedItem="{Binding Model.MorphProcessSelectName,Mode=TwoWay}"
+HorizontalAlignment="Left" VerticalAlignment="Top"  Height="25"   
+                                          SelectedIndex="{Binding Model.MorphProcessSelectIndex,Mode=TwoWay}"
                                           IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" >
                                     <ComboBoxItem Content="膨胀"/>
                                     <ComboBoxItem Content="腐蚀"/>
@@ -123,15 +123,16 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25
 
                                 <uc:MyNumUpDown Width="76"  Height="25"
                                                 HorizontalAlignment="Left" VerticalAlignment="Top"
-                                                 Margin="54,106,10,10"
-                                                NumericValue="{Binding Model.NumRadius}"
+                                                 Margin="54,106,10,10" MinValue="0" MaxValue="100" 
+                                                OffsetValue="5" DecimalPlaces="0" DefaultValue="10"
+                                                NumericValue="{Binding Model.NumRadius,Mode=TwoWay}"
                                                  IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" />
 
                                 <Label Content="尺寸单位" Style="{DynamicResource LabelStyle}"
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="140,106,10,10" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,106,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="0" Height="25"  Width="80"
-                                          SelectedItem="{Binding Model.ConvertUnitsSelectName,Mode=TwoWay}"
+HorizontalAlignment="Left" VerticalAlignment="Top"   Height="25"  Width="80"
+                                          SelectedIndex="{Binding Model.ConvertUnitsSelectIndex,Mode=TwoWay}"
                                            IsEnabled="{Binding Model.GenRegionWay,  Mode=TwoWay, Converter={StaticResource BooleanInverterConvert}, ConverterParameter={x:Static ccm:EumGenRegionWay.auto}}" >
                                     <ComboBoxItem Content="像素"/>
                                     <ComboBoxItem Content="物理"/>
@@ -147,9 +148,9 @@ Margin="30,141,10,10" Height="25" Width="120"
                                         Command="{Binding AutoGenInnerRegionBtnClickCommand}"
                                          IsEnabled="{Binding Model.BtnAutoGenInnerRegion1Enable,  Mode=TwoWay}" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,141,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.CobxUnionWaySelect}" Height="25" Width="80"
+HorizontalAlignment="Left" VerticalAlignment="Top"  Height="25" Width="80"
                                           x:Name="cobxUnionWay"
-                                          SelectedItem="{Binding Model.UnionWaySelectName,Mode=TwoWay}"
+                                          SelectedIndex="{Binding Model.UnionWaySelectIndex,Mode=TwoWay}"
                                            IsEnabled="{Binding  Model.CobxUnionWayEnable,  Mode=TwoWay}" >
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
@@ -171,8 +172,8 @@ Margin="30,175,10,10" Height="25" Width="120"
                                         Command="{Binding AutoGenInnerRegion2BtnClickCommand}"
                                          IsEnabled="{Binding Model.BtnAutoGenInnerRegion2Enable,  Mode=TwoWay}" />
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,174,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.CobxUnionWay2Select}"  Height="25"  Width="80"
-                                          SelectedItem="{Binding Model.UnionWay2SelectName,Mode=TwoWay}"
+HorizontalAlignment="Left" VerticalAlignment="Top"   Height="25"  Width="80"
+                                          SelectedIndex="{Binding Model.UnionWay2SelectIndex,Mode=TwoWay}"
                                           x:Name="cobxUnionWay2"  IsEnabled="{Binding Model.CobxUnionWay2Enable,  Mode=TwoWay}" >
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
@@ -217,8 +218,8 @@ Margin="30,270,10,10" Height="25" Width="120"
                                           Command="{Binding ManualDrawRegionBtnClickCommand}"
   IsEnabled="{Binding Model.BtnManualDrawRegionEnable,  Mode=TwoWay}"/>
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,270,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"   SelectedIndex="{Binding Model.CobxUnionWay3Select}" Width="80" Height="25"
-                                   x:Name="cobxUnionWay3"        SelectedItem="{Binding Model.UnionWay3SelectName,Mode=TwoWay}"
+HorizontalAlignment="Left" VerticalAlignment="Top"   Width="80" Height="25"
+                                   x:Name="cobxUnionWay3"        SelectedIndex="{Binding Model.UnionWay3SelectIndex,Mode=TwoWay}"
   IsEnabled="{Binding  Model.CobxUnionWay3Enable,  Mode=TwoWay}" >
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
@@ -240,9 +241,9 @@ Margin="30,304,10,10" Height="25" Width="120"
                                                                                   Command="{Binding ManualDrawRegionBtn2ClickCommand}"
 IsEnabled="{Binding Model.BtnManualDrawRegion2Enable,  Mode=TwoWay}"/>
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Margin="200,304,10,10"
-HorizontalAlignment="Left" VerticalAlignment="Top"  SelectedIndex="{Binding Model.CobxUnionWay4Select}"  Width="80" Height="25"
+HorizontalAlignment="Left" VerticalAlignment="Top"   Width="80" Height="25"
                                           
-                                   x:Name="cobxUnionWay4"        SelectedItem="{Binding Model.UnionWay4SelectName,Mode=TwoWay}"
+                                   x:Name="cobxUnionWay4"        SelectedIndex="{Binding Model.UnionWay4SelectIndex,Mode=TwoWay}"
   IsEnabled="{Binding  Model.CobxUnionWay4Enable,  Mode=TwoWay}">
                                     <ComboBoxItem Content="+"/>
                                     <ComboBoxItem Content="-"/>
@@ -295,13 +296,13 @@ SelectedItem="{Binding Model.SelectMatrixName,Mode=TwoWay}"
                                         attach:ButtonAttach.ButtonCornerRadius="3"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="灰度值下限："
     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,5,5"/>
-                                <uc:MyNumUpDown  MaxValue="999" MinValue="1" OffsetValue="10" DecimalPlaces="0"
+                                <uc:MyNumUpDown  MaxValue="255" MinValue="0" OffsetValue="10" DecimalPlaces="0"
                                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,40,5,5" 
                                     NumericValue="{Binding Model.GrayDown,Mode=TwoWay}"
                                                  Width="120" Height="25"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="灰度值上限："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
-                                <uc:MyNumUpDown   MaxValue="255" MinValue="1" OffsetValue="1" DecimalPlaces="0"
+                                <uc:MyNumUpDown   MaxValue="255" MinValue="0" OffsetValue="1" DecimalPlaces="0"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="90,76,5,5" 
                                                    NumericValue="{Binding Model.GrayUp,Mode=TwoWay}"
                                 Width="120" Height="25"/>

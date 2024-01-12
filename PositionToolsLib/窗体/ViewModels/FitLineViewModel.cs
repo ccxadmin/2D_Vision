@@ -35,8 +35,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-                   
+                           
             #region Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -68,38 +67,9 @@ namespace PositionToolsLib.窗体.ViewModels
 
 
             #endregion
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as FitLineParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
 
-
-            foreach (var s in dataManage.PositionDataDic)
-                Model.PositionDataList.Add(s.Key);
-            //x
-            string rowName = (par as FitLineParam).StartXName;
-            int index2 = Model.PositionDataList.IndexOf(rowName);
-            Model.SelectStartXIndex = index2;
-
-            //y
-           
-            string columnName = (par as FitLineParam).StartYName;
-            int index3 = Model.PositionDataList.IndexOf(columnName);
-            Model.SelectStartYIndex = index3;
-
-            //x2
-         
-            string rowName2 = (par as FitLineParam).EndXName;
-            int index4 = Model.PositionDataList.IndexOf(rowName2);
-           Model.SelectEndXIndex = index4;
-
-            //y2
-           
-            string columnName2 = (par as FitLineParam).EndYName;
-            int index5 = Model.PositionDataList.IndexOf(columnName2);
-           Model.SelectEndYIndex = index5;
-
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
         }
         /// <summary>
         /// 图像加载
@@ -112,7 +82,41 @@ namespace PositionToolsLib.窗体.ViewModels
             imgBuf.Dispose();
             imgBuf = ShowTool.D_HImage;
         }
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as FitLineParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
+            Model.SelectImageName = (par as FitLineParam).InputImageName;
 
+            foreach (var s in dataManage.PositionDataDic)
+                Model.PositionDataList.Add(s.Key);
+            //x
+            string rowName = (par as FitLineParam).StartXName;
+            int index2 = Model.PositionDataList.IndexOf(rowName);
+            Model.SelectStartXIndex = index2;
+
+            //y
+
+            string columnName = (par as FitLineParam).StartYName;
+            int index3 = Model.PositionDataList.IndexOf(columnName);
+            Model.SelectStartYIndex = index3;
+
+            //x2
+
+            string rowName2 = (par as FitLineParam).EndXName;
+            int index4 = Model.PositionDataList.IndexOf(rowName2);
+            Model.SelectEndXIndex = index4;
+
+            //y2
+
+            string columnName2 = (par as FitLineParam).EndYName;
+            int index5 = Model.PositionDataList.IndexOf(columnName2);
+            Model.SelectEndYIndex = index5;
+        }
         /// <summary>
         ///输入图像选择
         /// </summary>
@@ -120,6 +124,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!FitLineTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();

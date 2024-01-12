@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GlueDetectionLib.窗体.Models
 {
-    internal class DilationModel : NotifyBase
+    public class DilationModel : NotifyBase
     { /// <summary>
       /// 窗体标题
       /// </summary>

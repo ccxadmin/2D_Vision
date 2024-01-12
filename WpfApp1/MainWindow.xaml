@@ -22,39 +22,44 @@
 
     <Grid>
         <TabControl Style="{DynamicResource TabControlStyle}" Margin="2">
-            <TabItem Style="{DynamicResource TabItemStyle}" Header="00000">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                   VerticalScrollBarVisibility="Auto">
+            <TabItem Style="{DynamicResource TabItemStyle}" Header="00000" >
+                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+                   VerticalScrollBarVisibility="Auto">-->
                     <Grid x:Name="panel0"/>
-                </ScrollViewer>
+                <!--</ScrollViewer>-->
             </TabItem>
 
             <TabItem Style="{DynamicResource TabItemStyle}" Header="11111">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">
+                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">-->
                     <DockPanel x:Name="panel1"/>
-                </ScrollViewer>
+                <!--</ScrollViewer>-->
             </TabItem>
 
             <TabItem Style="{DynamicResource TabItemStyle}" Header="22222">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">
-                    <DockPanel x:Name="panel2"/>
-                </ScrollViewer>
+                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">-->
+                <DockPanel x:Name="panel2">
+                    <Button Content="切换模板" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="新建配方" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="切换配方" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="导出配方" Width="120" Height=" 30" Click="Button_Click"/>
+                </DockPanel>
+                <!--</ScrollViewer>-->
             </TabItem>
 
             <TabItem Style="{DynamicResource TabItemStyle}" Header="33333">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">
+                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">-->
                     <DockPanel x:Name="panel3"/>
-                </ScrollViewer>
+                <!--</ScrollViewer>-->
             </TabItem>
 
             <TabItem Style="{DynamicResource TabItemStyle}" Header="44444">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">
+                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto">-->
                     <DockPanel x:Name="panel4"/>
-                </ScrollViewer>
+                <!--</ScrollViewer>-->
             </TabItem>
         </TabControl>
     </Grid>

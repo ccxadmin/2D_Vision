@@ -99,7 +99,7 @@ namespace PositionToolsLib.窗体.ViewModels
             StuCoordinateData data = dataManage.PositionDataDic[Model.SelectStartXName];
 
             BaseParam par = baseTool.GetParam();
-            (par as FitLineParam).StartXName = Model.SelectStartXName;
+            (par as AngleConvertParam).StartXName = Model.SelectStartXName;
         }
 
         private void cobxStartY_SelectedIndexChanged(object o)
@@ -107,7 +107,7 @@ namespace PositionToolsLib.窗体.ViewModels
             StuCoordinateData data = dataManage.PositionDataDic[Model.SelectStartYName];
 
             BaseParam par = baseTool.GetParam();
-            (par as FitLineParam).StartYName = Model.SelectStartYName;
+            (par as AngleConvertParam).StartYName = Model.SelectStartYName;
         }
 
         private void cobxEndX_SelectedIndexChanged(object o)
@@ -115,7 +115,7 @@ namespace PositionToolsLib.窗体.ViewModels
             StuCoordinateData data = dataManage.PositionDataDic[Model.SelectEndXName];
 
             BaseParam par = baseTool.GetParam();
-            (par as FitLineParam).EndXName = Model.SelectEndXName;
+            (par as AngleConvertParam).EndXName = Model.SelectEndXName;
         }
 
         private void cobxEndY_SelectedIndexChanged(object o)
@@ -123,7 +123,7 @@ namespace PositionToolsLib.窗体.ViewModels
             StuCoordinateData data = dataManage.PositionDataDic[Model.SelectEndYName];
 
             BaseParam par = baseTool.GetParam();
-            (par as FitLineParam).EndYName = Model.SelectEndYName;
+            (par as AngleConvertParam).EndYName = Model.SelectEndYName;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace PositionToolsLib.窗体.ViewModels
             Model.SelectStartYName = (parDat as AngleConvertParam).StartYName;
             Model.SelectEndXName = (parDat as AngleConvertParam).EndXName;
             Model.SelectEndYName = (parDat as AngleConvertParam).EndYName;
-            Model.CalibFilePath = (baseTool as AngleConvertTool).CalibFilePath;
+            Model.CalibFilePath = parDat.calibFilePath;
 
         }
 
@@ -179,7 +179,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as AngleConvertParam).StartYName = Model.SelectStartYName;
             (par as AngleConvertParam).EndXName = Model.SelectEndXName;
             (par as AngleConvertParam).EndYName = Model.SelectEndYName;
-            (baseTool as AngleConvertTool).CalibFilePath = Model.CalibFilePath;
+            par.calibFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
 
         }
@@ -203,12 +203,14 @@ namespace PositionToolsLib.窗体.ViewModels
                 //更新结果表格数据
                 UpdateResultView(new AngleConvertData(1,
                    (par as AngleConvertParam).Angle));
+                Model.TestInfo = "坐标换算成功";
             }
             else
             {
                 //更新结果表格数据
                 UpdateResultView(new AngleConvertData(1, 0));
-                Console.WriteLine("坐标换算异常");
+                Model.TestInfo = "坐标换算异常";
+               
             }
         }
         /// <summary>

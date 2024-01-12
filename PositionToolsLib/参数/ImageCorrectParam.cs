@@ -23,6 +23,20 @@ namespace PositionToolsLib.参数
                 this.hv_CamParam = value;
             }
         }
+      
+       new string calibFilePath;
+        /// <summary>
+        ///  坐标转换矩阵存放路径
+        /// </summary>    
+        [Description("坐标转换矩阵存放路径"), DefaultValue("")]
+        public string CalibFilePath
+        {
+            get => this.calibFilePath;
+            set
+            {
+                this.calibFilePath = value;
+            }
+        }
 
 
         //Run status value define----1

@@ -11,10 +11,14 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.工具
 {
+    /// <summary>
+    /// 坐标换算工具
+    /// </summary>
+    [Serializable]
     public class CoordConvertTool : BaseTool, IDisposable
     {
         public static int inum = 0;//工具编号
-        public string CalibFilePath = "";//标定文件路径
+        //public string CalibFilePath = "";//标定文件路径
         public CoordConvertTool()
         {
             toolParam = new CoordConvertParam();
@@ -53,17 +57,17 @@ namespace PositionToolsLib.工具
                 bool transFlag = false;
 
                 double  x1 = 0, y1 = 0;
-                if (dm.resultFlagDic[(toolParam as CoordConvertParam).CoordXName])
+                if (dm.resultFlagDic[(toolParam as CoordConvertParam).CoordXName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData xDat = dm.PositionDataDic[(toolParam as CoordConvertParam).CoordXName];
                     x1 = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as CoordConvertParam).CoordYName])
+                if (dm.resultFlagDic[(toolParam as CoordConvertParam).CoordYName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as CoordConvertParam).CoordYName];
                     y1 = yDat.y;
                 }
-               
+                                 
                 HTuple Cx = 0, Cy = 0;
                 if ((toolParam as CoordConvertParam).ConvertWay == EumConvertWay.ToPhysical)
                     transFlag = Transformation_POINT(x1, y1, out Cx, out Cy); //转物理

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GlueDetectionLib.窗体.Models
 {
-    internal class MatchModel : NotifyBase
+    public class MatchModel : NotifyBase
     {
         /// <summary>
       /// 窗体标题
@@ -162,23 +162,23 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private string baseRowText= "0.000";
-        public string BaseRowText
+        private string baseXText= "0.000";
+        public string BaseXText
         {
-            get { return this.baseRowText; }
+            get { return this.baseXText; }
             set
             {
-                baseRowText = value;
+                baseXText = value;
                 DoNotify();
             }
         }
-        private string baseColumnText = "0.000";
-        public string BaseColumnText
+        private string baseYText = "0.000";
+        public string BaseYText
         {
-            get { return this.baseColumnText; }
+            get { return this.baseYText; }
             set
             {
-                baseColumnText = value;
+                baseYText = value;
                 DoNotify();
             }
         }

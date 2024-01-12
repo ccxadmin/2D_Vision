@@ -181,7 +181,7 @@ namespace PositionToolsLib.窗体.Models
 
         {
             ID = id;
-            Angle = angle;
+            Angle =Math.Round( angle,3);
         }
         public int ID { get; set; }
      

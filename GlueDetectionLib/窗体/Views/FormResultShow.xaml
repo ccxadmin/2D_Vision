@@ -126,9 +126,9 @@ VerticalAlignment="Top" Margin="160,40,0,0"
                                        Style="{DynamicResource datagrid}"  Grid.ColumnSpan="2"  Background="Transparent" 
                                         
                                            SelectedIndex="{Binding Model.DgDataSelectIndex}"
-                                           ItemsSource="{Binding Model.DgDataOfResultShowList,Mode=TwoWay}" >
+                                           ItemsSource="{Binding Model.DgDataOfResultShowList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
                                     <DataGrid.Columns>
-                                        <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                        <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
                                         <!--<DataGridComboBoxColumn Header="工具名称"  
                                                                 ItemsSource="{Binding ToolNameList,Mode=TwoWay}"                                                              
                                                                 SelectedItemBinding="{Binding ToolName,Mode=TwoWay}"
@@ -146,19 +146,21 @@ VerticalAlignment="Top" Margin="160,40,0,0"
                       
                                             <DataGridComboBoxColumn.EditingElementStyle>
                                                 <Style TargetType="ComboBox">
+                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
                                                     <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
-                                                    <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                    <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
                                                 </Style>
                                             </DataGridComboBoxColumn.EditingElementStyle>
                                             <DataGridComboBoxColumn.ElementStyle>
                                                 <Style TargetType="ComboBox">
+                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
                                                     <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
-                                                    <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay}" />
+                                                    <Setter Property="SelectedItem" Value="{Binding ToolName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" />
                                                 </Style>
                                             </DataGridComboBoxColumn.ElementStyle>
                                         </DataGridComboBoxColumn>
 
-                                        <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                        <DataGridTextColumn Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
                                     </DataGrid.Columns>
 
                                 </DataGrid>
@@ -188,8 +190,8 @@ VerticalAlignment="Top" Margin="160,40,0,0"
     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,40,5,5"/>
                                 <uc:MyNumUpDown  MaxValue="5000" MinValue="0" OffsetValue="10" DecimalPlaces="0"
                                     HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,40,5,5" 
-                                    Width="130" Height="25" 
-                                                 NumericValue="{Binding Model.NumStartPx}">
+                                    Width="130" Height="25"  ValueChangeAction="{Binding Model.NumStartPxCommand}"  
+                                                 NumericValue="{Binding Model.NumStartPx,Mode=TwoWay}">
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="KeyDown">
                                             <behaviors:InvokeCommandAction Command="{Binding NumStartPxKeyDownCommand}"                                                                    
@@ -202,8 +204,8 @@ VerticalAlignment="Top" Margin="160,40,0,0"
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
                                 <uc:MyNumUpDown   MaxValue="500" MinValue="0" OffsetValue="10" DecimalPlaces="0"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,76,5,5" 
-                                Width="130" Height="25"
-                                                    NumericValue="{Binding Model.NumStartPy}">
+                                Width="130" Height="25"  ValueChangeAction="{Binding Model.NumStartPyCommand}"  
+                                                    NumericValue="{Binding Model.NumStartPy,Mode=TwoWay}">
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="KeyDown">
                                             <behaviors:InvokeCommandAction Command="{Binding NumStartPyKeyDownCommand}"                                                                    

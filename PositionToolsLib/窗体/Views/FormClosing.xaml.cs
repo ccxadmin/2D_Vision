@@ -29,22 +29,21 @@ namespace PositionToolsLib.窗体.Views
             var model = new ClosingViewModel(tool);
             DataContext = model;
         }
+    
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+         
             HOperatorSet.SetSystem("temporary_mem_cache", "false");
             HOperatorSet.SetSystem("clip_region", "false");
-
-            var tool = ClosingViewModel.This.ShowTool;
-            //tool.SetColorOfTopBottomTitle(System.Drawing.Color.FromArgb(255, 109, 60));
+         
+            var tool = ClosingViewModel.This.ShowTool;        
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
-
             tool.SetBackgroundColor(EumControlBackColor.white);
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
-            //RoiEditer.SetRoiController(tool.RoiController);
-            //tool.ViewController.setDispLevel(HWndCtrl.MODE_INCLUDE_ROI);
 
+           
         }
         /// <summary>
         /// 装载winform控件，主动释放方式内存泄漏
@@ -56,5 +55,10 @@ namespace PositionToolsLib.窗体.Views
             host.Child = null;
             base.OnClosed(e);
         }
+
+        //private void cobxImageList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    ClosingViewModel.This.ImageSelectionChangedCommand.DoExecute?.Invoke(sender);
+        //}
     }
 }

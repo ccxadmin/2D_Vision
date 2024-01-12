@@ -92,11 +92,11 @@ Height="700" Width="1000">
                                 <DataGrid  Margin="10,80,10,40"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
                                        VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ff6d3c" 
                                        Style="{DynamicResource datagrid}" SelectedIndex="{Binding Model.DgDataSelectIndex,Mode=TwoWay}"
-                                           ItemsSource="{Binding Model.DgDataOfGlueCaliperWidthList,Mode=TwoWay}" Background="Transparent" >
+                                           ItemsSource="{Binding Model.DgDataOfGlueCaliperWidthList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Background="Transparent" >
                                     <DataGrid.Columns>
-                                        <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
-                                        <DataGridTextColumn Header="卡尺名称"  Binding="{Binding CaliperName,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
-                                        <DataGridTextColumn IsReadOnly="True"  Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                        <DataGridCheckBoxColumn Header="启用" Binding="{Binding Use,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                        <DataGridTextColumn Header="卡尺名称"  Binding="{Binding CaliperName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                        <DataGridTextColumn IsReadOnly="True"  Header="状态"  Binding="{Binding ToolStatus,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
                                     </DataGrid.Columns>
 
                                     <behaviors:Interaction.Triggers>

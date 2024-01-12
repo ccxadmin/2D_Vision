@@ -175,24 +175,24 @@ HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCor
             <GroupBox Grid.Row="2"   Style="{DynamicResource GroupBoxStyle}"  Header="基准点">
                    
                 <Grid>
-                    <Label Style="{DynamicResource LabelStyle}" Content="行坐标："
+                    <Label Style="{DynamicResource LabelStyle}" Content="X坐标："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="60,22"/>
                     <TextBox  Style="{DynamicResource  baseInput}" Width="120"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="140,22,25,25"  Height="25"
                               attach:TexboxAttach.TextBoxCornerRadius="3"
-                              IsReadOnly="True" Text="{Binding Model.BaseRowText}">
+                              IsReadOnly="True" Text="{Binding Model.BaseXText}">
                     </TextBox>
 
-                    <Label Style="{DynamicResource LabelStyle}" Content="列坐标："
+                    <Label Style="{DynamicResource LabelStyle}" Content="Y坐标："
        HorizontalAlignment="Left" VerticalAlignment="Top" 
         Margin="60,56"/>
                     <TextBox  Width="120" Height="25"
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Margin="140,57,25,25"  Style="{DynamicResource  baseInput}"
                               attach:TexboxAttach.TextBoxCornerRadius="3"
-                  IsReadOnly="True"  Text="{Binding Model.BaseColumnText}">
+                  IsReadOnly="True"  Text="{Binding Model.BaseYText}">
 
                     </TextBox>
 

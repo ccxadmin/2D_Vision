@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GlueDetectionLib.窗体.Models
 {
-    internal class GlueGapModel : NotifyBase
+    public class GlueGapModel : NotifyBase
     {
         /// <summary>
         /// 窗体标题
@@ -88,19 +88,7 @@ namespace GlueDetectionLib.窗体.Models
                 DoNotify();
             }
         }
-        /// <summary>
-        ///选择黑白极性名称
-        /// </summary>
-        private string selectPolarityName = "";
-        public string SelectPolarityName
-        {
-            get { return this.selectPolarityName; }
-            set
-            {
-                selectPolarityName = value;
-                DoNotify();
-            }
-        }
+      
         /// <summary>
         ///选择黑白极性索引编号
         /// </summary>
@@ -179,13 +167,13 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private string morphProcessSelectName= "膨胀";
-        public string MorphProcessSelectName
+        private int morphProcessSelectIndex= 0;
+        public int MorphProcessSelectIndex
         {
-            get { return this.morphProcessSelectName; }
+            get { return this.morphProcessSelectIndex; }
             set
             {
-                morphProcessSelectName = value;
+                morphProcessSelectIndex = value;
                 DoNotify();
             }
         }
@@ -201,33 +189,33 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private string convertUnitsSelectName= "像素";
-        public string ConvertUnitsSelectName
+        private int convertUnitsSelectIndex = 0;
+        public int ConvertUnitsSelectIndex
         {
-            get { return this.convertUnitsSelectName; }
+            get { return this.convertUnitsSelectIndex; }
             set
             {
-                convertUnitsSelectName = value;
+                convertUnitsSelectIndex = value;
                 DoNotify();
             }
         }
-        private string unionWaySelectName = "+";
-        public string UnionWaySelectName
+        private int unionWaySelectIndex ;
+        public int UnionWaySelectIndex
         {
-            get { return this.unionWaySelectName; }
+            get { return this.unionWaySelectIndex; }
             set
             {
-                unionWaySelectName = value;
+                unionWaySelectIndex = value;
                 DoNotify();
             }
         }
-        private string unionWay2SelectName = "+";
-        public string UnionWay2SelectName
+        private int unionWay2SelectIndex ;
+        public int UnionWay2SelectIndex
         {
-            get { return this.unionWay2SelectName; }
+            get { return this.unionWay2SelectIndex; }
             set
             {
-                unionWay2SelectName = value;
+                unionWay2SelectIndex = value;
                 DoNotify();
             }
         }
@@ -289,13 +277,13 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private string unionWay3SelectName = "+";
-        public string UnionWay3SelectName
+        private int unionWay3SelectIndex ;
+        public int UnionWay3SelectIndex
         {
-            get { return this.unionWay3SelectName; }
+            get { return this.unionWay3SelectIndex; }
             set
             {
-                unionWay3SelectName = value;
+                unionWay3SelectIndex = value;
                 DoNotify();
             }
         }
@@ -333,13 +321,13 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private string unionWay4SelectName = "+";
-        public string UnionWay4SelectName
+        private int unionWay4SelectIndex;
+        public int UnionWay4SelectIndex
         {
-            get { return this.unionWay4SelectName; }
+            get { return this.unionWay4SelectIndex; }
             set
             {
-                unionWay4SelectName = value;
+                unionWay4SelectIndex = value;
                 DoNotify();
             }
         }
@@ -459,49 +447,7 @@ namespace GlueDetectionLib.窗体.Models
             }
         }
 
-        private int cobxUnionWaySelect = 0;
-        public int CobxUnionWaySelect
-        {
-            get { return this.cobxUnionWaySelect; }
-            set
-            {
-                cobxUnionWaySelect = value;
-                DoNotify();
-            }
-        }
-        private int cobxUnionWay2Select = 0;
-        public int CobxUnionWay2Select
-        {
-            get { return this.cobxUnionWay2Select; }
-            set
-            {
-                cobxUnionWay2Select = value;
-                DoNotify();
-            }
-        }
-
-        private int cobxUnionWay3Select = 0;
-        public int CobxUnionWay3Select
-        {
-            get { return this.cobxUnionWay3Select; }
-            set
-            {
-                cobxUnionWay3Select = value;
-                DoNotify();
-            }
-        }
-        private int cobxUnionWay4Select = 0;
-        public int CobxUnionWay4Select
-        {
-            get { return this.cobxUnionWay4Select; }
-            set
-            {
-                cobxUnionWay4Select = value;
-                DoNotify();
-            }
-        }
-
-
+     
     }
 
 }

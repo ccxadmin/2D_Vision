@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GlueDetectionLib.窗体.ViewModels
 {
-    internal class ColorConvertViewModel : BaseViewModel
+    public class ColorConvertViewModel : BaseViewModel
     {
         public static ColorConvertViewModel This { get; set; }
         public ColorConvertModel Model { get; set; }
@@ -34,9 +34,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            ShowData(par);
-
+          
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -49,23 +47,25 @@ namespace GlueDetectionLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as ColorConvertParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
         }
 
         /// <summary>
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as ColorConvertParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
 
-            Model.SelectImageName = (parDat as ColorConvertParam).InputImageName;
-            Model.ImageFormat = (parDat as ColorConvertParam).ImgFormat;
+            Model.SelectImageName = (par as ColorConvertParam).InputImageName;
+            Model.ImageFormat = (par as ColorConvertParam).ImgFormat;
            
         }
 

@@ -28,11 +28,26 @@
         <DockPanel Margin="1" >
             <Grid>
                 <Rectangle Stroke="#ff6d3c" StrokeThickness="1.5" Margin="0"/>
-                <WindowsFormsHost Name="host" Margin="2" >
-                    <!--<WindowsFormsHost.Child>
+                <Label Height="50" FontSize="20" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+        Content="{Binding Model.TestInfo,Mode=TwoWay}" Name="lbl">
+                    <Label.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Model.TestInfo}"  Value="坐标换算成功">
+                                    <Setter Property="TextBlock.Foreground" Value="Green"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Model.TestInfo}"  Value="坐标换算异常">
+                                    <Setter Property="TextBlock.Foreground" Value="Red"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Label.Style>
+                </Label>
+                <!--<WindowsFormsHost Name="host" Margin="2" >
+                    <WindowsFormsHost.Child>
                         <vision:VisionShowTool Dock="Fill" x:Name="{Binding Model.VisionShowToolName}"/>
-                    </WindowsFormsHost.Child>-->
-                </WindowsFormsHost>
+                    </WindowsFormsHost.Child>
+                </WindowsFormsHost>-->
             </Grid>
         </DockPanel>
 

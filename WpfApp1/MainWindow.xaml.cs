@@ -29,6 +29,8 @@ using PositionToolsLib.窗体.Views;
 using MainFormLib.Views;
 using GlueDetectionLib.参数;
 using System.Windows.Interop;
+using MainFormLib.ViewModels;
+using MainFormLib.Models;
 
 namespace WpfApp1
 {
@@ -74,6 +76,26 @@ namespace WpfApp1
           
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string txt = ((Button)sender).Content.ToString();
+            switch(txt)
+            {
+                case "切换模板":
+                    f.viewModel.SwitchModelType(EumModelType.ProductModel_2);
+                    break;
+                case "新建配方":
+                    f.viewModel.NewRecipe("00000");
+                    break;
+                case "切换配方":
+                    f.viewModel.SwitchRecipe("00000");
+                    break;
+                case "导出配方":
+                    f.viewModel.ExportRecipe("e:","default");
+                    break;
+            }
+          
+        }
     }
 }
    

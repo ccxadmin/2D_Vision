@@ -24,6 +24,17 @@ namespace PositionToolsLib.窗体.Models
             }
         }
 
+        private string testInfo ;
+        public string TestInfo
+        {
+            get { return this.testInfo; }
+            set
+            {
+                testInfo = value;
+                DoNotify();
+            }
+        }
+        
         private int selectConvertWayIndex;
         public int SelectConvertWayIndex
         {
@@ -204,7 +215,7 @@ namespace PositionToolsLib.窗体.Models
 
         {
             ID = id;
-            Angle = angle;
+            Angle =double.Round( angle,3);
         }
         public int ID { get; set; }
 

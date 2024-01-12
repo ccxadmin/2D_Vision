@@ -31,9 +31,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            ShowData(par);
-
+       
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -46,7 +44,18 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
 
+        }
+
+        /// <summary>
+        /// 数据显示
+        /// </summary>
+        /// <param name="parDat"></param>
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
 
@@ -61,18 +70,10 @@ namespace PositionToolsLib.窗体.ViewModels
             int maskHeightValue = (par as DilationParam).MaskHeight;
             int index3 = Model.MaskHeightList.IndexOf(maskHeightValue);
             Model.SelectMaskHeightIndex = index3;
-        }
 
-        /// <summary>
-        /// 数据显示
-        /// </summary>
-        /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
-        {
-
-            Model.SelectImageName = (parDat as DilationParam).InputImageName;
-            Model.SelectMaskWidth = (parDat as DilationParam).MaskWidth;
-            Model.SelectMaskHeight = (parDat as DilationParam).MaskHeight;
+            Model.SelectImageName = (par as DilationParam).InputImageName;
+            Model.SelectMaskWidth = (par as DilationParam).MaskWidth;
+            Model.SelectMaskHeight = (par as DilationParam).MaskHeight;
         }
         /// <summary>
         /// 图像加载
@@ -93,6 +94,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!DilationTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();

@@ -181,8 +181,8 @@ new ObservableCollection<LineCentreResultData>();
           double centreX, double centreY)
         {
             ID = id;
-            CentreX= centreX;
-            CentreY = centreY;
+            CentreX=Math.Round( centreX,3);
+            CentreY =Math.Round( centreY,3);
            
         }
         public static int ID { get; set; }       

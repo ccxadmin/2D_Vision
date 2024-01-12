@@ -251,7 +251,7 @@ namespace PositionToolsLib.窗体.Models
     }
 
     [Serializable]
-    public class DgDataOfResultShow
+    public class DgDataOfResultShow : NotifyBase
     {
         public DgDataOfResultShow(bool use, string toolName, string toolStatus)
         {
@@ -262,9 +262,26 @@ namespace PositionToolsLib.窗体.Models
             //toolNameList.Add("2");
             //toolNameList.Add("3");
         }
-        public bool Use { get; set; }
-        public string ToolName { get; set; }
-        public string ToolStatus { get; set; }
+        private bool use;
+        public bool Use {
+            get=>this.use;
+
+            set { this.use = value; DoNotify(); }
+        }
+        private string toolName;
+        public string ToolName { 
+            get=>this.toolName;
+            set
+            {
+                this.toolName = value; DoNotify();
+            }
+        }
+
+        private string toolStatus;
+        public string ToolStatus {
+            get=>this.toolStatus;
+            set { this.toolStatus = value; DoNotify();
+            } }
 
         //private ObservableCollection<string> toolNameList = new ObservableCollection<string>();
         //public ObservableCollection<string> ToolNameList
@@ -286,9 +303,9 @@ namespace PositionToolsLib.窗体.Models
                          double y, double angle)
         {
             ID = id;         
-            X = x;
-            Y = y;
-            Angle = angle;
+            X =double.Round( x,3);
+            Y =double.Round( y,3);
+            Angle =double.Round( angle,3);
         }
         public int ID { get; set; }
      

@@ -42,7 +42,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         public CommandBase ResetBtnClickCommand { get; set; }
         public CommandBase RdbtnCheckedChangedCommand { get; set; }
 
-        public TemplateMakingViewModel(HObject img, HObject MaskROI,
+        public TemplateMakingViewModel(HObject img, HObject _maskROI,
                                     string _rootPath, EumMakeType
             type = EumMakeType.Model, HObject modelcontour = null)
         {
@@ -65,14 +65,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             eumPanType = (EumPanType)Enum.Parse(typeof(EumPanType), penType);
             Model.CobxPanTypeSelectName = penType;
 
-            HOperatorSet.GenEmptyObj(out MarkRegion);
-            if (GuidePositioning_HDevelopExport.ObjectValided(originalMaskROI))
-            {
-                MarkRegion.Dispose();
-                HOperatorSet.CopyObj(originalMaskROI, out MarkRegion, 1, -1);
-            }
-            Model.CobxPanTypeSelectIndex = 0;
-
+        
             HOperatorSet.GenEmptyObj(out originalContour);
             if (modelcontour != null)
             {
@@ -81,14 +74,20 @@ namespace GlueDetectionLib.窗体.ViewModels
             }
 
             HOperatorSet.GenEmptyObj(out originalMaskROI);
-            if (GuidePositioning_HDevelopExport.ObjectValided(MaskROI))
+            if (GuidePositioning_HDevelopExport.ObjectValided(_maskROI))
             {
                 originalMaskROI.Dispose();
-                HOperatorSet.CopyObj(MaskROI, out originalMaskROI, 1, -1);
+                HOperatorSet.CopyObj(_maskROI, out originalMaskROI, 1, -1);
             }
-
+            HOperatorSet.GenEmptyObj(out MarkRegion);
+            if (GuidePositioning_HDevelopExport.ObjectValided(originalMaskROI))
+            {
+                MarkRegion.Dispose();
+                HOperatorSet.CopyObj(originalMaskROI, out MarkRegion, 1, -1);
+            }
+            Model.CobxPanTypeSelectIndex = 0;
             ///////////////////////////////////////////////////////////////////////
-           
+
             PanTypeSelectionChangedCommand = new CommandBase();
             PanTypeSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxPanType_SelectedIndexChanged(o));
             PanTypeSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -121,7 +120,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             ShowTool = new VisionShowTool();
             ShowTool.Disp_MouseDownHandle += uCvisionLayout1_MouseDown;
             ShowTool.Disp_MouseUpHandle += uCvisionLayout1_MouseUp;
-            //ShowTool.Disp_MouseMoveHandle += uCvisionLayout1_MouseMove;
+            HOperatorSet.SetDraw(ShowTool.HWindowsHandle, "fill");
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             ShowTool.DispImage(img);
             ShowTool.D_HImage = GrabImg = img;
@@ -137,6 +136,7 @@ namespace GlueDetectionLib.窗体.ViewModels
 
         private void uCvisionLayout1_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            HOperatorSet.SetDraw(ShowTool.HWindowsHandle, "fill");
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
                 GuidePositioning_HDevelopExport.isContinue_drawing = true;
@@ -193,7 +193,7 @@ namespace GlueDetectionLib.窗体.ViewModels
                 HOperatorSet.SetDraw(ShowTool.HWindowsHandle, "fill");
                 ShowTool.DispRegion(originalContour, "green");
                 ShowTool.AddregionBuffer(originalContour, "green");
-                ShowTool.DispRegion(MarkRegion, "orange");
+                ShowTool.DispRegion(MarkRegion, "orange", EumDrawModel.fill);
                 ShowTool.AddregionBuffer(MarkRegion, "orange");
             }
 
@@ -281,7 +281,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             ShowTool.DispImage(GrabImg);
             ShowTool.DispRegion(originalContour, "green");
             ShowTool.AddregionBuffer(originalContour, "green");
-            HOperatorSet.SetDraw(ShowTool.HWindowsHandle, "fill");
+           
         }
 
         /// <summary>

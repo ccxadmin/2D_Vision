@@ -147,8 +147,8 @@ namespace PositionToolsLib.窗体.Models
         public LineIntersectionData(int id,double x1, double y1)
         {
             ID = id;
-            X1 = x1;
-            Y1 = y1;
+            X1 =Math.Round( x1,3);
+            Y1 =Math.Round( y1,3);
 
         }
         public int ID { get; set; }      

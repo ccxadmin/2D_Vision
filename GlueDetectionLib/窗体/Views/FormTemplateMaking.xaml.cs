@@ -41,12 +41,11 @@ namespace GlueDetectionLib.窗体.Views
             HOperatorSet.SetSystem("clip_region", "false");
 
             var tool = TemplateMakingViewModel.This.ShowTool;
-            //tool.SetColorOfTopBottomTitle(System.Drawing.Color.FromArgb(255, 109, 60));
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
 
             tool.SetBackgroundColor(EumControlBackColor.white);
-            tool.setDraw(EumDrawModel.margin);
+            //tool.setDraw(EumDrawModel.fill);
             host.Child = tool;
         }
 

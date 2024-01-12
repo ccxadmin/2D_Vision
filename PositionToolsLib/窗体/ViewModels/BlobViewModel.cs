@@ -19,7 +19,7 @@ namespace PositionToolsLib.窗体.ViewModels
         public BlobModel Model { get; set; }
         List<ParticleFeaturesData> particleFeaturesDataList = new List<ParticleFeaturesData>();//表格数据集合
         HObject inspectROI = null;//检测区域
-        HTuple matrix2D = null;
+        HTuple matrix2D = null;//位置偏移补正
         //图像源选择
         public CommandBase ImageSelectionChangedCommand { get; set; }
         public CommandBase UsePosiCorrectCheckedCommand { get; set; }
@@ -40,13 +40,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-          
-            //检测区域
-            if (BaseTool.ObjectValided((par as BlobParam).InspectROI))
-                HOperatorSet.CopyObj((par as BlobParam).InspectROI, out inspectROI, 1, -1);
-            ShowData(par);
-
+                           
             #region Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -81,18 +75,10 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
             #endregion
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as BlobParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
 
-            foreach (var s in dataManage.matrixBufDic)
-                Model.MatrixList.Add(s.Key);
-            string matrixName = (par as BlobParam).MatrixName;
-            int index2 = Model.MatrixList.IndexOf(matrixName);
-            Model.SelectMatrixIndex = index2;
-
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+            cobxMatrixList_SelectedIndexChanged(null);
         }
         /// <summary>
         /// 图像加载
@@ -112,6 +98,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!BlobTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -130,9 +117,28 @@ namespace PositionToolsLib.窗体.ViewModels
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
-            particleFeaturesDataList = (parDat as BlobParam).ParticleFeaturesDataList;
+            BaseParam par = baseTool.GetParam();
+            //检测区域
+            if (BaseTool.ObjectValided((par as BlobParam).InspectROI))
+                HOperatorSet.CopyObj((par as BlobParam).InspectROI, out inspectROI, 1, -1);
+        
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as BlobParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
+            Model.SelectImageName = (par as BlobParam).InputImageName;
+
+
+            foreach (var s in dataManage.matrixBufDic)
+                Model.MatrixList.Add(s.Key);
+            string matrixName = (par as BlobParam).MatrixName;
+            int index2 = Model.MatrixList.IndexOf(matrixName);
+            Model.SelectMatrixIndex = index2;
+
+            particleFeaturesDataList = (par as BlobParam).ParticleFeaturesDataList;
             if (particleFeaturesDataList == null) return;
             Model.DgDataOfBlobList.Clear();        
             GetItemList();
@@ -144,16 +150,14 @@ namespace PositionToolsLib.窗体.ViewModels
             if (Model.DgDataOfBlobList.Count > 0)
                 Model.DgDataSelectIndex = Model.DgDataOfBlobList.Count - 1;
 
-           Model.NumGrayMin = (parDat as BlobParam).GrayMin;
-           Model.NumGrayMax = (parDat as BlobParam).GrayMax;
+           Model.NumGrayMin = (par as BlobParam).GrayMin;
+           Model.NumGrayMax = (par as BlobParam).GrayMax;
 
-            Model.UsePosiCorrectChecked = (parDat as BlobParam).UsePosiCorrect;
-            if ((parDat as BlobParam).UsePosiCorrect)
+            Model.UsePosiCorrectChecked = (par as BlobParam).UsePosiCorrect;
+            if ((par as BlobParam).UsePosiCorrect)
                Model.MatrixEnable = true;
             else
                 Model.MatrixEnable = false;
-
-
         }
 
         private void chxbUsePosiCorrect_CheckedChanged()
@@ -181,6 +185,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxMatrixList_SelectedIndexChanged(object o)
         {
+            if (Model.SelectMatrixIndex == -1) return;
             matrix2D = dataManage.matrixBufDic[Model.SelectMatrixName];
             BaseParam par = baseTool.GetParam();
             (par as BlobParam).MatrixName = Model.SelectMatrixName;

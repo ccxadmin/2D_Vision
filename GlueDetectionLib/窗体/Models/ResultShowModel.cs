@@ -38,7 +38,7 @@ namespace GlueDetectionLib.窗体.Models
         /// <summary>
         ///选择表格索引编号
         /// </summary>
-        private int dgDataSelectIndex;
+        private int dgDataSelectIndex=-1;
         public int DgDataSelectIndex
         {
             get { return this.dgDataSelectIndex; }
@@ -144,8 +144,26 @@ namespace GlueDetectionLib.窗体.Models
         //        DoNotify();
         //    }
         //}
-
-
+        private Action numStartPxCommand;
+        public Action NumStartPxCommand
+        {
+            get { return numStartPxCommand; }
+            set
+            {
+                numStartPxCommand = value;
+                DoNotify();
+            }
+        }
+        private Action numStartPyCommand;
+        public Action NumStartPyCommand
+        {
+            get { return numStartPyCommand; }
+            set
+            {
+                numStartPyCommand = value;
+                DoNotify();
+            }
+        }
 
         private ObservableCollection<string> glueNameList = new ObservableCollection<string>();
         public ObservableCollection<string> GlueNameList
@@ -216,7 +234,7 @@ namespace GlueDetectionLib.窗体.Models
     }
 
     [Serializable]
-    public class DgDataOfResultShow
+    public class DgDataOfResultShow : NotifyBase
     {
         public DgDataOfResultShow(bool use, string toolName, string toolStatus)
         {
@@ -227,9 +245,32 @@ namespace GlueDetectionLib.窗体.Models
             //toolNameList.Add("2");
             //toolNameList.Add("3");
         }
-        public bool Use { get; set; }
-        public string ToolName { get; set; }
-        public string ToolStatus { get; set; }
+        private bool use;
+        public bool Use
+        {
+            get => this.use;
+
+            set { this.use = value; DoNotify(); }
+        }
+        private string toolName;
+        public string ToolName
+        {
+            get => this.toolName;
+            set
+            {
+                this.toolName = value; DoNotify();
+            }
+        }
+
+        private string toolStatus;
+        public string ToolStatus
+        {
+            get => this.toolStatus;
+            set
+            {
+                this.toolStatus = value; DoNotify();
+            }
+        }
 
         //private ObservableCollection<string> toolNameList = new ObservableCollection<string>();
         //public ObservableCollection<string> ToolNameList

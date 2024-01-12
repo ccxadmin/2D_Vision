@@ -9,9 +9,9 @@
     <Grid>
         <Grid.ColumnDefinitions>
            
-            <ColumnDefinition Width="6*" MinWidth="20"/>
-            <ColumnDefinition Width="9*" MinWidth="36"/>
-            <ColumnDefinition Width="6*" MinWidth="20"/>
+            <ColumnDefinition Width="5*" MinWidth="15"/>
+            <ColumnDefinition Width="10*" MinWidth="30"/>
+            <ColumnDefinition Width="5*" MinWidth="15"/>
         </Grid.ColumnDefinitions>
 
        
@@ -23,7 +23,7 @@
                 <Style TargetType="RepeatButton">
                     <Setter Property="Background" Value="#ff6d3c"/>
                     <Setter Property="Foreground" Value="White"/>
-                    <!--<Setter Property="BorderBrush" Value="#ff6d3c"/>-->
+                    <Setter Property="BorderBrush" Value="#ff6d3c"/>
                 
                     <Setter Property="Template">
                         <Setter.Value>
@@ -62,8 +62,8 @@
             <TextBox.Style>
                 <Style TargetType="TextBox">
                     <Setter Property="Background" Value="#FFFFFF"/>
-                    <Setter Property="BorderBrush" Value="#707070"/>
-                    <Setter Property="BorderThickness" Value="0,1,0,1"/>
+                    <Setter Property="BorderBrush" Value="#ff6d3c"/>
+                    <Setter Property="BorderThickness" Value="0,1.5,0,1.5"/>
                     <Setter Property="Foreground" Value="#ff6d3c"/>
                     <!--<Setter Property="Template">
                         <Setter.Value>
@@ -95,6 +95,7 @@
                 <Style TargetType="RepeatButton">
                     <Setter Property="Background" Value="#ff6d3c"/>
                     <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="#ff6d3c"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type RepeatButton}">

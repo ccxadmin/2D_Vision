@@ -234,9 +234,9 @@ namespace PositionToolsLib.窗体.Models
             double area)
         {
             ID = id;
-            X = x;
-            Y = y;
-            Area = area;
+            X =Math.Round( x,3);
+            Y =Math.Round( y,3);
+            Area =Math.Round( area,3);
                
         }
      

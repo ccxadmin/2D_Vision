@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Views\FormVision.xaml.cs" />
     <Compile Remove="Views\frmRecipe.xaml.cs" />
   </ItemGroup>
 
@@ -35,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="Views\FormVision.xaml" />
     <Page Remove="Views\frmRecipe.xaml" />
   </ItemGroup>
 

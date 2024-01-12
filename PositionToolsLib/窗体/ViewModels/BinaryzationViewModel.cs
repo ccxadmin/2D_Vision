@@ -40,9 +40,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            ShowData(par);
-           
+                 
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -65,24 +63,26 @@ namespace PositionToolsLib.窗体.ViewModels
             NumGrayMaxKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
             Model.NumGrayMaxValueChangeAction = new Action(() => NumGrayMaxValueEvent());
 
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-
-            string imageName = (par as BinaryzationParam).InputImageName;
-
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
         }
         /// <summary>
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
-            Model.SelectImageName = (parDat as BinaryzationParam).InputImageName;
-            Model.GrayMin = (parDat as BinaryzationParam).GrayMin;
-            Model.GrayMax = (parDat as BinaryzationParam).GrayMax;
-            Model.IsInvertImage = (parDat as BinaryzationParam).IsInvert;
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);                
+            string imageName = (par as BinaryzationParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
+
+            Model.SelectImageName = (par as BinaryzationParam).InputImageName;
+            Model.GrayMin = (par as BinaryzationParam).GrayMin;
+            Model.GrayMax = (par as BinaryzationParam).GrayMax;
+            Model.IsInvertImage = (par as BinaryzationParam).IsInvert;
         }
         /// <summary>
         /// 图像加载
@@ -102,6 +102,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!DilationTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();

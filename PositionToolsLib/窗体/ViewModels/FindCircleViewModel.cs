@@ -41,14 +41,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-         
-            //检测区域
-            if (BaseTool.ObjectValided((par as FindCircleParam).InspectXLD))
-                HOperatorSet.CopyObj((par as FindCircleParam).InspectXLD, out inspectXLD, 1, -1);
-
-            ShowData(par);
-
+          
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -73,7 +66,23 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+            cobxMatrixList_SelectedIndexChanged(null);
+        }
 
+        /// <summary>
+        /// 数据显示
+        /// </summary>
+        /// <param name="parDat"></param>
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+
+            //检测区域
+            if (BaseTool.ObjectValided((par as FindCircleParam).InspectXLD))
+                HOperatorSet.CopyObj((par as FindCircleParam).InspectXLD, out inspectXLD, 1, -1);
+           
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
             string imageName = (par as FindCircleParam).InputImageName;
@@ -85,22 +94,17 @@ namespace PositionToolsLib.窗体.ViewModels
             string matrixName = (par as FindCircleParam).MatrixName;
             int index2 = Model.MatrixList.IndexOf(matrixName);
             Model.SelectMatrixIndex = index2;
-        }
 
-        /// <summary>
-        /// 数据显示
-        /// </summary>
-        /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
-        {
-            Model.NumEdgeThd = (parDat as FindCircleParam).EdgeThd;
-            Model.NumCaliperCount = (parDat as FindCircleParam).CaliperNum;
-            Model.NumCaliperWidth = (parDat as FindCircleParam).CaliperWidth;
-            Model.NumCaliperHeight = (parDat as FindCircleParam).CaliperHeight;
-            Model.SelectTransitionIndex = (int)(parDat as FindCircleParam).Transition;
-            Model.SelectEdgeIndex= (int)(parDat as FindCircleParam).Select;
-            Model.UsePosiCorrectChecked = (parDat as FindCircleParam).UsePosiCorrect;
-            if ((parDat as FindCircleParam).UsePosiCorrect)
+            Model.SelectImageName = (par as FindCircleParam).InputImageName;
+            Model.SelectMatrixName=(par as FindCircleParam).MatrixName  ;
+            Model.NumEdgeThd = (par as FindCircleParam).EdgeThd;
+            Model.NumCaliperCount = (par as FindCircleParam).CaliperNum;
+            Model.NumCaliperWidth = (par as FindCircleParam).CaliperWidth;
+            Model.NumCaliperHeight = (par as FindCircleParam).CaliperHeight;
+            Model.SelectTransitionIndex = (int)(par as FindCircleParam).Transition;
+            Model.SelectEdgeIndex= (int)(par as FindCircleParam).Select;
+            Model.UsePosiCorrectChecked = (par as FindCircleParam).UsePosiCorrect;
+            if ((par as FindCircleParam).UsePosiCorrect)
                 Model.MatrixEnable = true;
             else
                 Model.MatrixEnable = false;
@@ -126,7 +130,8 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
-            if (!DilationTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
+            if (Model.SelectImageIndex == -1) return;
+                if (!DilationTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
             ShowTool.DispImage(imgBuf);
@@ -142,7 +147,8 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxMatrixList_SelectedIndexChanged(object value)
         {
-            matrix2D = dataManage.matrixBufDic[Model.SelectMatrixName];
+            if (Model.SelectMatrixIndex == -1) return;
+                matrix2D = dataManage.matrixBufDic[Model.SelectMatrixName];
             BaseParam par = baseTool.GetParam();
             (par as FindCircleParam).MatrixName = Model.SelectMatrixName;
         }

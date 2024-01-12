@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PositionToolsLib.参数
 {
     /// <summary>
-    /// 直线相交检测参数
+    /// 直线交点检测参数
     /// </summary>
     [Serializable]
     public class LineIntersectionParam : BaseParam

@@ -39,14 +39,8 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
           
-            //检测区域
-            if (BaseTool.ObjectValided((par as FindLineParam).InspectXLD))
-                HOperatorSet.CopyObj((par as FindLineParam).InspectXLD, out inspectXLD, 1, -1);
-
-            ShowData(par);
-
+       
             #region Command
 
             ImageSelectionChangedCommand = new CommandBase();
@@ -74,7 +68,22 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
             #endregion
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+            cobxMatrixList_SelectedIndexChanged(null);
+        }
+        /// <summary>
+        /// 数据显示
+        /// </summary>
+        /// <param name="parDat"></param>
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
 
+            //检测区域
+            if (BaseTool.ObjectValided((par as FindLineParam).InspectXLD))
+                HOperatorSet.CopyObj((par as FindLineParam).InspectXLD, out inspectXLD, 1, -1);
+          
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
             string imageName = (par as FindLineParam).InputImageName;
@@ -87,22 +96,15 @@ namespace PositionToolsLib.窗体.ViewModels
             int index2 = Model.MatrixList.IndexOf(matrixName);
             Model.SelectMatrixIndex = index2;
 
-
-        }
-        /// <summary>
-        /// 数据显示
-        /// </summary>
-        /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
-        {
-           Model.NumEdgeThd = (parDat as FindLineParam).EdgeThd;
-          Model.NumCaliperCount= (parDat as FindLineParam).CaliperNum;
-         Model.NumCaliperWidth = (parDat as FindLineParam).CaliperWidth;
-          Model.NumCaliperHeight = (parDat as FindLineParam).CaliperHeight;
-           Model.SelectTransitionIndex = (int)(parDat as FindLineParam).Transition;
-           Model.SelectEdgeIndex= (int)(parDat as FindLineParam).Select;
-           Model.UsePosiCorrectChecked= (parDat as FindLineParam).UsePosiCorrect;
-            if ((parDat as FindLineParam).UsePosiCorrect)
+            Model.SelectImageName = (par as FindLineParam).InputImageName;
+            Model.NumEdgeThd = (par as FindLineParam).EdgeThd;
+            Model.NumCaliperCount = (par as FindLineParam).CaliperNum;
+            Model.NumCaliperWidth = (par as FindLineParam).CaliperWidth;
+            Model.NumCaliperHeight = (par as FindLineParam).CaliperHeight;
+            Model.SelectTransitionIndex = (int)(par as FindLineParam).Transition;
+            Model.SelectEdgeIndex = (int)(par as FindLineParam).Select;
+            Model.UsePosiCorrectChecked = (par as FindLineParam).UsePosiCorrect;
+            if ((par as FindLineParam).UsePosiCorrect)
                 Model.MatrixEnable = true;
             else
                 Model.MatrixEnable = false;
@@ -126,6 +128,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!FindLineTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -142,6 +145,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxMatrixList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectMatrixIndex == -1) return;
             matrix2D = dataManage.matrixBufDic[Model.SelectMatrixName];
             BaseParam par = baseTool.GetParam();
             (par as FindLineParam).MatrixName = Model.SelectMatrixName;

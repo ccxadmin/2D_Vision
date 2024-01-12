@@ -963,13 +963,14 @@ namespace VisionShowLib.UserControls
         /// </summary>
         /// <param name="region"></param>
         /// <param name="color"></param>
-        public void DispRegion(HObject region, string color)
+        public void DispRegion(HObject region, string color, 
+                            EumDrawModel draw= EumDrawModel.margin)
         {
             if (!ObjectValided(region))
             {
                 return;
             }
-            setDraw(EumDrawModel.margin);
+            setDraw(draw);
             HOperatorSet.SetColor(hWindowsHandle, color);
             HOperatorSet.DispObj(region, hWindowsHandle);
         }
@@ -1096,7 +1097,7 @@ namespace VisionShowLib.UserControls
                 HOperatorSet.SelectObj(concatedObj, out HObject objectSelected, imageIndex);
                 DispImage(objectSelected);
             }
-            setDraw(EumDrawModel.margin);
+            //setDraw(EumDrawModel.margin);
             for (int j = 1; j <= number; j++)
             {
                 HOperatorSet.SelectObj(concatedObj, out HObject objectSelected2, j);

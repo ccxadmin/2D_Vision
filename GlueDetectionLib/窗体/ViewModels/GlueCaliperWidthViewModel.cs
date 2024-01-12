@@ -15,7 +15,7 @@ using VisionShowLib.UserControls;
 
 namespace GlueDetectionLib.窗体.ViewModels
 {
-    internal class GlueCaliperWidthViewModel : BaseViewModel
+    public class GlueCaliperWidthViewModel : BaseViewModel
     {
         public static GlueCaliperWidthViewModel This { get; set; }
         public GlueCaliperWidthModel Model { get; set; }
@@ -62,10 +62,8 @@ namespace GlueDetectionLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            this.regionBufList = (par as GlueCaliperWidthParam).RegionBufList;
-            ShowData(par);
-
+          
+       
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -112,10 +110,22 @@ namespace GlueDetectionLib.窗体.ViewModels
             UsePosiCorrectCheckedChangedCommand.DoExecute = new Action<object>((o) => chxbUsePosiCorrect_CheckedChanged());
             UsePosiCorrectCheckedChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
+            HOperatorSet.GenEmptyObj(out glueCaliperRegion);
 
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+        }
+
+        /// <summary>
+        /// 数据显示
+        /// </summary>
+        /// <param name="parDat"></param>
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+            this.regionBufList = (par as GlueCaliperWidthParam).RegionBufList;
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
-
             string imageName = (par as GlueCaliperWidthParam).InputImageName;
             int index = Model.ImageList.IndexOf(imageName);
             Model.SelectImageIndex = index;
@@ -127,23 +137,13 @@ namespace GlueDetectionLib.窗体.ViewModels
             int index2 = Model.MatrixList.IndexOf(matrixName);
             Model.SelectMatrixIndex = index2;
 
-            HOperatorSet.GenEmptyObj(out glueCaliperRegion);
-        }
-
-        /// <summary>
-        /// 数据显示
-        /// </summary>
-        /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
-        {
-            Model.SelectImageName = (parDat as GlueCaliperWidthParam).InputImageName;
-
-            Model.PixelRatio = (parDat as GlueCaliperWidthParam).PixleRatio.ToString();
-            Model.CobxMatrixListEnable = Model.UsePosiCorrect = (parDat as GlueCaliperWidthParam).UsePosiCorrect;
-            Model.CaliperHeight = (parDat as GlueCaliperWidthParam).CaliperHeight;
-            Model.CaliperEdgeThd = (parDat as GlueCaliperWidthParam).CaliperEdgeThd;
-            Model.DistanceMin = (parDat as GlueCaliperWidthParam).DistanceMin;
-            Model.DistanceMax = (parDat as GlueCaliperWidthParam).DistanceMax;
+            Model.SelectImageName = (par as GlueCaliperWidthParam).InputImageName;
+            Model.PixelRatio = (par as GlueCaliperWidthParam).PixleRatio.ToString();
+            Model.CobxMatrixListEnable = Model.UsePosiCorrect = (par as GlueCaliperWidthParam).UsePosiCorrect;
+            Model.CaliperHeight = (par as GlueCaliperWidthParam).CaliperHeight;
+            Model.CaliperEdgeThd = (par as GlueCaliperWidthParam).CaliperEdgeThd;
+            Model.DistanceMin = (par as GlueCaliperWidthParam).DistanceMin;
+            Model.DistanceMax = (par as GlueCaliperWidthParam).DistanceMax;
 
             if (regionBufList == null) return;
         

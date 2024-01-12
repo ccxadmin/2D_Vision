@@ -13,7 +13,7 @@ using VisionShowLib.UserControls;
 
 namespace GlueDetectionLib.窗体.ViewModels
 {
-    internal class GlueGapViewModel : BaseViewModel
+    public class GlueGapViewModel : BaseViewModel
     {
         //DataManage dataManage = null;
         //HObject imgBuf = null;//图像缓存
@@ -75,15 +75,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            //检测区域
-            if (BaseTool.ObjectValided((par as GlueGapParam).InspectROI))
-                HOperatorSet.CopyObj((par as GlueGapParam).InspectROI, out inspectROI, 1, -1);
-
-            this.regionBufList = (par as GlueGapParam).RegionBufList;
-            this.genRegionWay = (par as GlueGapParam).GenRegionWay;
-            ShowData(par);
-
+        
             #region  Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -189,12 +181,31 @@ namespace GlueDetectionLib.窗体.ViewModels
             MenuItemClickCommand.DoExecute = new Action<object>((o) => 重置ToolStripMenuItem_Click());
             MenuItemClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
             #endregion
+            HOperatorSet.GenEmptyObj(out glueSearchRegion);
+            HOperatorSet.GenEmptyObj(out glueShapeRegion);
 
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+        }
+
+        /// <summary>
+        /// 数据显示
+        /// </summary>
+        /// <param name="parDat"></param>
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+            //检测区域
+            if (BaseTool.ObjectValided((par as GlueGapParam).InspectROI))
+                HOperatorSet.CopyObj((par as GlueGapParam).InspectROI, out inspectROI, 1, -1);
+
+            this.regionBufList = (par as GlueGapParam).RegionBufList;
+            this.genRegionWay = (par as GlueGapParam).GenRegionWay;
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
             string imageName = (par as GlueGapParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
+            int index1 = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index1;
 
             foreach (var s in dataManage.matrixBufDic)
                 Model.MatrixList.Add(s.Key);
@@ -202,23 +213,22 @@ namespace GlueDetectionLib.窗体.ViewModels
             int index2 = Model.MatrixList.IndexOf(matrixName);
             Model.SelectMatrixIndex = index2;
 
-            HOperatorSet.GenEmptyObj(out glueSearchRegion);
-            HOperatorSet.GenEmptyObj(out glueShapeRegion);
-        }
 
-        /// <summary>
-        /// 数据显示
-        /// </summary>
-        /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
-        {
-            Model.SelectImageName = (parDat as GlueGapParam).InputImageName;
-            Model.PixelRatio = (parDat as GlueGapParam).PixleRatio.ToString();
-            Model.GrayDown = (parDat as GlueGapParam).GrayMin;
-            Model.GrayUp = (parDat as GlueGapParam).GrayMax;
-            Model.AreaDown=(parDat as GlueGapParam).AreaMin;
-            Model.AreaUp=(parDat as GlueGapParam).AreaMax;
-            Model.MatrixEnable= Model.UsePosiCorrectChecked = (parDat as GlueGapParam).UsePosiCorrect;
+            Model.AutoRegionTypeSelectIndex = (baseTool as GlueGapTool).autoRegionTypeSelectIndex;
+            Model.SelectPolarityIndex = (baseTool as GlueGapTool).selectPolarityIndex;
+            Model.MorphProcessSelectIndex = (baseTool as GlueGapTool).morphProcessSelectIndex;
+            Model.NumRadius = (baseTool as GlueGapTool).numRadius;
+            Model.ConvertUnitsSelectIndex = (baseTool as GlueGapTool).convertUnitsSelectIndex;
+            Model.ManulRegionTypeSelectIndex = (baseTool as GlueGapTool).manulRegionTypeSelectIndex;
+            Model.ShowBaseRegionChecked = (baseTool as GlueGapTool).showBaseRegionChecked;
+
+            Model.SelectImageName = (par as GlueGapParam).InputImageName;
+            Model.PixelRatio = (par as GlueGapParam).PixleRatio.ToString();
+            Model.GrayDown = (par as GlueGapParam).GrayMin;
+            Model.GrayUp = (par as GlueGapParam).GrayMax;
+            Model.AreaDown=(par as GlueGapParam).AreaMin;
+            Model.AreaUp=(par as GlueGapParam).AreaMax;
+            Model.MatrixEnable= Model.UsePosiCorrectChecked = (par as GlueGapParam).UsePosiCorrect;
 
             if (genRegionWay == EumGenRegionWay.auto)
                 Model.GenRegionWay = Models.EumGenRegionWay.auto;
@@ -230,7 +240,12 @@ namespace GlueDetectionLib.窗体.ViewModels
                 int index = regionBufList.FindIndex(t => t.regionName == "自动内圈区域1");
                 StuRegionBuf regionBuf = regionBufList[index];
                 Model.UseAutoGenInner1Checked = regionBuf.isUse;
-                Model.CobxUnionWaySelect = (int)regionBuf.regionUnionWay;
+                {
+                    Model.BtnAutoGenInnerRegion1Enable = regionBuf.isUse;
+                    Model.CobxUnionWayEnable = regionBuf.isUse;
+                }
+
+                Model.UnionWaySelectIndex = (int)regionBuf.regionUnionWay;
 
             }
             if (regionBufList.Exists(t => t.regionName == "自动内圈区域2"))
@@ -238,14 +253,23 @@ namespace GlueDetectionLib.窗体.ViewModels
                 int index = regionBufList.FindIndex(t => t.regionName == "自动内圈区域2");
                 StuRegionBuf regionBuf = regionBufList[index];
                 Model.UseAutoGenInner2Checked = regionBuf.isUse;
-                Model.CobxUnionWay2Select = (int)regionBuf.regionUnionWay;
+
+                {
+                    Model.BtnAutoGenInnerRegion2Enable = regionBuf.isUse;
+                    Model.CobxUnionWay2Enable = regionBuf.isUse;
+                }
+                Model.UnionWay2SelectIndex = (int)regionBuf.regionUnionWay;
             }
             if (regionBufList.Exists(t => t.regionName == "手动检测区域1"))
             {
                 int index = regionBufList.FindIndex(t => t.regionName == "手动检测区域1");
                 StuRegionBuf regionBuf = regionBufList[index];
                 Model.UseManualDrawRegionChecked = regionBuf.isUse;
-                Model.CobxUnionWay3Select = (int)regionBuf.regionUnionWay;
+                {
+                    Model.BtnManualDrawRegionEnable = regionBuf.isUse;
+                    Model.CobxUnionWay3Enable = regionBuf.isUse;
+                }
+                Model.UnionWay3SelectIndex = (int)regionBuf.regionUnionWay;
 
             }
             if (regionBufList.Exists(t => t.regionName == "手动检测区域2"))
@@ -253,7 +277,11 @@ namespace GlueDetectionLib.窗体.ViewModels
                 int index = regionBufList.FindIndex(t => t.regionName == "手动检测区域2");
                 StuRegionBuf regionBuf = regionBufList[index];
                 Model.UseManualDrawRegion2Checked = regionBuf.isUse;
-                Model.CobxUnionWay4Select = (int)regionBuf.regionUnionWay;
+                {
+                    Model.BtnManualDrawRegion2Enable = regionBuf.isUse;
+                    Model.CobxUnionWay4Enable = regionBuf.isUse;
+                }
+                Model.UnionWay4SelectIndex = (int)regionBuf.regionUnionWay;
             }
 
         }
@@ -313,7 +341,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             }
             HOperatorSet.ReduceDomain(imgBuf, glueSearchRegion, out HObject imageReduced);
             glueShapeRegion.Dispose();
-            if (Model.SelectPolarityName == "白色")
+            if (Model.SelectPolarityIndex == 0)
                 HOperatorSet.BinaryThreshold(imageReduced, out glueShapeRegion, "max_separability", "light", out HTuple UsedThreshold);
             else
                 HOperatorSet.BinaryThreshold(imageReduced, out glueShapeRegion, "max_separability", "dark", out HTuple UsedThreshold);
@@ -456,7 +484,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             HObject innerRegion = null;
             int radius = Model.NumRadius;
             //物理单位
-            if (Model.ConvertUnitsSelectName == "物理尺寸")
+            if (Model.ConvertUnitsSelectIndex == 1)
             {
                 if (!double.TryParse(Model.PixelRatio, out double value))
                     value = 1.0;
@@ -466,7 +494,7 @@ namespace GlueDetectionLib.窗体.ViewModels
                 HOperatorSet.CopyObj(glueShapeRegion, out innerRegion, 1, -1);
             else
             {
-                if (Model.MorphProcessSelectName == "膨胀")
+                if (Model.MorphProcessSelectIndex == 0)
                     HOperatorSet.DilationCircle(glueShapeRegion, out innerRegion, radius);
                 else
                     HOperatorSet.ErosionCircle(glueShapeRegion, out innerRegion, radius);
@@ -477,7 +505,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             ShowTool.DispRegion(innerRegion, "orange");
             ShowTool.AddregionBuffer(innerRegion, "orange");
             EumRegionUnionWay way = EumRegionUnionWay.concat;
-            if (Model.UnionWaySelectName == "-")
+            if (Model.UnionWaySelectIndex == 1)
                 way = EumRegionUnionWay.difference;
             if (regionBufList.Exists(t => t.regionName == "自动内圈区域1"))
             {
@@ -524,7 +552,7 @@ namespace GlueDetectionLib.窗体.ViewModels
                 HOperatorSet.CopyObj(glueShapeRegion, out innerRegion2, 1, -1);
             else
             {
-                if (Model.MorphProcessSelectName == "膨胀")
+                if (Model.MorphProcessSelectIndex == 0)
                     HOperatorSet.DilationCircle(glueShapeRegion, out innerRegion2, radius);
                 else
                     HOperatorSet.ErosionCircle(glueShapeRegion, out innerRegion2, radius);
@@ -535,7 +563,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             ShowTool.DispRegion(innerRegion2, "orange");
             ShowTool.AddregionBuffer(innerRegion2, "orange");
             EumRegionUnionWay way = EumRegionUnionWay.concat;
-            if (Model.UnionWay2SelectName == "-")
+            if (Model.UnionWay2SelectIndex == 1)
                 way = EumRegionUnionWay.difference;
             if (regionBufList.Exists(t => t.regionName == "自动内圈区域2"))
             {
@@ -561,7 +589,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         private void cobxUnionWay_SelectedIndexChanged(object o)
         {
             EumRegionUnionWay way = EumRegionUnionWay.concat;
-            if (Model.UnionWaySelectName == "-")
+            if (Model.UnionWaySelectIndex == 1)
                 way = EumRegionUnionWay.difference;
             if (regionBufList.Exists(t => t.regionName == "自动内圈区域1"))
             {
@@ -574,7 +602,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         private void cobxUnionWay2_SelectedIndexChanged(object o)
         {
             EumRegionUnionWay way = EumRegionUnionWay.concat;
-            if (Model.UnionWay2SelectName == "-")
+            if (Model.UnionWay2SelectIndex == 1)
                 way = EumRegionUnionWay.difference;
             if (regionBufList.Exists(t => t.regionName == "自动内圈区域2"))
             {
@@ -703,7 +731,7 @@ namespace GlueDetectionLib.窗体.ViewModels
               
                 //添加检测区域到集合
                 EumRegionUnionWay way = EumRegionUnionWay.concat;
-                if (Model.UnionWay3SelectName == "-")
+                if (Model.UnionWay3SelectIndex == 1)
                     way = EumRegionUnionWay.difference;
                 if (regionBufList.Exists(t => t.regionName == "手动检测区域1"))
                 {
@@ -731,7 +759,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         private void cobxUnionWay3_SelectedIndexChanged(object o)
         {
             EumRegionUnionWay way = EumRegionUnionWay.concat;
-            if (Model.UnionWay3SelectName == "-")
+            if (Model.UnionWay3SelectIndex ==1)
                 way = EumRegionUnionWay.difference;
             if (regionBufList.Exists(t => t.regionName == "手动检测区域1"))
             {
@@ -819,7 +847,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             
                 //添加检测区域到集合
                 EumRegionUnionWay way = EumRegionUnionWay.concat;
-                if (Model.UnionWay4SelectName == "-")
+                if (Model.UnionWay4SelectIndex == 1)
                     way = EumRegionUnionWay.difference;
                 if (regionBufList.Exists(t => t.regionName == "手动检测区域2"))
                 {
@@ -847,7 +875,7 @@ namespace GlueDetectionLib.窗体.ViewModels
         private void cobxUnionWay4_SelectedIndexChanged(object o)
         {
             EumRegionUnionWay way = EumRegionUnionWay.concat;
-            if (Model.UnionWay4SelectName == "-")
+            if (Model.UnionWay4SelectIndex == 1)
                 way = EumRegionUnionWay.difference;
             if (regionBufList.Exists(t => t.regionName == "手动检测区域2"))
             {
@@ -958,6 +986,16 @@ namespace GlueDetectionLib.窗体.ViewModels
                   Model.GrayDown, Model.GrayUp);
             BaseParam par = baseTool.GetParam();
             (par as GlueGapParam).ResultBaseRegion = region.Clone();
+            if (Model.ShowBaseRegionChecked)
+            {
+                ShowTool.ClearAllOverLays();
+                ShowTool.DispImage(imgBuf);
+                if (GlueGapTool.ObjectValided((par as GlueGapParam).ResultBaseRegion))
+                {
+                    ShowTool.DispRegion((par as GlueGapParam).ResultBaseRegion, "green");
+                    ShowTool.AddregionBuffer((par as GlueGapParam).ResultBaseRegion, "green");
+                }
+            }
         }
         /// <summary>
         /// 参数保存
@@ -967,6 +1005,16 @@ namespace GlueDetectionLib.窗体.ViewModels
         private void btnSave_Click()
         {
             BaseParam par = baseTool.GetParam();
+
+            (baseTool as GlueGapTool).autoRegionTypeSelectIndex = Model.AutoRegionTypeSelectIndex;
+            (baseTool as GlueGapTool).selectPolarityIndex = Model.SelectPolarityIndex;
+            (baseTool as GlueGapTool).morphProcessSelectIndex = Model.MorphProcessSelectIndex;
+            (baseTool as GlueGapTool).numRadius = Model.NumRadius;
+            (baseTool as GlueGapTool).convertUnitsSelectIndex = Model.ConvertUnitsSelectIndex;
+            (baseTool as GlueGapTool).manulRegionTypeSelectIndex = Model.ManulRegionTypeSelectIndex;
+            (baseTool as GlueGapTool).showBaseRegionChecked = Model.ShowBaseRegionChecked;
+
+
             (par as GlueGapParam).PixleRatio =double.Parse( Model.PixelRatio);
             (par as GlueGapParam).GrayMin = Model.GrayDown;
             (par as GlueGapParam).GrayMax = Model.GrayUp;

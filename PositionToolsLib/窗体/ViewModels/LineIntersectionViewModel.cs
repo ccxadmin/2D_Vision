@@ -33,10 +33,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-           
-            ShowData(par);
-
+          
             #region  Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -60,25 +57,9 @@ namespace PositionToolsLib.窗体.ViewModels
 
 
             #endregion
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
 
-
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as LineIntersectionParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
-
-            foreach (var s in dataManage.LineDataDic)
-                Model.LineList.Add(s.Key);
-
-            string lineName = (par as LineIntersectionParam).InputLineName;
-            int index2 = Model.LineList.IndexOf(lineName);
-            Model.SelectLine1Index = index2;
-
-
-            string line2Name = (par as LineIntersectionParam).InputLine2Name;
-            int index3 = Model.LineList.IndexOf(line2Name);
-            Model.SelectLine2Index = index3;
 
         }
         /// <summary>
@@ -96,10 +77,30 @@ namespace PositionToolsLib.窗体.ViewModels
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
-            lineData1 = (parDat as LineIntersectionParam).LineData;
-            lineData2 = (parDat as LineIntersectionParam).LineData2;
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as LineIntersectionParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
+            Model.SelectImageName = (par as LineIntersectionParam).InputImageName;
+
+            foreach (var s in dataManage.LineDataDic)
+                Model.LineList.Add(s.Key);
+
+            string lineName = (par as LineIntersectionParam).InputLineName;
+            int index2 = Model.LineList.IndexOf(lineName);
+            Model.SelectLine1Index = index2;
+
+
+            string line2Name = (par as LineIntersectionParam).InputLine2Name;
+            int index3 = Model.LineList.IndexOf(line2Name);
+            Model.SelectLine2Index = index3;
+
+            lineData1 = (par as LineIntersectionParam).LineData;
+            lineData2 = (par as LineIntersectionParam).LineData2;
         }
         /// <summary>
         ///输入图像选择
@@ -215,7 +216,7 @@ namespace PositionToolsLib.窗体.ViewModels
             }
         }
         /// <summary>
-        /// 更新直线相交结果表格数据
+        /// 更新直线交点结果表格数据
         /// </summary>
         /// <param name="LineIntersectionData"></param>
         void UpdateResultView(LineIntersectionData Data)

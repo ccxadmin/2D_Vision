@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.参数
 {
-    internal class AngleConvertParam : BaseParam
+    [Serializable]
+    public class AngleConvertParam : BaseParam
     { 
         /*****************************************Property*****************************************/
         #region---Property---

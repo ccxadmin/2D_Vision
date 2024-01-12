@@ -46,8 +46,9 @@
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="140,22,25,25"  Height="25"
                                 ItemsSource="{Binding Model.ImageList}"                          
-  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+ SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"
+                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" 
+                              >
 
                         <behaviors:Interaction.Triggers>
                             <behaviors:EventTrigger EventName="SelectionChanged">

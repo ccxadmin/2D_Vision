@@ -74,23 +74,23 @@ namespace PositionToolsLib.工具
                 }
 
                 double x1 = 0, y1= 0;
-                if (dm.resultFlagDic[(toolParam as FitLineParam).StartXName])
+                if (dm.resultFlagDic[(toolParam as FitLineParam).StartXName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData xDat = dm.PositionDataDic[(toolParam as FitLineParam).StartXName];
                     x1 = xDat.x;                   
                 }
-                if (dm.resultFlagDic[(toolParam as FitLineParam).StartYName])
+                if (dm.resultFlagDic[(toolParam as FitLineParam).StartYName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as FitLineParam).StartYName];
                     y1 = yDat.y;
                 }
                 double x2 = 0, y2 = 0;
-                if (dm.resultFlagDic[(toolParam as FitLineParam).EndXName])
+                if (dm.resultFlagDic[(toolParam as FitLineParam).EndXName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData xDat = dm.PositionDataDic[(toolParam as FitLineParam).EndXName];
                     x2 = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as FitLineParam).EndYName])
+                if (dm.resultFlagDic[(toolParam as FitLineParam).EndYName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as FitLineParam).EndYName];
                     y2 = yDat.y;

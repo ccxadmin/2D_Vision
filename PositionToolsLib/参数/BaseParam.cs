@@ -16,12 +16,16 @@ namespace PositionToolsLib.参数
     public class BaseParam
     {
         /// <summary>
-        /// 坐标转换矩阵:通过外部配方变换实时更新
-        /// </summary>
+        /// 坐标转换矩阵:通过外部标定矩阵变换实时更新
+        /// </summary>  
         [NonSerialized]
         public HTuple hv_HomMat2D ;
+        /// <summary>
+        ///  坐标转换矩阵存放路径
+        /// </summary>
+        [NonSerialized]
+        public string calibFilePath;
         
-       
 
         string inputImageName = "原始图像";
         /// <summary>

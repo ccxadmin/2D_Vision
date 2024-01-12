@@ -10,7 +10,7 @@ xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareRe
 xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
 Background="#ffffff"
 Style="{x:Null}" FocusVisualStyle="{x:Null}"
-mc:Ignorable="d"  Loaded="Window_Loaded"  
+mc:Ignorable="d"  Loaded="Window_Loaded" 
 Height="700" Width="1000">
 
     <UserControl.Resources>
@@ -42,151 +42,220 @@ Height="700" Width="1000">
             <Grid.Resources>
                 <model:ComparisonConverter x:Key="ComparisonConverter" />
                 <model:EnumConverter x:Key="enumConverter" />
-                <Style TargetType="MenuItem" x:Key="custoMenuItem">
-                    <EventSetter Event="Click" Handler="MenuItem_Click"/>
+                <model:BoolConverter x:Key="boolConverter" />
+           
+                <Style TargetType="MenuItem" x:Key="PosMenuItem">
+                    <EventSetter Event="Click" Handler="PosMenuItem_Click"/>
+                </Style>
+                <Style TargetType="MenuItem" x:Key="GlueMenuItem">
+                    <EventSetter Event="Click" Handler="GlueMenuItem_Click"/>
                 </Style>
             </Grid.Resources>
             <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
 
-            <TabControl Style="{DynamicResource TabControlStyle}" Margin="2">
+            <TabControl Style="{DynamicResource TabControlStyle}" Margin="2" >
                 <TabItem Style="{DynamicResource TabItemStyle}" Header="面阵相机">
                     <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">-->
 
                     <Grid Margin="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
                         <!--<Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>-->
-                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Height="110"  
-                                      VerticalAlignment="Top"  Header="相机选择">
+                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="0"  Header="相机选择">
                             <Grid>
                                 <Label Style="{DynamicResource LabelStyle}" Content="相机型号："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="10,8,0,0"/>
-                                <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="135"
+                                <ComboBox Name="cobxCamTypeList" Style="{DynamicResource MyCbbStyle}" Width="135"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,8,0,0"  Height="25" 
-                                ItemsSource="{Binding Model.ImageList}"                          
-  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                              Margin="80,8,0,0"  Height="25"  IsEnabled="{Binding Model.IsCamAlive , Converter={StaticResource boolConverter}}"
+                                ItemsSource="{Binding Model.CamTypeList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"                          
+  SelectedItem="{Binding Model.SelectCamTypeName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.SelectCamTypeIndex,Mode=TwoWay}"  >
 
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="SelectionChanged">
-                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                            <behaviors:InvokeCommandAction Command="{Binding CamTypeSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxCamTypeList,Path=SelectedValue}"/>
                                         </behaviors:EventTrigger>
                                     </behaviors:Interaction.Triggers>
                                 </ComboBox>
                                 <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="打开相机"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="230,5,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3" 
-                          Command="{Binding SaveButClickCommand}"/>
+Margin="230,5,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3"  IsEnabled="{Binding Model.BtnOpenCamEnable}"
+                          Command="{Binding OpenCamButClickCommand}"/>
 
                                 <Label Style="{DynamicResource LabelStyle}" Content="相机索引："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="10,48,0,0"/>
                                 <ComboBox  Style="{DynamicResource MyCbbStyle}" Width="135"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,48,0,0"  Height="25" 
-                                ItemsSource="{Binding Model.ImageList}"                          
-  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
+                              Margin="80,48,0,0"  Height="25"  x:Name="cobxCamIndexerList"
+                                ItemsSource="{Binding Model.CamIndexerList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"                          
+  SelectedItem="{Binding Model.SelectCamIndexerName,Mode=TwoWay}"  IsEnabled="{Binding Model.IsCamAlive , Converter={StaticResource boolConverter}}"
+                    SelectedIndex="{Binding Model.SelectCamIndexerIndex,Mode=TwoWay}"  >
 
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="SelectionChanged">
-                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                            <behaviors:InvokeCommandAction Command="{Binding CamIndexerSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxCamIndexerList,Path=SelectedValue}"/>
                                         </behaviors:EventTrigger>
                                     </behaviors:Interaction.Triggers>
                                 </ComboBox>
                                 <Button Style="{DynamicResource PrimaryButton}" Height="30" Content="关闭相机"
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="230,45,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3" 
-                          Command="{Binding SaveButClickCommand}"/>
+Margin="230,45,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3"   IsEnabled="{Binding Model.BtnCloseCamEnable}"
+                          Command="{Binding CloseCamButClickCommand}"/>
 
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Height="110"  
-                                      VerticalAlignment="Top"  Header="相机参数" Margin="3,120,3,3">
+                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="1" 
+                                  Header="相机参数"  IsEnabled="{Binding Model.IsCamAlive}">
                             <Grid>
                                 <Label Style="{DynamicResource LabelStyle}" Content="曝光(us)："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="10,8,0,0"/>
-                                <Slider  Style="{DynamicResource  sliderStyle}" Width="135"
+                                <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="80,8,0,0"  Height="25" 
-                                 >
-                                    <behaviors:Interaction.Triggers>
-                                        <behaviors:EventTrigger EventName="SelectionChanged">
-                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
-                                        </behaviors:EventTrigger>
-                                    </behaviors:Interaction.Triggers>
+                                         Maximum="{Binding Model.ExpouseMaxValue,Mode=TwoWay}"
+                                         Minimum="{Binding Model.ExpouseMinValue,Mode=TwoWay}"
+                                         Value="{Binding Model.ExpouseSliderValue,Mode=TwoWay}"
+                                 Thumb.DragCompleted ="expouseSlider_DragCompleted" >
+                                   
                                 </Slider>
-                                <TextBox  Height="30" Style="{DynamicResource baseInput}"
-                                              attach:TexboxAttach.TextBoxCornerRadius="3"
+                                <uc:MyNumUpDown  Height="25" 
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="230,5,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3" />
+Margin="210,8,0,0" Width="100"   MaxValue="{Binding Model.ExpouseMaxValue,Mode=TwoWay}"
+  MinValue="{Binding  Model.ExpouseMinValue,Mode=TwoWay}"
+         NumericValue="{Binding Model.ExpouseNumricValue,Mode=TwoWay}"
+                   OffsetValue="1000" DecimalPlaces="0"   
+                                   ValueChangeAction="{Binding Model.ExpouseNumericCommand}"         >
+
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding ExpouseNumericKeyDownCommand}"                                                                    
+                                        PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
+
+                                </uc:MyNumUpDown>
 
                                 <Label Style="{DynamicResource LabelStyle}" Content="增益(db)："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
-                           Margin="10,48,0,0"/>
-                                <Slider  Style="{DynamicResource  sliderStyle}" Width="135"
+                           Margin="10,45,0,0"/>
+                                <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,48,0,0"  Height="25" >
+                              Margin="80,47,0,0"  Height="25" 
+                                          Maximum="{Binding Model.GainMaxValue,Mode=TwoWay}"
+ Minimum="{Binding Model.GainMinValue,Mode=TwoWay}"
+ Value="{Binding Model.GainSliderValue,Mode=TwoWay}"
+                                     Thumb.DragCompleted ="gainSlider_DragCompleted"     >
 
-                                    <behaviors:Interaction.Triggers>
-                                        <behaviors:EventTrigger EventName="SelectionChanged">
-                                            <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
-                                        </behaviors:EventTrigger>
-                                    </behaviors:Interaction.Triggers>
+                                  
                                 </Slider>
-                                <TextBox Style="{DynamicResource  baseInput}" Height="30" 
+                                <uc:MyNumUpDown  Height="25" 
                             HorizontalAlignment="Left" VerticalAlignment="Top"
-                                             attach:TexboxAttach.TextBoxCornerRadius="3"
-Margin="230,45,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3" />
+Margin="210,45,0,0" Width="100"  
+                    MaxValue="{Binding Model.GainMaxValue,Mode=TwoWay}"
+  MinValue="{Binding  Model.GainMinValue,Mode=TwoWay}"
+         NumericValue="{Binding Model.GainNumricValue,Mode=TwoWay}"             
+                      OffsetValue="1" DecimalPlaces="0"                           
+                         ValueChangeAction="{Binding Model.GainNumericCommand}"       >
+                               
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding GainNumericKeyDownCommand}"                                                                    
+      PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
+
+
+                                </uc:MyNumUpDown>
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Height="110"  Width="180"
-                                      VerticalAlignment="Top" HorizontalAlignment="Left" Header="图像采集" Margin="2,240,3,3">
+                        <GroupBox Style="{DynamicResource GroupBoxStyle}"   Width="170"
+                                     Grid.Row="2"  
+                                  HorizontalAlignment="Left" Header="图像采集" >
                             <Grid>
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="单帧采集"
                           HorizontalAlignment="Left" VerticalAlignment="Top"  Width="70"
                                             attach:ButtonAttach.ButtonCornerRadius="3"
-                           Margin="10,8,0,0"/>
+                           Margin="6,8,0,0" Command="{Binding OneShotBtnClickCommand}" 
+                                        IsEnabled="{Binding Model.BtnOneShotEnable}"
+                                        />
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="连续采集"
 HorizontalAlignment="Left" VerticalAlignment="Top"  Width="70"
-                  attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="95,8,0,0"/>
+                  attach:ButtonAttach.ButtonCornerRadius="3" Command="{Binding ContinueGrabBtnClickCommand}" 
+ Margin="85,8,0,0"   IsEnabled="{Binding Model.BtnContinueGrabEnable}"/>
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="参数保存"
                           HorizontalAlignment="Left" VerticalAlignment="Top"  Width="70"
                                             attach:ButtonAttach.ButtonCornerRadius="3"
-                           Margin="10,45,0,0"/>
+                           Margin="6,45,0,0" Command="{Binding SaveCamParamBtnClickCommand}"  />
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="停止采集"
 HorizontalAlignment="Left" VerticalAlignment="Top"  Width="70"
-                  attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="95,45,0,0"/>
+                  attach:ButtonAttach.ButtonCornerRadius="3" Command="{Binding StopGrabBtnClickCommand}" 
+ Margin="85,45,0,0"  IsEnabled="{Binding Model.BtnStopGrabEnable}"/>
 
                             </Grid>
                         </GroupBox>
-                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Height="110"  Width="150"
-                                      VerticalAlignment="Top" HorizontalAlignment="Right" Header="图像采集" Margin="3,240,3,3">
+                        <GroupBox Style="{DynamicResource GroupBoxStyle}"  Width="152"
+                                Margin="180,3,3,3"     IsEnabled="{Binding Model.IsCamAlive}"
+                                  Grid.Row="2" HorizontalAlignment="Left" Header="图像采集" >
                             <Grid>
                                 <Label Style="{DynamicResource   LabelStyle}" Content="偏差阈值:"
                           HorizontalAlignment="Left" VerticalAlignment="Top"  
                            Margin="-1,8,0,0"/>
                                 <uc:MyNumUpDown HorizontalAlignment="Right" VerticalAlignment="Top"
-                                                   Width="80" Height="25" Margin="3,8,1,3"/>
+                                                   Width="80" Height="25" Margin="3,8,1,3"
+                                                DecimalPlaces="0" DefaultValue="10"
+                                                MaxValue="100" MinValue="-100" OffsetValue="10"
+                                                NumericValue="{Binding Model.NumDeviationThd,Mode=TwoWay}"
+                                                ValueChangeAction="{Binding Model.DeviationThdNumericCommand}"                                     
+                                                >
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding NumDeviationThdKeyDownCommand}"                                                                    
+       PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
+
+
+                                </uc:MyNumUpDown>
                                 <Label Style="{DynamicResource   LabelStyle}" Content="限位机制:"
 HorizontalAlignment="Left" VerticalAlignment="Top"  
  Margin="-1,45,0,0"/>
                                 <uc:MyNumUpDown HorizontalAlignment="Right" VerticalAlignment="Top"
-                         Width="80" Height="25" Margin="3,45,1,3"/>
+                         Width="80" Height="25" Margin="3,45,1,3"
+                                                DefaultValue="20" DecimalPlaces="0"
+                                                MaxValue="100" MinValue="10"
+                                                OffsetValue="10" NumericValue="{Binding Model.NumLimitMethd,Mode=TwoWay}"
+                                                 ValueChangeAction="{Binding Model.LimitMethdNumericCommand}"  >
 
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding NumLimitMethdKeyDownCommand}"                                                                    
+PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
 
+                                    </behaviors:Interaction.Triggers>
+
+                                </uc:MyNumUpDown>
                             </Grid>
                         </GroupBox>
-                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Margin="3,360,3,3"
+                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="3"
                                       Header="测试信息">
-                            <RichTextBox  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"               
-     attach:RichTextBoxAttach.RichText="{Binding  Model.RichIfo,Mode=TwoWay}"
+                          
+                            <RichTextBox    VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" 
+     attach:RichTextBoxAttach.RichText="{Binding  Model.RichIfo,Mode=TwoWay}" x:Name="richTxtInfo"
      attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWay}">
                                 <RichTextBox.Resources>
                                     <Style  TargetType="{x:Type RichTextBox}">
@@ -239,16 +308,15 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
                                     </ContextMenu>
                                 </RichTextBox.ContextMenu>
                             </RichTextBox>
+                       
                         </GroupBox>
-
-
 
                     </Grid>
                     <!--</ScrollViewer>-->
                 </TabItem>
-                <TabItem Style="{DynamicResource TabItemStyle}" Header="线扫相机">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                                  VerticalScrollBarVisibility="Auto">
+                <TabItem Style="{DynamicResource TabItemStyle}" Header="线扫相机"  >
+                    <!--<ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                                  VerticalScrollBarVisibility="Disabled">-->
                         <Grid Margin="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="auto"/>
@@ -334,8 +402,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
                             <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="3"   Header="测试信息" >
 
                                 <RichTextBox  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"               
-attach:RichTextBoxAttach.RichText="{Binding  Model.RichIfo,Mode=TwoWay}"
-attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWay}">
+>
                                     <RichTextBox.Resources>
                                         <Style  TargetType="{x:Type RichTextBox}">
                                             <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -391,7 +458,7 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
 
 
                         </Grid>
-                    </ScrollViewer>
+                    <!--</ScrollViewer>-->
                 </TabItem>
                 <TabItem Style="{DynamicResource TabItemStyle}" Header="定位检测">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
@@ -431,7 +498,7 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" HorizontalAlignment="Center"
            VerticalAlignment="Top" Width="160" Height="25" Margin="0,7,0,0"  ItemsSource="{Binding Model.ModelTypeList,
                                                UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
-                                          SelectedItem="{ Binding Model.ModelType,Mode=TwoWay}" x:Name="cobxModelTypeList"
+                                          SelectedItem="{ Binding Model.ModelTypeSelectName,Mode=TwoWay}" x:Name="cobxModelTypeList"
                                           SelectedIndex="{Binding Model.ModelTypeSelectIndex,Mode=TwoWay}">
                                     <!--<ComboBoxItem Content="ProductModel_1"/>
                                     <ComboBoxItem Content="ProductModel_2"/>
@@ -622,25 +689,25 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                                         <Setter.Value>
                                                             <ContextMenu  >
 
-                                                                <MenuItem Header="上移"  Style="{DynamicResource custoMenuItem}"
+                                                                <MenuItem Header="上移"  Style="{DynamicResource PosMenuItem}"
                                  IsEnabled= "{Binding MenuItemEnable,   Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.first}}"    >
                                                                     <MenuItem.Icon>
                                                                         <Image Source="../images/上移.ico" />
                                                                     </MenuItem.Icon>
                                                                 </MenuItem>
-                                                                <MenuItem Header="下移"   Style="{DynamicResource custoMenuItem}"
+                                                                <MenuItem Header="下移"   Style="{DynamicResource PosMenuItem}"
                                  IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.last}}"   
                                                                          >
                                                                     <MenuItem.Icon>
                                                                         <Image Source="../images/下移.ico"/>
                                                                     </MenuItem.Icon>
                                                                 </MenuItem>
-                                                                <MenuItem Header="删除" Style="{DynamicResource custoMenuItem}"  >
+                                                                <MenuItem Header="删除" Style="{DynamicResource PosMenuItem}"  >
                                                                     <MenuItem.Icon>
                                                                         <Image Source="../images/删除.png"/>
                                                                     </MenuItem.Icon>
                                                                 </MenuItem>
-                                                                <MenuItem Header="修改备注" Style="{DynamicResource custoMenuItem}">
+                                                                <MenuItem Header="修改备注" Style="{DynamicResource PosMenuItem}">
 
                                                                     <MenuItem.Icon>
                                                                         <Image Source="../images/备注 (1).png"/>
@@ -651,8 +718,8 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                                             </ContextMenu>
                                                         </Setter.Value>
                                                     </Setter>
-                                                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem__MouseDoubleClick"/>
-                                                    <EventSetter Event="MouseUp" Handler="ListViewItem_MouseUp"/>
+                                                    <EventSetter Event="MouseDoubleClick" Handler="PosListViewItem__MouseDoubleClick"/>
+                                                    <EventSetter Event="MouseUp" Handler="PosListViewItem_MouseUp"/>
                                                     <Setter Property="Background" Value="#ffffff"/>
                                                     <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
                                                     <Style.Triggers>
@@ -663,7 +730,17 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                                             <Setter Property="Background" Value="#ff6d3c"/>
                                                             <Setter Property="Foreground" Value="#ffffff"/>
                                                         </Trigger>
+                                                        <DataTrigger Binding="{Binding ToolStatus}"  Value="OK">
+                                                            <Setter Property="Foreground" Value="Green"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ToolStatus}" Value="NG">
+                                                            <Setter Property="Foreground" Value="Red"/>
+                                                        </DataTrigger>
+
                                                     </Style.Triggers>
+                                                    
+                                                    
+                                                    
                                                 </Style>
                                             </ListView.ItemContainerStyle>
                                             <!--<behaviors:Interaction.Triggers>
@@ -674,6 +751,10 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                                     <behaviors:InvokeCommandAction Command="{Binding ToolsOfPosMouseDownCommand}" CommandParameter="{Binding ElementName=listViewToolsOfPosition,Path=SelectedValue}"/>
                                                 </behaviors:EventTrigger>
                                             </behaviors:Interaction.Triggers>-->
+
+                                          
+
+
 
                                         </ListView>
 
@@ -697,25 +778,33 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                 </Grid.RowDefinitions>
                                 <ToolBarTray Height="35" Grid.Row="0" Margin="1" >
                                     <ToolBar Height="35" Band="0" BandIndex="0" Background="Transparent" Padding="0">
-                                        <Button Margin="2" Background="Transparent"   ToolTip="打开流程">
+                                        <Button Margin="2" Background="Transparent"   ToolTip="打开流程"
+                                                   Command="{Binding GlueToolBarBtnClickCommand}"                         
+  CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                                             <Button.Content>
                                                 <Image Source="../imgs/打开项目.png"/>
                                             </Button.Content>
                                         </Button>
                                         <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                        <Button Margin="2" Background="Transparent"   ToolTip="保存流程">
+                                        <Button Margin="2" Background="Transparent"   ToolTip="保存流程"
+                                                Command="{Binding GlueToolBarBtnClickCommand}"                         
+CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                                             <Button.Content>
                                                 <Image Source="../imgs/保存项目.png"/>
                                             </Button.Content>
                                         </Button>
                                         <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                        <Button Margin="2" Background="Transparent"   ToolTip="运行流程">
+                                        <Button Margin="2" Background="Transparent"   ToolTip="运行流程"
+      Command="{Binding GlueToolBarBtnClickCommand}"                         
+CommandParameter="{Binding RelativeSource={RelativeSource Self}}"            >
                                             <Button.Content>
                                                 <Image Source="../imgs/试运行.png"/>
                                             </Button.Content>
                                         </Button>
                                         <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                        <Button Margin="2" Background="Transparent"   ToolTip="清空流程" Cursor="">
+                                        <Button Margin="2" Background="Transparent"   ToolTip="清空流程" Cursor=""
+                               Command="{Binding GlueToolBarBtnClickCommand}"                         
+CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
                                             <Button.Content>
                                                 <Image Source="../imgs/清空_清空.png"/>
                                             </Button.Content>
@@ -724,47 +813,123 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                 </ToolBarTray>
                                 <Menu Grid.Row="1" Margin="1" 
                                        Style="{DynamicResource WD.DefaultMenu}" >
-                                    <MenuItem Header="前处理工具"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}" >
-                                        <MenuItem Header="颜色转换" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="膨胀" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="腐蚀" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="开运算" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="闭运算" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="二值化" Style="{DynamicResource WD.DefaultMenuItem}"/>
+                                    <MenuItem Header="图像前处理"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}" >
+                                        <MenuItem Header="颜色转换" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                     Command="{Binding GlueMenuClickCommand}"
+   CommandParameter="颜色转换"/>
+                                        <MenuItem Header="膨胀" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                     Command="{Binding GlueMenuClickCommand}"
+   CommandParameter="膨胀"/>
+                                        <MenuItem Header="腐蚀" Style="{DynamicResource WD.DefaultMenuItem}"
+                                           Command="{Binding GlueMenuClickCommand}"
+CommandParameter="腐蚀" />
+                                        <MenuItem Header="开运算" Style="{DynamicResource WD.DefaultMenuItem}"
+                                           Command="{Binding GlueMenuClickCommand}"
+CommandParameter="开运算"                                                 />
+                                        <MenuItem Header="闭运算" Style="{DynamicResource WD.DefaultMenuItem}"
+                                           Command="{Binding GlueMenuClickCommand}"
+CommandParameter="闭运算"                                                  />
+                                        <MenuItem Header="二值化" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            Command="{Binding GlueMenuClickCommand}"
+CommandParameter="二值化"                                                 />
                                     </MenuItem>
                                     <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="定位工具"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
-                                        <MenuItem Header="模板匹配" Style="{DynamicResource WD.DefaultMenuItem}"/>
+                                    <MenuItem Header="定位识别"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
+                                        <MenuItem Header="模板匹配" Style="{DynamicResource WD.DefaultMenuItem}"
+                                             Command="{Binding GlueMenuClickCommand}"
+CommandParameter="模板匹配"                                                 />
                                     </MenuItem>
                                     <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="胶水检测工具"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
-                                        <MenuItem Header="漏胶" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="偏位" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="断胶" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                        <MenuItem Header="胶宽" Style="{DynamicResource WD.DefaultMenuItem}"/>
+                                    <MenuItem Header="胶水检测"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
+                                        <MenuItem Header="漏胶" Style="{DynamicResource WD.DefaultMenuItem}"
+                                              Command="{Binding GlueMenuClickCommand}"
+CommandParameter="漏胶"                                                 />
+                                        <MenuItem Header="偏位" Style="{DynamicResource WD.DefaultMenuItem}"
+                                               Command="{Binding GlueMenuClickCommand}"
+CommandParameter="偏位"                                                 />
+                                        <MenuItem Header="断胶" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                Command="{Binding GlueMenuClickCommand}"
+CommandParameter="断胶"                                                  />
+                                        <MenuItem Header="胶宽" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                Command="{Binding GlueMenuClickCommand}"
+CommandParameter="胶宽"                                                  />
                                     </MenuItem>
                                     <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="结果显示工具"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
-                                        <MenuItem Header="结果显示" Style="{DynamicResource WD.DefaultMenuItem}"/>
-                                    </MenuItem>
-
+                                    <MenuItem Header="结果显示"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}"
+                            Command="{Binding GlueMenuClickCommand}"
+CommandParameter="结果显示" />
                                 </Menu>
                                 <ListView  Grid.Row="2"
-                                        Style="{DynamicResource ListViewStyle}"  ItemsSource="{Binding}" >
+                                        Style="{DynamicResource ListViewStyle}"  
+                                            x:Name="listViewToolsOfGlue"  
+ SelectedIndex="{Binding Model.ToolsOfGlueSelectIndex,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+ItemsSource="{Binding Model.ToolsOfGlueList,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" >
 
                                     <ListView.View>
                                         <GridView>
                                             <GridViewColumn Header="序号" Width="40" DisplayMemberBinding="{Binding Path=ID}"/>
-                                            <GridViewColumn Header="工具名称" Width="90" DisplayMemberBinding="{Binding Path=Name}"/>
-                                            <GridViewColumn Header="工具状态" Width="90" DisplayMemberBinding="{Binding Path=Age}"/>
-                                            <GridViewColumn Header="工具备注" Width="90" DisplayMemberBinding="{Binding Path=Age}"/>
+                                            <GridViewColumn Header="工具名称" Width="120" DisplayMemberBinding="{Binding Path=ToolName}"/>
+                                            <GridViewColumn Header="状态" Width="40" DisplayMemberBinding="{Binding Path=ToolStatus}"/>
+                                            <GridViewColumn Header="工具备注" Width="120" DisplayMemberBinding="{Binding Path=ToolNotes}"/>
                                         </GridView>
                                     </ListView.View>
-                                    <ListView.ContextMenu>
-                                        <ContextMenu  Style="{x:Null}">
-                                            <MenuItem Header="clear" Style="{x:Null}"/>
-                                        </ContextMenu>
-                                    </ListView.ContextMenu>
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="ContextMenu">
+                                                <Setter.Value>
+                                                    <ContextMenu  >
+
+                                                        <MenuItem Header="上移"  Style="{DynamicResource GlueMenuItem}"
+IsEnabled= "{Binding MenuItemEnable,   Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.first}}"    >
+                                                            <MenuItem.Icon>
+                                                                <Image Source="../images/上移.ico" />
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                        <MenuItem Header="下移"   Style="{DynamicResource GlueMenuItem}"
+IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.last}}"   
+                                        >
+                                                            <MenuItem.Icon>
+                                                                <Image Source="../images/下移.ico"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                        <MenuItem Header="删除" Style="{DynamicResource GlueMenuItem}"  >
+                                                            <MenuItem.Icon>
+                                                                <Image Source="../images/删除.png"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+                                                        <MenuItem Header="修改备注" Style="{DynamicResource GlueMenuItem}">
+
+                                                            <MenuItem.Icon>
+                                                                <Image Source="../images/备注 (1).png"/>
+                                                            </MenuItem.Icon>
+                                                        </MenuItem>
+
+
+                                                    </ContextMenu>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <EventSetter Event="MouseDoubleClick" Handler="GlueListViewItem__MouseDoubleClick"/>
+                                            <EventSetter Event="MouseUp" Handler="GlueListViewItem_MouseUp"/>
+                                            <Setter Property="Background" Value="#ffffff"/>
+                                            <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="true">
+                                                    <Setter Property="Background" Value="#dddddd"/>
+                                                </Trigger>
+                                                <Trigger Property="IsSelected" Value="true">
+                                                    <Setter Property="Background" Value="#ff6d3c"/>
+                                                    <Setter Property="Foreground" Value="#ffffff"/>
+                                                </Trigger>
+                                                <DataTrigger Binding="{Binding ToolStatus}"  Value="OK">
+                                                    <Setter Property="Foreground" Value="Green"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ToolStatus}" Value="NG">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
                                 </ListView>
                             </Grid>
 
@@ -785,19 +950,19 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
                                     <attach:RichButton   Icon="../imgs/新建.png" Foreground="#ff6d3c"
                     Content="新建" Margin="2" Background="Transparent" 
                        BorderBrush="#ff6d3c"   BorderThickness="0"        
-                       Width="55"    Orientation="Horizontal" >
+                       Width="55"    Orientation="Horizontal" Command="{Binding NewRecipeClickCommand}">
 
                                     </attach:RichButton>
                                     <Separator Background="Gray" BorderBrush="#ff6d3c" BorderThickness="1"/>
                                     <attach:RichButton   Icon="../imgs/删除.png" Foreground="#ff6d3c"
-     Content="删除" Margin="2" Background="Transparent" 
+     Content="删除" Margin="2" Background="Transparent" Command="{Binding DeleteRecipeClickCommand}"
         BorderBrush="#ff6d3c"   BorderThickness="0"        
         Width="55"    Orientation="Horizontal" Cursor="Hand">
 
                                     </attach:RichButton>
                                     <Separator Background="Gray" BorderBrush="#ff6d3c" BorderThickness="1"/>
                                     <attach:RichButton   Icon="../imgs/保存.png" Foreground="#ff6d3c"
-     Content="保存" Margin="2" Background="Transparent" 
+     Content="保存" Margin="2" Background="Transparent" Command="{Binding SaveRecpeClickCommand}"
         BorderBrush="#ff6d3c"   BorderThickness="0"        
         Width="55"    Orientation="Horizontal">
 
@@ -809,11 +974,12 @@ attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWa
 
                             <DataGrid  Grid.Row="1" Margin="3,5"   Background="#ffffff" 
         VerticalGridLinesBrush="#dddddd"   BorderThickness="1.5" BorderBrush="#ff6d3c"
-        Style="{DynamicResource datagrid}"  IsReadOnly="False"  ItemsSource="{Binding Model.RecipeDgList,Mode=TwoWay}"
-              >
+        Style="{DynamicResource datagrid}"  IsReadOnly="False" 
+                                     SelectedIndex="{Binding Model.RecipeDgSelectIndex,Mode=TwoWay}"  
+                                       ItemsSource="{Binding Model.RecipeDgList ,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" >
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="配方名称" Binding="{Binding Name,Mode=TwoWay}" Width="165" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridCheckBoxColumn Header="启用"  Binding="{Binding IsUse,Mode=TwoWay}" Width="165" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                    <DataGridTextColumn Header="配方名称" Binding="{Binding Name,UpdateSourceTrigger=PropertyChanged,  Mode=TwoWay}" Width="165" ElementStyle="{StaticResource datagridtextblock}"/>
+                                    <DataGridCheckBoxColumn Header="启用"  Binding="{Binding IsUse,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Width="165" ElementStyle="{StaticResource datagridcheckbox}"/>
                                 </DataGrid.Columns>
 
                             </DataGrid>

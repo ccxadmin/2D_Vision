@@ -138,6 +138,7 @@ namespace GlueDetectionLib.工具
                 log.Error(funName, "模板训练失败");
                 modelTrans = null;
                 ho_ModelTrans.Dispose();
+                ho_ImageReduced.Dispose();
                 ho_ImageReduced2.Dispose();
                 subROI.Dispose();
                 return false;
@@ -159,6 +160,7 @@ namespace GlueDetectionLib.工具
                 log.Error(funName, "模板训练失败");
                 modelTrans = null;
                 ho_ModelTrans.Dispose();
+                ho_ImageReduced.Dispose();
                 ho_ImageReduced2.Dispose();
                 subROI.Dispose();
                 return false;
@@ -187,9 +189,15 @@ namespace GlueDetectionLib.工具
             (toolParam as MatchParam).ModelImgOfWhole = (toolParam as MatchParam).InputImg.Clone();
 
             HOperatorSet.WriteShapeModel( hv_ModelID, (toolParam as MatchParam).RootFolder+ "\\"+toolName+".shm");
+          if(ObjectValided(ho_ImageReduced))
+            {
+                HOperatorSet.CropDomain(ho_ImageReduced,out HObject imagePart);
+                HOperatorSet.WriteImage(imagePart, "png", 0, (toolParam as MatchParam).RootFolder + "\\" + toolName + ".png");
+                imagePart.Dispose();
+            }
           
-            HOperatorSet.WriteImage((toolParam as MatchParam).InputImg, "bmp", 0, (toolParam as MatchParam).RootFolder + "\\" + toolName + ".bmp");
             ho_ModelTrans.Dispose();
+            ho_ImageReduced.Dispose();
             ho_ImageReduced2.Dispose();
             subROI.Dispose();
             return true;
@@ -221,7 +229,9 @@ namespace GlueDetectionLib.工具
                 if (hv_ModelID != null && hv_ModelID.Length > 0)
                     HOperatorSet.ClearShapeModel(hv_ModelID);
                 hv_ModelID = null;
-                if(System.IO.File.Exists((toolParam as MatchParam).RootFolder + "\\" + toolName + ".shm"))
+                if (!System.IO.Directory.Exists((toolParam as MatchParam).RootFolder))
+                    System.IO.Directory.CreateDirectory((toolParam as MatchParam).RootFolder);
+                if (System.IO.File.Exists((toolParam as MatchParam).RootFolder + "\\" + toolName + ".shm"))
                    HOperatorSet.ReadShapeModel((toolParam as MatchParam).RootFolder + "\\" + toolName + ".shm", out hv_ModelID);
 
                 (toolParam as MatchParam).InputImg = dm.imageBufDic[(toolParam as MatchParam).InputImageName];

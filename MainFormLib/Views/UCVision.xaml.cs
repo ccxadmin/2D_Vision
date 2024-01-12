@@ -1,4 +1,5 @@
 ﻿using HalconDotNet;
+using LightSourceController.ViewModels;
 using MainFormLib.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -24,13 +25,15 @@ namespace MainFormLib.Views
     public partial class UCVision : UserControl
     {
         static UCVision uCVision = null;
-        VisionViewModel model = null;
+        public VisionViewModel viewModel { get; set; } = null;
         public UCVision(string camStationName = "camStationName_1")
         {
-            InitializeComponent();
-             model = new VisionViewModel(camStationName);
-            DataContext = model;
-
+            InitializeComponent();          
+            viewModel = new VisionViewModel(
+                AppenTxt,
+                ClearTxt,
+                camStationName);
+            DataContext = viewModel;        
         }
         ~UCVision()
         {
@@ -63,8 +66,8 @@ namespace MainFormLib.Views
                     
             HOperatorSet.SetSystem("temporary_mem_cache", "false");
             HOperatorSet.SetSystem("clip_region", "false");
-            HOperatorSet.SetLineWidth(model.ShowTool.HWindowsHandle, 2);
-            var tool = model.ShowTool;  
+            HOperatorSet.SetLineWidth(viewModel.ShowTool.HWindowsHandle, 2);
+            var tool = viewModel.ShowTool;  
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
 
@@ -72,23 +75,69 @@ namespace MainFormLib.Views
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
 
-            model.WindowsLoadedCommand.DoExecute?.Invoke(sender);
+            viewModel.WindowsLoadedCommand.DoExecute?.Invoke(sender);
         }
         
-        private void ListViewItem__MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void PosListViewItem__MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            model.ToolsOfPosDoubleClickCommand.DoExecute?.Invoke(sender);
+            viewModel.ToolsOfPosDoubleClickCommand.DoExecute?.Invoke(sender);
         }
 
-        private void ListViewItem_MouseUp(object sender, MouseButtonEventArgs e)
+        private void PosListViewItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
 
-            model.ToolsOfPosMouseUpCommand.DoExecute?.Invoke(sender);
+            viewModel.ToolsOfPosMouseUpCommand.DoExecute?.Invoke(sender);
+        }
+        private void GlueListViewItem__MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            viewModel.ToolsOfGlueDoubleClickCommand.DoExecute?.Invoke(sender);
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void GlueListViewItem_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            model.ToolsOfPosition_ContextMenuCommand.DoExecute?.Invoke(sender);
-        }     
+
+            viewModel.ToolsOfGlueMouseUpCommand.DoExecute?.Invoke(sender);
+        }
+        private void PosMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ToolsOfPosition_ContextMenuCommand.DoExecute?.Invoke(sender);
+        }
+        private void GlueMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ToolsOfGlue_ContextMenuCommand.DoExecute?.Invoke(sender);
+        }
+
+
+        void AppenTxt(string info)
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                TextPointer tpstart = richTxtInfo.Document.ContentStart;
+                int length = Math.Abs(richTxtInfo.Document.ContentEnd.GetOffsetToPosition(tpstart));
+                if (length > 5000)
+                    richTxtInfo.Document.Blocks.Clear();
+                richTxtInfo.AppendText(info);
+                richTxtInfo.AppendText("\r");
+                richTxtInfo.ScrollToEnd();
+            }));
+        }
+
+        void ClearTxt()
+        {
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                richTxtInfo.Document.Blocks.Clear();
+            }));
+        }
+
+        private void expouseSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            viewModel.ExpouseValueChangedCommand.DoExecute?.Invoke(sender);
+        }
+        private void gainSlider_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            viewModel.GainValueChangedCommand.DoExecute?.Invoke(sender);
+        }
+
     }
 }

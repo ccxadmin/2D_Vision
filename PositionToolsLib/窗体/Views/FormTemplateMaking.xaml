@@ -7,9 +7,9 @@
   xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
  xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
  xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
-    
- Style="{x:Null}" FocusVisualStyle="{x:Null}"
- mc:Ignorable="d"  Loaded="Window_Loaded" Title="{Binding Model.TitleName ,Mode=TwoWay}"
+     xmlns:ccm="clr-namespace:PositionToolsLib.窗体.Models"
+ Style="{x:Null}" FocusVisualStyle="{x:Null}" Title="掩膜设置"
+ mc:Ignorable="d"  Loaded="Window_Loaded" Closing="Window_Closing"
  Height="700" Width="1000">
 
     <Window.Resources>
@@ -21,8 +21,8 @@
     </Window.Resources>
 
     <Grid>
-        
-            <Grid.ColumnDefinitions>
+
+        <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="350"/>
         </Grid.ColumnDefinitions>
@@ -39,22 +39,27 @@
 
         <!--<StackPanel Grid.Column="1"  Margin="1">-->
         <Grid Grid.Column="1"  Margin="1">
-            <!--<Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>-->
+            <Grid.Resources>
+                <ccm:ComparisonConverter x:Key="ComparisonConverter" />
+                <ccm:BooleanInverterConvert x:Key="BooleanInverterConvert" />
+            </Grid.Resources>
+            <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
             <GroupBox Style="{DynamicResource GroupBoxStyle}"  Header="参数">
                 <Grid>
                     <Label Style="{DynamicResource LabelStyle}" Content="画笔类型："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="60,20"/>
-                    <ComboBox Name="cobxImageList" Style="{DynamicResource MyCbbStyle}" Width="120"
+                    <ComboBox Name="cobxPanType" Style="{DynamicResource MyCbbStyle}" Width="120"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="140,22,25,25"  Height="25"
-                                ItemsSource="{Binding Model.ImageList}"                          
-  SelectedItem="{Binding Model.SelectImageName,Mode=TwoWay}"
-                    SelectedIndex="{Binding Model.SelectImageIndex,Mode=TwoWay}"  >
-
+                                                        
+  SelectedItem="{Binding Model.CobxPanTypeSelectName,Mode=TwoWay}"
+                    SelectedIndex="{Binding Model.CobxPanTypeSelectIndex,Mode=TwoWay}"  >
+                        <ComboBoxItem Content="圆"/>
+                        <ComboBoxItem Content="矩形"/>
                         <behaviors:Interaction.Triggers>
                             <behaviors:EventTrigger EventName="SelectionChanged">
-                                <behaviors:InvokeCommandAction Command="{Binding ImageSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxImageList,Path=SelectedValue}"/>
+                                <behaviors:InvokeCommandAction Command="{Binding PanTypeSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxPanType,Path=SelectedValue}"/>
                             </behaviors:EventTrigger>
                         </behaviors:Interaction.Triggers>
                     </ComboBox>
@@ -62,19 +67,57 @@
        HorizontalAlignment="Left" VerticalAlignment="Top" 
         Margin="60,56"/>
                     <Slider Style="{DynamicResource sliderStyle}" Width="120" Height="25"
-            HorizontalAlignment="Left" VerticalAlignment="Top"
-            Margin="140,57,25,25" >
+            HorizontalAlignment="Left" VerticalAlignment="Top" Minimum="1" Maximum="50"
+            Margin="140,57,25,25"  Value="{Binding Model.PanSize,Mode=TwoWay}"
+                             Thumb.DragCompleted ="mySlider_DragCompleted">
+                        <!--<behaviors:Interaction.Triggers>
+     <behaviors:EventTrigger EventName="DragCompleted">
+         <behaviors:InvokeCommandAction Command="{Binding LightSliderValueChangedCommand}" 
+                                        CommandParameter="{Binding ElementName=LightSlider1,Path=Name}"   />
+     </behaviors:EventTrigger>
+ </behaviors:Interaction.Triggers>-->
 
                     </Slider>
 
                     <TextBox Style="{DynamicResource  baseInput}" 
 HorizontalAlignment="Left" VerticalAlignment="Top"  Width="40" Height="20"
- Margin="265,59,10,10"/>
-              
+ Margin="265,59,10,10" Text="{Binding Model.PanValue,Mode=TwoWay}">
+                        <behaviors:Interaction.Triggers>
+                            <behaviors:EventTrigger EventName="KeyDown">
+                                <behaviors:InvokeCommandAction Command="{Binding TxbBarValueKeyDownCommand}"                                                                    
+                                  PassEventArgsToCommand="True"/>
+                            </behaviors:EventTrigger>
+                        </behaviors:Interaction.Triggers>
+                    </TextBox>
+                    <RadioButton Style="{DynamicResource RadioButtonStyleBasics}"
+                           HorizontalAlignment="Left" VerticalAlignment="Top"
+                            Margin="60,100,10,10"  Content="擦拭"
+                     Command="{Binding RdbtnCheckedChangedCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
+IsChecked="{Binding Model.WorkType,  Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static ccm:EumworkType.擦拭}}"   
+                                   />
+                    <RadioButton Style="{DynamicResource RadioButtonStyleBasics}"
+        HorizontalAlignment="Left" VerticalAlignment="Top"
+                                                      Command="{Binding RdbtnCheckedChangedCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
+IsChecked="{Binding Model.WorkType,  Mode=TwoWay, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static ccm:EumworkType.清除}}"  
+         Margin="140,100,10,10"  Content="清除"/>
+
+                    <Button Style="{DynamicResource PrimaryButton}" 
+HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"
+                            attach:ButtonAttach.ButtonCornerRadius="3"
+                            Content="保存" Command="{Binding SaveBtnClickCommand}"
+ Margin="60,140,10,10" />
+                    <Button Style="{DynamicResource PrimaryButton}" 
+HorizontalAlignment="Left" VerticalAlignment="Top" Height="25"
+                            attach:ButtonAttach.ButtonCornerRadius="3"
+                            Content="重置" Command="{Binding ResetBtnClickCommand}"
+ Margin="180,140,10,10" />
                 </Grid>
             </GroupBox>
 
         </Grid>
         <!--</StackPanel>-->
     </Grid>
+    
 </Window>

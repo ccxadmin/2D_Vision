@@ -43,7 +43,7 @@ namespace PositionToolsLib.窗体.Views
             tool.Padding = new System.Windows.Forms.Padding(2);
 
             tool.SetBackgroundColor(EumControlBackColor.white);
-            tool.setDraw(EumDrawModel.margin);
+            tool.setDraw(EumDrawModel.fill);
             host.Child = tool;
         }
         /// <summary>

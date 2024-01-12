@@ -23,13 +23,16 @@ namespace MainFormLib.Views
     /// </summary>
     public partial class FormNinePointsCalib : Window
     {
+        public bool isClosedFlag = false;
+
         public FormNinePointsCalib(string path, string _calibName = "default")
         {
             InitializeComponent();
             var model = new NinePointsCalibViewModel(path, _calibName);
             DataContext = model;
+            isClosedFlag = false;
         }
-
+     
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             HOperatorSet.SetSystem("temporary_mem_cache", "false");
@@ -54,6 +57,8 @@ namespace MainFormLib.Views
             host.Child.Dispose();
             host.Child = null;
             base.OnClosed(e);
+            isClosedFlag = true;
+            
         }
     }
 }

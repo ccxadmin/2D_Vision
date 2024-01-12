@@ -196,11 +196,18 @@ namespace PositionToolsLib.工具
             (toolParam as MatchParam).ModelContour = ho_ModelTrans.Clone();
             (toolParam as MatchParam).ModelImgOfPart = ho_ImageReduced2.Clone();
             (toolParam as MatchParam).ModelImgOfWhole = grayImage.Clone();
-         
+            if (!System.IO.Directory.Exists((toolParam as MatchParam).RootFolder))
+                System.IO.Directory.CreateDirectory((toolParam as MatchParam).RootFolder);
             HOperatorSet.WriteShapeModel( hv_ModelID, (toolParam as MatchParam).RootFolder+ "\\"+toolName+".shm");
-            if(ObjectValided(grayImage))
-            HOperatorSet.WriteImage(grayImage,"bmp" ,0,(toolParam as MatchParam).RootFolder + "\\" + toolName + ".bmp");
+            if(ObjectValided(ho_ImageReduced))
+            {
+                HOperatorSet.CropDomain(ho_ImageReduced, out HObject imagePart);
+                HOperatorSet.WriteImage(imagePart, "png", 0, (toolParam as MatchParam).RootFolder + "\\" + toolName + ".png");
+                imagePart.Dispose();
+            }
+          
             ho_ModelTrans.Dispose();
+            ho_ImageReduced.Dispose();
             ho_ImageReduced2.Dispose();
             subROI.Dispose();
             grayImage.Dispose();
@@ -234,7 +241,8 @@ namespace PositionToolsLib.工具
                     HOperatorSet.ClearShapeModel(hv_ModelID);
                 hv_ModelID = null;
 
-               
+                if (!System.IO.Directory.Exists((toolParam as MatchParam).RootFolder))
+                    System.IO.Directory.CreateDirectory((toolParam as MatchParam).RootFolder);
                 if (System.IO.File.Exists((toolParam as MatchParam).RootFolder + "\\" + toolName + ".shm"))
                    HOperatorSet.ReadShapeModel((toolParam as MatchParam).RootFolder + "\\" + toolName + ".shm", out hv_ModelID);
 

@@ -13,7 +13,7 @@ namespace PositionToolsLib.工具
     public class ImageCorrectTool : BaseTool, IDisposable
     {
         public static int inum = 0;//工具编号
-        public string CalibFilePath = "";//标定文件路径
+        //public string CalibFilePath = "";//标定文件路径
         public ImageCorrectTool()
         {
             toolParam = new ImageCorrectParam();
@@ -25,7 +25,15 @@ namespace PositionToolsLib.工具
         {
 
         }
+        [OnSerializing]
+        private void OnSerializing(StreamingContext context)
+        {
+            if ((toolParam as ImageCorrectParam).Hv_CamParam == null)
+            {
+                (toolParam as ImageCorrectParam).Hv_CamParam = new HTuple();
+            }
 
+        }
         //工具日志:同类型工具日志信息放一起      
         static private Log log = new Log("畸变校正");
 
@@ -44,10 +52,12 @@ namespace PositionToolsLib.工具
         /// 获取相机内参
         /// </summary>
         /// <param name="homMat2D"></param>
-        override public void GetMatrix(HTuple homMat2D)
+        override public void SetMatrix(HTuple homMat2D)
         {
             (toolParam as ImageCorrectParam).Hv_CamParam = homMat2D;
         }
+
+     
         /// <summary>
         /// 拟合直线工具运行
         /// </summary>

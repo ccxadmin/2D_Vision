@@ -36,10 +36,8 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-          
-            ShowData(par);
-
+            
+        
             #region  Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -64,25 +62,10 @@ namespace PositionToolsLib.窗体.ViewModels
 
             #endregion
 
-
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as CalParallelLineParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
-
-            foreach (var s in dataManage.LineDataDic)
-                Model.LineList.Add(s.Key);
-
-            string lineName = (par as CalParallelLineParam).InputLineName;
-            int index2 = Model.LineList.IndexOf(lineName);
-            Model.SelectLine1Index = index2;
-
-           
-            string line2Name = (par as CalParallelLineParam).InputLine2Name;
-            int index3 = Model.LineList.IndexOf(line2Name);
-            Model.SelectLine2Index = index3;
-
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+            cobxLineList_SelectedIndexChanged(null);
+            cobxLine2List_SelectedIndexChanged(null);
         }
         /// <summary>
         /// 图像加载
@@ -99,10 +82,32 @@ namespace PositionToolsLib.窗体.ViewModels
            /// 数据显示
            /// </summary>
            /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
-            lineData1 = (parDat as CalParallelLineParam).LineData;
-            lineData2 = (parDat as CalParallelLineParam).LineData2;
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as CalParallelLineParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
+            Model.SelectImageName = (par as CalParallelLineParam).InputImageName;
+
+
+            foreach (var s in dataManage.LineDataDic)
+                Model.LineList.Add(s.Key);
+            string lineName = (par as CalParallelLineParam).InputLineName;
+            int index2 = Model.LineList.IndexOf(lineName);
+            Model.SelectLine1Index = index2;
+
+            string line2Name = (par as CalParallelLineParam).InputLine2Name;
+            int index3 = Model.LineList.IndexOf(line2Name);
+            Model.SelectLine2Index = index3;
+
+            lineData1 = (par as CalParallelLineParam).LineData;
+            lineData2 = (par as CalParallelLineParam).LineData2;
+
+
+
         }
         /// <summary>
         ///输入图像选择
@@ -111,6 +116,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!CalParallelLineTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -127,6 +133,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxLineList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectLine1Index == -1) return;
             lineData1 = dataManage.LineDataDic[Model.SelectLine1Name];
             BaseParam par = baseTool.GetParam();
             (par as CalParallelLineParam).InputLineName = Model.SelectLine1Name;
@@ -149,6 +156,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxLine2List_SelectedIndexChanged(object value)
         {
+            if (Model.SelectLine2Index == -1) return;
             lineData2 = dataManage.LineDataDic[Model.SelectLine2Name];
             BaseParam par = baseTool.GetParam();
             (par as CalParallelLineParam).InputLine2Name = Model.SelectLine2Name;
@@ -221,7 +229,7 @@ namespace PositionToolsLib.窗体.ViewModels
             }
         }
         /// <summary>
-        /// 更新直线相交结果表格数据
+        /// 更新平行直线结果表格数据
         /// </summary>
         /// <param name="LineIntersectionData"></param>
         void UpdateResultView(ParallelLineData Data)

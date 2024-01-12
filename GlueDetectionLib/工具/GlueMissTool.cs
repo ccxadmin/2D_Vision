@@ -16,7 +16,12 @@ namespace GlueDetectionLib.工具
     [Serializable]
    public class GlueMissTool : BaseTool, IDisposable
     {
-
+        public  int autoRegionTypeSelectIndex = 0;
+        public int selectPolarityIndex = 0;
+        public int morphProcessSelectIndex = 0;
+        public int numRadius = 1;
+        public int convertUnitsSelectIndex = 0;
+        public int manulRegionTypeSelectIndex = 0;
         public static int inum = 0;//工具编号
 
         public GlueMissTool()

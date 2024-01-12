@@ -38,9 +38,7 @@ namespace GlueDetectionLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            ShowData(par);
-
+       
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -72,15 +70,14 @@ namespace GlueDetectionLib.窗体.ViewModels
             TestButClickCommand = new CommandBase();
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            
+            Model.NumStartPxCommand = new Action(() => NumStartPxEvent());
+            Model.NumStartPxCommand = new Action(() => NumStartPyEvent());
 
 
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
 
-
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as ResultShowParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
         }
         /// <summary>
         /// 图像加载
@@ -100,21 +97,29 @@ namespace GlueDetectionLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
-            if (!OpeningTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
+            if (!ResultShowTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
             ShowTool.DispImage(imgBuf);
             ShowTool.D_HImage = imgBuf;
             BaseParam par = baseTool.GetParam();
-            (par as OpeningParam).InputImageName = Model.SelectImageName;
+            (par as ResultShowParam).InputImageName = Model.SelectImageName;
         }
 
         /// <summary>
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
+            BaseParam par = baseTool.GetParam();
+
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as ResultShowParam).InputImageName;
+            int index1 = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index1;
+            Model.SelectImageName= (par as ResultShowParam).InputImageName;
             Model.NmCoorX = (baseTool as ResultShowTool).inforCoorX;
             Model.NmCoorY = (baseTool as ResultShowTool).inforCoorY;
             Model.ShowInspectRegChecked = (baseTool as ResultShowTool).isShowInspectRegion;
@@ -125,11 +130,11 @@ namespace GlueDetectionLib.窗体.ViewModels
             //numGlueInfoOffsetY.Value = (baseTool as ResultShowTool).glueInfoOffetY;
 
 
-            resultShowDataList = (parDat as ResultShowParam).ResultShowDataList;
+            resultShowDataList = (par as ResultShowParam).ResultShowDataList;
             if (resultShowDataList == null) return;
          
             Model.DgDataOfResultShowList.Clear();
-         
+            GetToolNameList();
             foreach (var s in resultShowDataList)
             {
                 if (dataManage.enumerableTooDic.Count <= 0) break;
@@ -162,10 +167,18 @@ namespace GlueDetectionLib.窗体.ViewModels
                         if (!Model.GlueNameList.Contains(string.Format("R{0}", index)))
                             Model.GlueNameList.Add(string.Format("R{0}", index));
                         index++;
+                       
                     }
 
 
                 }
+                if(Model.GlueNameList.Count>0)
+                {
+                    Model.SelectGlueIndex = 0;
+                    Model.SelectGlueName = "R1";
+                    comboBox1_SelectedIndexChanged(null);
+                }
+                     
                 Model.CobxGlueNameEnable = true;
              
             }
@@ -174,17 +187,39 @@ namespace GlueDetectionLib.窗体.ViewModels
 
         private void 新增toolStripMenuItem_Click()
         {
-            //新增时就更新表格
-            GetToolNameList();
+            ////新增时就更新表格
+            //GetToolNameList();
             DgDataOfResultShow dat = new DgDataOfResultShow(false, "", "");
             resultShowDataList.Add(dat);
             Model.DgDataOfResultShowList.Add(dat);
             Model.DgDataSelectIndex = Model.DgDataOfResultShowList.Count - 1;
           
         }
+       void  NumStartPxEvent()
+        {
+            if ((baseTool as ResultShowTool).GlueInfoDic.ContainsKey(Model.SelectGlueName))
+            {
+                CoorditionDat pos =
+                    (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName];
+                pos.Column = Model.NumStartPx;
 
+                (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName] = pos;
+            }
+           
+        }
+        void NumStartPyEvent()
+        {
+            if ((baseTool as ResultShowTool).GlueInfoDic.ContainsKey(Model.SelectGlueName))
+            {
+                CoorditionDat pos =
+                    (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName];
+                pos.Column = Model.NumStartPx;
 
-       void GetToolNameList()
+                (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName] = pos;
+            }
+
+        }
+        void GetToolNameList()
         {
             Model.ToolNameList.Clear();
             foreach (var s in dataManage.enumerableTooDic)
@@ -207,8 +242,8 @@ namespace GlueDetectionLib.窗体.ViewModels
             {
                 CoorditionDat pos =
                     (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName];
-                Model.NmCoorX = (int)pos.Column;
-                Model.NmCoorY= (int)pos.Row;
+                Model.NumStartPx = (int)pos.Column;
+                Model.NumStartPy= (int)pos.Row;
 
             }
         }
@@ -237,7 +272,7 @@ namespace GlueDetectionLib.窗体.ViewModels
                 {
                     CoorditionDat pos =
                         (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName];
-                    pos.Column = Model.NumStartPy;
+                    pos.Row = Model.NumStartPy;
 
                     (baseTool as ResultShowTool).GlueInfoDic[Model.SelectGlueName] = pos;
                 }

@@ -34,10 +34,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-      
-            ShowData(par);
-
+          
             #region  Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -62,19 +59,9 @@ namespace PositionToolsLib.窗体.ViewModels
 
             #endregion
 
-
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as LineOffsetParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
-
-            foreach (var s in dataManage.LineDataDic)
-                Model.LineList.Add(s.Key);
-            string lineName = (par as LineOffsetParam).InputLineName;
-            int index2 = Model.LineList.IndexOf(lineName);
-            Model.SelectLine1Index = index2;
-
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+            cobxLineList_SelectedIndexChanged(null);
         }
         /// <summary>
         /// 图像加载
@@ -91,14 +78,29 @@ namespace PositionToolsLib.窗体.ViewModels
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
+        void ShowData()
         {
-            lineData1 = (parDat as LineOffsetParam).LineData;
-           Model.NumOffsetDistance = (parDat as LineOffsetParam).OffsetDistance;
-            Model.PixelRatio = (parDat as LineOffsetParam).PixleRatio;
+            BaseParam par = baseTool.GetParam();
+
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as LineOffsetParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
+            Model.SelectImageName = (par as LineOffsetParam).InputImageName;
+
+            foreach (var s in dataManage.LineDataDic)
+                Model.LineList.Add(s.Key);
+            string lineName = (par as LineOffsetParam).InputLineName;
+            int index2 = Model.LineList.IndexOf(lineName);
+            Model.SelectLine1Index = index2;
+
+            lineData1 = (par as LineOffsetParam).LineData;
+            Model.NumOffsetDistance = (par as LineOffsetParam).OffsetDistance;
+            Model.PixelRatio = (par as LineOffsetParam).PixleRatio;
             sizeUnits = (baseTool as LineOffsetTool).sizeUnits;
             if (sizeUnits == EumSizeUnits.pixel)
-               Model.ConvertUnits= "像素";
+                Model.ConvertUnits = "像素";
             else
                 Model.ConvertUnits = "物理";
         }
@@ -109,6 +111,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!LineOffsetTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -125,7 +128,8 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxLineList_SelectedIndexChanged(object value)
         {
-            lineData1 = dataManage.LineDataDic[Model.SelectLine1Name];
+            if (Model.SelectLine1Index == -1) return;
+                lineData1 = dataManage.LineDataDic[Model.SelectLine1Name];
             BaseParam par = baseTool.GetParam();
             (par as LineOffsetParam).InputLineName = Model.SelectLine1Name;
 

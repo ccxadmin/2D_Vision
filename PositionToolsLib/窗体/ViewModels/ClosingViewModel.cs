@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.Windows.Media.Media3D;
 
 namespace PositionToolsLib.窗体.ViewModels
 {
@@ -31,9 +33,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
-            ShowData(par);
-
+         
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
             ImageSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -46,14 +46,27 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-          
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
+            ShowData();
+            /*--如果直接xaml中设置Combox.SelectionChanged="SelectionChanged"，
+             * 那么在Loaded时，SelectionChanged事件会正常触发。
+             * loaded时，Triggers还没生效，也就是说要等页面加载完毕Triggers才会被实例化。
+             */
+            cobxImageList_SelectedIndexChanged(null);
+        }
 
+        /// <summary>
+        /// 数据显示
+        /// </summary>
+        /// <param name="parDat"></param>
+        private  void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);          
             string imageName = (par as ClosingParam).InputImageName;
             int index = Model.ImageList.IndexOf(imageName);
             Model.SelectImageIndex = index;
-
+      
             int maskWidthValue = (par as ClosingParam).MaskWidth;
             int index2 = Model.MaskWidthList.IndexOf(maskWidthValue);
             Model.SelectMaskWidthIndex = index2;
@@ -61,18 +74,10 @@ namespace PositionToolsLib.窗体.ViewModels
             int maskHeightValue = (par as ClosingParam).MaskHeight;
             int index3 = Model.MaskHeightList.IndexOf(maskHeightValue);
             Model.SelectMaskHeightIndex = index3;
-        }
 
-        /// <summary>
-        /// 数据显示
-        /// </summary>
-        /// <param name="parDat"></param>
-        void ShowData(BaseParam parDat)
-        {
-           
-            Model.SelectImageName = (parDat as ClosingParam).InputImageName;
-            Model.SelectMaskWidth = (parDat as ClosingParam).MaskWidth;
-            Model.SelectMaskHeight = (parDat as ClosingParam).MaskHeight;
+            Model.SelectImageName = (par as ClosingParam).InputImageName;
+            Model.SelectMaskWidth = (par as ClosingParam).MaskWidth;
+            Model.SelectMaskHeight = (par as ClosingParam).MaskHeight;
         }
         /// <summary>
         /// 图像加载
@@ -93,6 +98,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!DilationTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();

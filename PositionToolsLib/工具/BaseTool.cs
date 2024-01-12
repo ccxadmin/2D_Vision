@@ -24,9 +24,9 @@ namespace PositionToolsLib.工具
         [OnSerializing]
         private void OnSerializing(StreamingContext context)
         {
-            //if (toolParam.Hv_HomMat2D==null)
+            //if (toolParam.Hv_HomMat2D == null)
             //{
-            //    toolParam.Hv_HomMat2D = new HTuple(); 
+            //    toolParam.Hv_HomMat2D = new HTuple();
             //}
 
         }
@@ -42,12 +42,20 @@ namespace PositionToolsLib.工具
                 return OnGetManageHandle.Invoke();
         }
         /// <summary>
-        /// 获取标定关系矩阵
+        /// 设置标定关系矩阵,外部切换标定关系
         /// </summary>
         /// <param name="homMat2D"></param>
-        virtual  public void GetMatrix(HTuple homMat2D)
+        virtual  public void SetMatrix(HTuple homMat2D)
         {
             toolParam.hv_HomMat2D = homMat2D;
+        }
+        /// <summary>
+        ///设置标定关系矩阵存放路径
+        /// </summary>
+        /// <param name="calibFilePath"></param>
+        virtual public void SetCalibFilePath(string calibFilePath)
+        {
+            toolParam.calibFilePath = calibFilePath;
         }
         /// <summary>
         /// 计算直线角度 -180~180

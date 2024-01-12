@@ -39,9 +39,9 @@ namespace PositionToolsLib.窗体.Views
         /// <param name="e"></param>
         protected override void OnClosed(EventArgs e)
         {
-            host.Child.Dispose();
-            host.Child = null;
-            base.OnClosed(e);
+            //host.Child.Dispose();
+            //host.Child = null;
+            //base.OnClosed(e);
         }
     }
 }

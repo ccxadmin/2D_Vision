@@ -35,9 +35,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
          
-
             #region Command
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -69,13 +67,32 @@ namespace PositionToolsLib.窗体.ViewModels
 
 
             #endregion
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
+        }
+
+        /// <summary>
+        /// 图像加载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void LoadedImageNoticeEvent(object sender, EventArgs e)
+        {
+            HOperatorSet.GenEmptyObj(out imgBuf);
+            imgBuf.Dispose();
+            imgBuf = ShowTool.D_HImage;
+        }
+
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
             string imageName = (par as LineCentreParam).InputImageName;
             int index = Model.ImageList.IndexOf(imageName);
             Model.SelectImageIndex = index;
-
-
+            Model.SelectImageName = (par as LineCentreParam).InputImageName;
+      
             foreach (var s in dataManage.PositionDataDic)
                 Model.PositionDataList.Add(s.Key);
             //x
@@ -101,20 +118,8 @@ namespace PositionToolsLib.窗体.ViewModels
             int index5 = Model.PositionDataList.IndexOf(yName2);
             Model.SelectEndYIndex = index5;
 
-        }
 
-        /// <summary>
-        /// 图像加载
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void LoadedImageNoticeEvent(object sender, EventArgs e)
-        {
-            HOperatorSet.GenEmptyObj(out imgBuf);
-            imgBuf.Dispose();
-            imgBuf = ShowTool.D_HImage;
         }
-
         /// <summary>
         ///输入图像选择
         /// </summary>
@@ -122,6 +127,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!LineCentreTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();

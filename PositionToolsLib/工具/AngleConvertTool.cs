@@ -10,10 +10,14 @@ using System.Threading.Tasks;
 
 namespace PositionToolsLib.工具
 {
+    /// <summary>
+    /// 角度换算工具
+    /// </summary>
+    [Serializable]
     public class AngleConvertTool : BaseTool, IDisposable
     {
         public static int inum = 0;//工具编号
-        public string CalibFilePath = "";//标定文件路径
+        //public string CalibFilePath = "";//标定文件路径
         public AngleConvertTool()
         {
             toolParam = new AngleConvertParam();
@@ -46,8 +50,7 @@ namespace PositionToolsLib.工具
         override public RunResult Run()
         {
             DataManage dm = GetManage();
-            if (!dm.enumerableTooDic.Contains(toolName))
-                dm.enumerableTooDic.Add(toolName);
+       
             RunResult result = new RunResult();
             string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             if (sw == null) sw = new System.Diagnostics.Stopwatch();
@@ -58,23 +61,23 @@ namespace PositionToolsLib.工具
 
             
                 double x1 = 0, y1 = 0;
-                if (dm.resultFlagDic[(toolParam as AngleConvertParam).StartXName])
+                if (dm.resultFlagDic[(toolParam as AngleConvertParam).StartXName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData xDat = dm.PositionDataDic[(toolParam as AngleConvertParam).StartXName];
                     x1 = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as AngleConvertParam).StartYName])
+                if (dm.resultFlagDic[(toolParam as AngleConvertParam).StartYName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as AngleConvertParam).StartYName];
                     y1 = yDat.y;
                 }
                 double x2 = 0, y2 = 0;
-                if (dm.resultFlagDic[(toolParam as AngleConvertParam).EndXName])
+                if (dm.resultFlagDic[(toolParam as AngleConvertParam).EndXName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData xDat = dm.PositionDataDic[(toolParam as AngleConvertParam).EndXName];
                     x2 = xDat.x;
                 }
-                if (dm.resultFlagDic[(toolParam as AngleConvertParam).EndYName])
+                if (dm.resultFlagDic[(toolParam as AngleConvertParam).EndYName.Replace("起点", "").Replace("终点", "")])
                 {
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as AngleConvertParam).EndYName];
                     y2 = yDat.y;

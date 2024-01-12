@@ -22,6 +22,7 @@ using System.Globalization;
 using System.Windows;
 using HalconDotNet;
 using GlueDetectionLib;
+using FunctionLib.Cam;
 
 namespace MainFormLib.Models
 {
@@ -32,6 +33,295 @@ namespace MainFormLib.Models
         {
             foreach (EumModelType s  in Enum.GetValues(typeof(EumModelType))) 
             { modelTypeList.Add(s); }
+            foreach (CamType s in Enum.GetValues(typeof(CamType)))
+            { CamTypeList.Add(s); }
+        }
+        
+        /// <summary>
+        /// 相机类型源集合
+        /// </summary>
+        private ObservableCollection<CamType> camTypeList = new ObservableCollection<CamType>();
+        public ObservableCollection<CamType> CamTypeList
+        {
+            get { return this.camTypeList; }
+            set
+            {
+                camTypeList = value;
+                DoNotify();
+            }
+        }
+        /// <summary>
+        ///选择相机类型名称
+        /// </summary>
+        private string selectCamTypeName;
+        public string SelectCamTypeName
+        {
+            get { return this.selectCamTypeName; }
+            set
+            {
+                selectCamTypeName = value;
+                DoNotify();
+            }
+        }
+        /// <summary>
+        ///选择相机类型索引编号
+        /// </summary>
+        private int selectCamTypeIndex;
+        public int SelectCamTypeIndex
+        {
+            get { return this.selectCamTypeIndex; }
+            set
+            {
+                selectCamTypeIndex = value;
+                DoNotify();
+            }
+        }
+
+      
+        private ObservableCollection<int> camIndexerList = new ObservableCollection<int>();
+        public ObservableCollection<int> CamIndexerList
+        {
+            get { return this.camIndexerList; }
+            set
+            {
+                camIndexerList = value;
+                DoNotify();
+            }
+        }
+      
+        private string selectCamIndexerName;
+        public string SelectCamIndexerName
+        {
+            get { return this.selectCamIndexerName; }
+            set
+            {
+                selectCamIndexerName = value;
+                DoNotify();
+            }
+        }
+      
+        private int selectCamIndexerIndex;
+        public int SelectCamIndexerIndex
+        {
+            get { return this.selectCamIndexerIndex; }
+            set
+            {
+                selectCamIndexerIndex = value;
+                DoNotify();
+            }
+        }
+
+        public long expouseMaxValue;
+        public long ExpouseMaxValue
+        {
+            get { return this.expouseMaxValue; }
+            set
+            {
+                expouseMaxValue = value;
+                DoNotify();
+            }
+        }
+
+        public long expouseMinValue;
+        public long ExpouseMinValue
+        {
+            get { return this.expouseMinValue; }
+            set
+            {
+                expouseMinValue = value;
+                DoNotify();
+            }
+        }
+
+        public long expouseSliderValue=1000;
+        public long ExpouseSliderValue
+        {
+            get { return this.expouseSliderValue; }
+            set
+            {
+                expouseSliderValue = value;
+                DoNotify();
+            }
+        }
+
+        public long expouseNumricValue = 1000;
+        public long ExpouseNumricValue
+        {
+            get { return this.expouseNumricValue; }
+            set
+            {
+                expouseNumricValue = value;
+                DoNotify();
+            }
+        }
+        private Action expouseNumericCommand;
+        public Action ExpouseNumericCommand
+        {
+            get { return expouseNumericCommand; }
+            set
+            {
+                expouseNumericCommand = value;
+                DoNotify();
+            }
+        }
+
+        private bool isCamAlive;
+        public bool IsCamAlive
+        {
+            get { return this.isCamAlive; }
+            set
+            {
+                isCamAlive = value;
+                DoNotify();
+            }
+        }
+        private bool btnOpenCamEnable;
+        public bool BtnOpenCamEnable
+        {
+            get { return this.btnOpenCamEnable; }
+            set
+            {
+                btnOpenCamEnable = value;
+                DoNotify();
+            }
+        }
+        private bool btnCloseCamEnable;
+        public bool BtnCloseCamEnable
+        {
+            get { return this.btnCloseCamEnable; }
+            set
+            {
+                btnCloseCamEnable = value;
+                DoNotify();
+            }
+        }
+        private bool btnOneShotEnable;
+        public bool BtnOneShotEnable
+        {
+            get { return this.btnOneShotEnable; }
+            set
+            {
+                btnOneShotEnable = value;
+                DoNotify();
+            }
+        }
+        private bool btnContinueGrabEnable;
+        public bool BtnContinueGrabEnable
+        {
+            get { return this.btnContinueGrabEnable; }
+            set
+            {
+                btnContinueGrabEnable = value;
+                DoNotify();
+            }
+        }
+        private bool btnStopGrabEnable;
+        public bool BtnStopGrabEnable
+        {
+            get { return this.btnStopGrabEnable; }
+            set
+            {
+                btnStopGrabEnable = value;
+                DoNotify();
+            }
+        }
+
+        public int gainMaxValue;
+        public int GainMaxValue
+        {
+            get { return this.gainMaxValue; }
+            set
+            {
+                gainMaxValue = value;
+                DoNotify();
+            }
+        }
+
+        public int gainMinValue;
+        public int GainMinValue
+        {
+            get { return this.gainMinValue; }
+            set
+            {
+                gainMinValue = value;
+                DoNotify();
+            }
+        }
+
+        public int gainSliderValue;
+        public int GainSliderValue
+        {
+            get { return this.gainSliderValue; }
+            set
+            {
+                gainSliderValue = value;
+                DoNotify();
+            }
+        }
+
+        public int gainNumricValue ;
+        public int GainNumricValue
+        {
+            get { return this.gainNumricValue; }
+            set
+            {
+                gainNumricValue = value;
+                DoNotify();
+            }
+        }
+
+        private int numDeviationThd;
+        public int NumDeviationThd
+        {
+            get { return this.numDeviationThd; }
+            set
+            {
+                numDeviationThd = value;
+                DoNotify();
+            }
+        }
+        private int numLimitMethd;
+        public int NumLimitMethd
+        {
+            get { return this.numLimitMethd; }
+            set
+            {
+                numLimitMethd = value;
+                DoNotify();
+            }
+        }
+
+
+        private Action gainNumericCommand;
+        public Action GainNumericCommand
+        {
+            get { return gainNumericCommand; }
+            set
+            {
+                gainNumericCommand = value;
+                DoNotify();
+            }
+        }
+
+        private Action deviationThdNumericCommand;
+        public Action DeviationThdNumericCommand
+        {
+            get { return deviationThdNumericCommand; }
+            set
+            {
+                deviationThdNumericCommand = value;
+                DoNotify();
+            }
+        }
+        private Action limitMethdNumericCommand;
+        public Action LimitMethdNumericCommand
+        {
+            get { return limitMethdNumericCommand; }
+            set
+            {
+                limitMethdNumericCommand = value;
+                DoNotify();
+            }
         }
 
         private EumModelType modelType = EumModelType.ProductModel_1;
@@ -45,22 +335,8 @@ namespace MainFormLib.Models
                 DoNotify();
             }
         }
-        //private EumMenuItemEnable menuItemEnable = EumMenuItemEnable.all;
-
-        //public EumMenuItemEnable MenuItemEnable
-        //{
-        //    get { return menuItemEnable; }
-        //    set
-        //    {
-        //        menuItemEnable = value;
-        //        DoNotify();
-        //    }
-        //}
-        
-
-
-
-        public ObservableCollection<RecipeDg> recipeDgList 
+         
+        private ObservableCollection<RecipeDg> recipeDgList 
                                   = new ObservableCollection<RecipeDg>();
         public ObservableCollection<RecipeDg> RecipeDgList
         {
@@ -72,8 +348,18 @@ namespace MainFormLib.Models
             }
         }
 
+        private int recipeDgSelectIndex;
+        public int RecipeDgSelectIndex
+        {
+            get { return this.recipeDgSelectIndex; }
+            set
+            {
+                recipeDgSelectIndex = value;
+                DoNotify();
+            }
+        }
 
-        public ObservableCollection<EumModelType> modelTypeList
+        private ObservableCollection<EumModelType> modelTypeList
                                = new ObservableCollection<EumModelType>();
         public ObservableCollection<EumModelType> ModelTypeList
         {
@@ -108,9 +394,9 @@ namespace MainFormLib.Models
         }
 
 
-        public ObservableCollection<ListViewToolsOfPositionData> toolsOfPositionList
-                                 = new ObservableCollection<ListViewToolsOfPositionData>();
-        public ObservableCollection<ListViewToolsOfPositionData> ToolsOfPositionList
+        private ObservableCollection<ListViewToolsData> toolsOfPositionList
+                                 = new ObservableCollection<ListViewToolsData>();
+        public ObservableCollection<ListViewToolsData> ToolsOfPositionList
         {
             get { return this.toolsOfPositionList; }
             set
@@ -130,6 +416,32 @@ namespace MainFormLib.Models
                 DoNotify();
             }
         }
+
+        private ObservableCollection<ListViewToolsData> toolsOfGlueList
+                                = new ObservableCollection<ListViewToolsData>();
+        public ObservableCollection<ListViewToolsData> ToolsOfGlueList
+        {
+            get { return this.toolsOfGlueList; }
+            set
+            {
+                toolsOfGlueList = value;
+                DoNotify();
+            }
+        }
+
+        private int toolsOfGlueSelectIndex = -1;
+        public int ToolsOfGlueSelectIndex
+        {
+            get { return this.toolsOfGlueSelectIndex; }
+            set
+            {
+                toolsOfGlueSelectIndex = value;
+                DoNotify();
+            }
+        }
+
+
+
         /// <summary>
         /// 富文本信息
         /// </summary>
@@ -193,9 +505,37 @@ namespace MainFormLib.Models
             return Binding.DoNothing;
         }
     }
+    public class BoolConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return !(bool)value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b && b) return parameter;
+            return Binding.DoNothing;
+        }
+    }
+
     #endregion
 
     #region---------数据类型-------------
+    [Serializable]
+    public struct GlueRecheckDat
+    {
+        public GlueRecheckDat(double x, double y, double area)
+        {
+            X = x;
+            Y = y;
+            Area = area;
+        }
+        public double X;
+        public double Y;
+        public double Area;
+    }
+
     public struct StuWindowInfoToPaint
     {
         public CoorditionDat coorditionDat;
@@ -209,56 +549,6 @@ namespace MainFormLib.Models
         public string color;
     }
 
-    /// <summary>
-    /// 当前相机工作方式
-    /// </summary>
-    public enum EunmcurrCamWorkStatus
-    {
-        /// <summary>
-        /// 自由模式
-        /// </summary>
-        Freestyle,
-        /// <summary>
-        /// 9点标定
-        /// </summary>
-        NinePointcLocation,
-        /// <summary>
-        /// 旋转标定
-        /// </summary>
-        RotatoLocation,
-        /// <summary>
-        /// 偏差标定
-        /// </summary>
-        DeviationLocation,
-        /// <summary>
-        /// 产品点位1测试
-        /// </summary>
-        NormalTest_T1,
-        /// <summary>
-        /// 产品点位2测试
-        /// </summary>
-        NormalTest_T2,
-        /// <summary>
-        /// 胶水测试
-        /// </summary>
-        NormalTest_G,
-        /// <summary>
-        /// 自动对焦
-        /// </summary>
-        AutoFocus,
-        /// <summary>
-        /// 胶水检测
-        /// </summary>
-        AOI,     
-        /// <summary>
-        /// 轨迹提取
-        /// </summary>
-        Trajectory,
-        /// <summary>
-        /// 无
-        /// </summary>
-        None
-    }
     public enum EumMenuItemEnable
     {
         first,
@@ -307,7 +597,7 @@ namespace MainFormLib.Models
         /// <summary>
         /// 胶水检测
         /// </summary>
-        GlueAOI,      
+        AOI,      
         /// <summary>
         /// 轨迹提取
         /// </summary>
@@ -356,10 +646,12 @@ namespace MainFormLib.Models
 
         GluetapModel   //点胶阀
     }
+
+    [Serializable]
     /// <summary>
     /// 配方
     /// </summary>
-    public class RecipeDg
+    public class RecipeDg: NotifyBase
     {
         public RecipeDg()
         {
@@ -371,7 +663,42 @@ namespace MainFormLib.Models
             Name = name;
             IsUse = isUse;
         }
+        private string name;
+        public string Name { 
+            get=>this.name;
+            set { this.name = value; DoNotify(); }
+        }
+
+        private bool isUse;
+        public bool IsUse {
+            get=>this.isUse;
+            set { this.isUse = value; DoNotify(); }
+        }
+
+     
+    }
+
+    [Serializable]
+    /// <summary>
+    /// 配方
+    /// </summary>
+    public class RecipeDgBuf 
+    {
+        public RecipeDgBuf()
+        {
+            Name = "default";
+            IsUse = false;
+        }
+        public RecipeDgBuf(string name, bool isUse)
+        {
+            Name = name;
+            IsUse = isUse;
+        }
+
+
         public string Name { get; set; }
+
+
         public bool IsUse { get; set; }
 
     }
@@ -420,10 +747,10 @@ namespace MainFormLib.Models
     }
 
     [Serializable]
-    public class ListViewToolsOfPositionData : NotifyBase
+    public class ListViewToolsData : NotifyBase
     {
       
-        public ListViewToolsOfPositionData(int _id, string _toolName,
+        public ListViewToolsData(int _id, string _toolName,
             string _toolStatus,string _toolNotes)
         {
             ID = _id;

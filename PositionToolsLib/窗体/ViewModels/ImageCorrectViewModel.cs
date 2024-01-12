@@ -31,7 +31,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //图像控件      
             ShowTool.LoadedImageNoticeHandle += new EventHandler(LoadedImageNoticeEvent);
             Model.TitleName = baseTool.GetToolName();//工具名称
-            BaseParam par = baseTool.GetParam();
+          
 
             ImageSelectionChangedCommand = new CommandBase();
             ImageSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxImageList_SelectedIndexChanged(o));
@@ -49,14 +49,8 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-
-            foreach (var s in dataManage.imageBufDic)
-                Model.ImageList.Add(s.Key);
-            string imageName = (par as ImageCorrectParam).InputImageName;
-            int index = Model.ImageList.IndexOf(imageName);
-            Model.SelectImageIndex = index;
-
-
+            ShowData();
+            cobxImageList_SelectedIndexChanged(null);
         }
         /// <summary>
         /// 图像加载
@@ -69,7 +63,17 @@ namespace PositionToolsLib.窗体.ViewModels
             imgBuf.Dispose();
             imgBuf = ShowTool.D_HImage;
         }
+        void ShowData()
+        {
+            BaseParam par = baseTool.GetParam();
+            foreach (var s in dataManage.imageBufDic)
+                Model.ImageList.Add(s.Key);
+            string imageName = (par as ImageCorrectParam).InputImageName;
+            int index = Model.ImageList.IndexOf(imageName);
+            Model.SelectImageIndex = index;
 
+            Model.CalibFilePath=(par as ImageCorrectParam).CalibFilePath ;
+        }
         /// <summary>
         ///输入图像选择
         /// </summary>
@@ -77,6 +81,7 @@ namespace PositionToolsLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
+            if (Model.SelectImageIndex == -1) return;
             if (!ImageCorrectTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -120,8 +125,8 @@ namespace PositionToolsLib.窗体.ViewModels
         /// </summary>
         void btnSaveParam_Click()
         {
-            BaseParam par = baseTool.GetParam();           
-            (baseTool as ImageCorrectTool).CalibFilePath = Model.CalibFilePath;
+            BaseParam par = baseTool.GetParam();
+            (par as ImageCorrectParam).CalibFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
 
         }

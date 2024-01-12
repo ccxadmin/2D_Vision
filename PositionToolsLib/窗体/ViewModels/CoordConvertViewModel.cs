@@ -122,9 +122,8 @@ namespace PositionToolsLib.窗体.ViewModels
             convertWay = (parDat as CoordConvertParam).ConvertWay;
             Model.SelectConvertWayIndex = (int)convertWay;
             Model.SelectCoordXName = (parDat as CoordConvertParam).CoordXName;
-            Model.SelectCoordYName = (parDat as CoordConvertParam).CoordYName;
-            Model.CalibFilePath = (baseTool as CoordConvertTool).CalibFilePath;
-
+            Model.SelectCoordYName = (parDat as CoordConvertParam).CoordYName;  
+            Model.CalibFilePath = parDat.calibFilePath;
         }
      
         /// <summary>
@@ -137,7 +136,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as CoordConvertParam).ConvertWay = convertWay;
             (par as CoordConvertParam).CoordXName = Model.SelectCoordXName;
             (par as CoordConvertParam).CoordYName = Model.SelectCoordYName;
-            (baseTool as CoordConvertTool).CalibFilePath = Model.CalibFilePath;
+            par.calibFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
 
         }
@@ -160,12 +159,14 @@ namespace PositionToolsLib.窗体.ViewModels
                 UpdateResultView(new CoordConvertData(1,
                    (par as CoordConvertParam).ConvertedX,
                    (par as CoordConvertParam).ConvertedY));
+                Model.TestInfo = "坐标换算成功";
             }
             else
             {
                 //更新结果表格数据
                 UpdateResultView(new CoordConvertData(1, 0, 0)) ;
-                Console.WriteLine("坐标换算异常");
+                Model.TestInfo = "坐标换算异常";
+             
             }
         }
         /// <summary>
