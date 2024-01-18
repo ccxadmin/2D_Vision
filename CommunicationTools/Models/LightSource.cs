@@ -7,7 +7,7 @@ using System.IO.Ports;
 
 
 
-namespace LightSourceController.Models
+namespace CommunicationTools.Models
 {
     public class LightSource
     {

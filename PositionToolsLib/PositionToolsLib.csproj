@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommunicationTools\CommunicationTools.csproj" />
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
     <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
     <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />

@@ -1,5 +1,5 @@
 ﻿using HalconDotNet;
-using LightSourceController.ViewModels;
+using CommunicationTools.ViewModels;
 using MainFormLib.ViewModels;
 using System;
 using System.Collections.Generic;

@@ -14,18 +14,21 @@ using GlueBaseTool = GlueDetectionLib.工具.BaseTool;
 using GlueDataManage = GlueDetectionLib.DataManage;
 using GlueBaseParam = GlueDetectionLib.参数.BaseParam;
 using GlueRunResult = GlueDetectionLib.工具.RunResult;
+using GlueTcpSendTool = GlueDetectionLib.工具.TcpSendTool;
+using GlueTcpRecvTool = GlueDetectionLib.工具.TcpRecvTool;
 
 using PosBaseTool = PositionToolsLib.工具.BaseTool;
 using PosDataManage = PositionToolsLib.DataManage;
 using PosBaseParam = PositionToolsLib.参数.BaseParam;
 using PosRunResult = PositionToolsLib.工具.RunResult;
-
+using PosTcpSendTool = PositionToolsLib.工具.TcpSendTool;
+using PosTcpRecvTool = PositionToolsLib.工具.TcpRecvTool;
 
 using System.Diagnostics;
 using PositionToolsLib.窗体.Views;
 using PositionToolsLib.窗体.ViewModels;
 using PositionToolsLib.参数;
-using LightSourceController.Models;
+using CommunicationTools.Models;
 using FunctionLib;
 using System.IO;
 using OSLog;
@@ -45,6 +48,14 @@ using System.Threading.Channels;
 using GlueDetectionLib.参数;
 using static VisionShowLib.UserControls.VisionShowTool;
 using System.Windows.Input;
+using Microsoft.Win32;
+using FunctionLib.AutoFocus;
+using CommunicationTools.Views;
+using CommunicationTools;
+using FunctionLib.TCP;
+using System.Net;
+using System.Reflection;
+using System.Windows.Documents;
 
 namespace MainFormLib.ViewModels
 {
@@ -62,6 +73,7 @@ namespace MainFormLib.ViewModels
         public Action<string> AppenTxtAction = null;
         public Action ClearTxtAction = null;
         public OutPointGray DoubleClickGetMousePosHandle;//双击获取像素坐标  
+        public EventHandler AutoFocusDataHandle;//自动对焦事件
         /*-----------------------------------------文件配置---------------------------------------*/
         private string rootFolder = AppDomain.CurrentDomain.BaseDirectory; //根目录
         private string currCamStationName = "cam1";
@@ -70,7 +82,10 @@ namespace MainFormLib.ViewModels
         string saveToUsePath = AppDomain.CurrentDomain.BaseDirectory + "配方\\default";// 配方文件夹路径
         string NineCalibFile = AppDomain.CurrentDomain.BaseDirectory + "标定矩阵\\九点标定\\default\\hv_HomMat2D.tup";
         string CorrectCalibFile = AppDomain.CurrentDomain.BaseDirectory + "标定矩阵\\标定助手\\default\\相机内参.dat";
-
+        bool isColorPalette = false;
+        /*-----------------------------------------通讯工具---------------------------------------*/
+        object locker = new object();//同步锁
+        bool ContinueRunFlag = false;//连续运行标志
         /*-----------------------------------------定位工具---------------------------------------*/
         EumModelType currModelType = EumModelType.ProductModel_1;
         int toolindexofPosition = 0;
@@ -101,11 +116,17 @@ namespace MainFormLib.ViewModels
         int currCamGain = 0;
         EunmCamWorkStatus workstatus = EunmCamWorkStatus.None;//当前相机工作状态
         CamType currCamType = CamType.NONE;
+        int DgPixelPointIndexer = 0;
+        int DgRobotPointIndexer = 0;
+        int DgRotatePointIndexer = 0;
+        Dictionary<int, bool> NinePointStatusDic = new Dictionary<int, bool>();
+        Dictionary<int, bool> RotatoStatusDic = new Dictionary<int, bool>();
         int camIndex = 0;
         //自动对焦偏差阈值
         int DeviationThd = -10;
         //限位阈值
         int LimitMethd = 20;
+        HObject autoFocusRegion = null;
         #region Command
         public CommandBase WindowsLoadedCommand { get; set; }
         public CommandBase NinePointsCalibFormClickCommand { get; set; }
@@ -138,8 +159,12 @@ namespace MainFormLib.ViewModels
         public CommandBase StopGrabBtnClickCommand { get; set; }
         public CommandBase NumDeviationThdKeyDownCommand { get; set; }
         public CommandBase NumLimitMethdKeyDownCommand { get; set; }
+        public CommandBase RdbtnCheckedChangedCommand { get; set; }
+        public CommandBase AssistCircleKeyDownCommand { get; set; }
 
         #endregion
+
+        /*-----------------------------------------Construction---------------------------------------*/
         private VisionViewModel()
         {
 
@@ -152,7 +177,12 @@ namespace MainFormLib.ViewModels
             ShowTool.ImageGetRotationHandle += new EventHandler(ImageGetRotationEvent);
             ShowTool.CamGrabHandle += new EventHandler(CamGrabEvent);
             ShowTool.DoubleClickGetMousePosHandle += new OutPointGray(DoubleClickGetMousePosEvent);
-
+            ShowTool.显示中心十字坐标Handle += new EventHandler(显示中心十字坐标Event);
+            ShowTool.彩色显示ChangeEventHandle += new EventHandler(彩色显示ChangeEvent);
+            ShowTool.SaveWindowImageHnadle += new EventHandler(OnSaveWindowImageHnadle);
+            ShowTool.BtnRunClick = Run_Click;
+            ShowTool.BtnStopClick = Stop_Click;
+      
             #region Command
             WindowsLoadedCommand = new CommandBase();
             WindowsLoadedCommand.DoExecute = new Action<object>((o) => Windows_Load());
@@ -289,6 +319,17 @@ namespace MainFormLib.ViewModels
             NumLimitMethdKeyDownCommand.DoExecute = new Action<object>((o) => NumLimitMethd_KeyDown(o));
             NumLimitMethdKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
             Model.LimitMethdNumericCommand = new Action(() => LimitMethdNumericEvent());
+
+            RdbtnCheckedChangedCommand = new CommandBase();
+            RdbtnCheckedChangedCommand.DoExecute = new Action<object>((o) => rdbtn_CheckedChanged(o));
+            RdbtnCheckedChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            AssistCircleKeyDownCommand = new CommandBase();
+            AssistCircleKeyDownCommand.DoExecute = new Action<object>((o) => AssistCircleKeyDown(o));
+            AssistCircleKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            Model.AssistCircleCommand = new Action(() => AssistCircleEvent());
+
             #endregion
 
         }
@@ -318,8 +359,9 @@ namespace MainFormLib.ViewModels
             if (!Directory.Exists(saveToUsePath))
                 Directory.CreateDirectory(saveToUsePath);
 
+           
+            LoadCommDev();//加载外部通讯工具     
             LoadRecipe();//加载配方
-
             LoadCamera();//加载相机
         }
 
@@ -342,7 +384,7 @@ namespace MainFormLib.ViewModels
             //f_NinePointsCalib.BringIntoView();
             bool flag = f_NinePointsCalib.isClosedFlag;
             if(flag)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder);
+                f_NinePointsCalib = new FormNinePointsCalib(rootFolder,currCalibName);
             f_NinePointsCalib.Show();
 
         }
@@ -356,7 +398,7 @@ namespace MainFormLib.ViewModels
                 return;
             currModelType = (EumModelType)Model.ModelTypeSelectIndex;
             if (currModelType == EumModelType.CaliBoardModel)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder);
+                f_NinePointsCalib = new FormNinePointsCalib(rootFolder,currCalibName);
             Model.ModelType= currModelType;
             string secondName = Enum.GetName(typeof(EumModelType), currModelType);
             LoadPositionFlow(secondName);
@@ -395,6 +437,7 @@ namespace MainFormLib.ViewModels
                         {
                             ResetNumOfPos();
                             this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>(path);
+                            projectOfPos.GetNum();
                             projectOfPos.toolNamesList = new List<string>();
                             if (projectOfPos.dataManage == null)
                                 projectOfPos.dataManage = new PosDataManage();
@@ -461,6 +504,7 @@ namespace MainFormLib.ViewModels
                         projectOfPos.toolsDic.Clear();
                         projectOfPos.dataManage?.ResetBuf();//重载后清除数据缓存
                         ResetNumOfPos();
+                        projectOfPos.GetNum();
                         Model.ToolsOfPositionList.Clear();
                     }
                     break;
@@ -468,9 +512,32 @@ namespace MainFormLib.ViewModels
                     FormCalibAssistant f = new FormCalibAssistant(rootFolder);
                     f.Show();
                     break;
-
+                case "通讯管理":
+                    CommDevWindow fc = CommDevWindow.CreateInstance();
+                    fc.Show();
+                    break;
+              
             }
 
+        }
+
+        void Run_Click()
+        {
+            ContinueRunFlag = true;
+            Model.ContinueRunFlag = true;
+            foreach (var item in Model.ToolsOfPositionList)
+                item.ContextMenuVisib = Visibility.Hidden;
+            foreach (var item in Model.ToolsOfGlueList)
+                item.ContextMenuVisib = Visibility.Hidden;
+        }
+        void Stop_Click()
+        {
+            ContinueRunFlag = false;
+            Model.ContinueRunFlag = false;
+            foreach (var item in Model.ToolsOfPositionList)
+                item.ContextMenuVisib = Visibility.Visible;
+            foreach (var item in Model.ToolsOfGlueList)
+                item.ContextMenuVisib = Visibility.Visible;
         }
         /// <summary>
         /// 胶水检测工具栏按钮事件
@@ -501,6 +568,7 @@ namespace MainFormLib.ViewModels
                         {
                             ResetNumOfGlue();
                             this.projectOfGlue = GeneralUse.ReadSerializationFile<ProjectOfGlue>(path);
+                            projectOfGlue.GetNum();
                             projectOfGlue.toolNamesList = new List<string>();
                             if (projectOfGlue.dataManage == null)
                                 projectOfGlue.dataManage = new GlueDataManage();
@@ -559,6 +627,7 @@ namespace MainFormLib.ViewModels
                         projectOfGlue.toolsDic.Clear();
                         projectOfGlue.dataManage?.ResetBuf();//重载后清除数据缓存
                         ResetNumOfGlue();
+                        projectOfGlue.GetNum();
                         Model.ToolsOfGlueList.Clear();
                     }
                     break;
@@ -566,90 +635,103 @@ namespace MainFormLib.ViewModels
             }
 
         }
-      
+
         /// <summary>
         /// 定位检测菜单栏按钮事件（新增定位检测工具）
         /// </summary>
         /// <param name="o"></param>
         void PosMenu_Click(object o)
         {
-            toolindexofPosition++;
             PosBaseTool tool = null;
             string tip = o.ToString();
+            if (tip == "Tcp接收")
+                if (projectOfPos.toolNamesList.Exists(t => t.Contains("Tcp接收")))
+                {
+                    Appentxt("流程中存在TCP接收工具，无需重复添加");
+                    return;
+                }
+            if (tip == "Tcp发送")
+                if (projectOfPos.toolNamesList.Exists(t => t.Contains("Tcp发送")))
+                {
+                    Appentxt("流程中存在Tcp发送工具，无需重复添加");
+                    return;
+                }
+            toolindexofPosition++;
 
+            projectOfPos.SetNum();
             switch (tip)
             {
                 case "颜色转换":
                     tool = new PositionToolsLib.工具.ColorConvertTool();
-                
+
                     break;
                 case "膨胀":
                     tool = new PositionToolsLib.工具.DilationTool();
-                 
+
                     break;
                 case "腐蚀":
                     tool = new PositionToolsLib.工具.ErosionTool();
-                 
+
                     break;
                 case "开运算":
                     tool = new PositionToolsLib.工具.OpeningTool();
-                 
+
                     break;
                 case "闭运算":
                     tool = new PositionToolsLib.工具.ClosingTool();
-                 
+
                     break;
                 case "二值化":
                     tool = new PositionToolsLib.工具.BinaryzationTool();
-                 
+
                     break;
                 case "模板匹配":
                     tool = new PositionToolsLib.工具.MatchTool();
-                   
+
                     break;
                 case "查找直线":
                     tool = new PositionToolsLib.工具.FindLineTool();
-                 
+
                     break;
                 case "拟合直线":
                     tool = new PositionToolsLib.工具.FitLineTool();
-                   
+
                     break;
                 case "直线偏移":
                     tool = new PositionToolsLib.工具.LineOffsetTool();
-                   
+
                     break;
                 case "平行直线":
                     tool = new PositionToolsLib.工具.CalParallelLineTool();
-                   
+
                     break;
                 case "直线中心":
                     tool = new PositionToolsLib.工具.LineCentreTool();
-                   
+
                     break;
                 case "直线交点":
                     tool = new PositionToolsLib.工具.LineIntersectionTool();
-                  
+
                     break;
                 case "查找圆":
                     tool = new PositionToolsLib.工具.FindCircleTool();
-                  
+
                     break;
                 case "Blob中心":
                     tool = new PositionToolsLib.工具.BlobTool();
-                  
+
                     break;
                 case "坐标换算":
                     tool = new PositionToolsLib.工具.CoordConvertTool();
-                 
+
                     break;
                 case "角度换算":
                     tool = new PositionToolsLib.工具.AngleConvertTool();
-          
+
                     break;
                 case "畸变校正":
-                    tool = new PositionToolsLib.工具.ImageCorrectTool();        
-                  
+                    tool = new PositionToolsLib.工具.ImageCorrectTool();
+
                     break;
                 case "点点距离":
                     break;
@@ -661,7 +743,16 @@ namespace MainFormLib.ViewModels
                     break;
                 case "结果显示":
                     tool = new PositionToolsLib.工具.ResultShowTool();
-                   
+
+                    break;
+
+                case "Tcp接收":
+                    tool = new PosTcpRecvTool();
+
+                    break;
+                case "Tcp发送":
+                    tool = new PosTcpSendTool();
+
                     break;
             }
             tool.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
@@ -684,10 +775,23 @@ namespace MainFormLib.ViewModels
         /// <param name="o"></param>
         void GlueMenu_Click(object o)
         {
-            toolindexofGlueAOI++;
             GlueBaseTool tool = null;
             string tip = o.ToString();
+            if (tip == "Tcp接收")
+                if (projectOfGlue.toolNamesList.Exists(t => t.Contains("Tcp接收")))
+                {
+                    Appentxt("流程中存在TCP接收工具，无需重复添加");
+                    return;
+                }
+            if (tip == "Tcp发送")
+                if (projectOfGlue.toolNamesList.Exists(t => t.Contains("Tcp发送")))
+                {
+                    Appentxt("流程中存在Tcp发送工具，无需重复添加");
+                    return;
+                }
+            toolindexofGlueAOI++;
 
+            projectOfGlue.SetNum();
             switch (tip)
             {
                 case "颜色转换":
@@ -737,9 +841,17 @@ namespace MainFormLib.ViewModels
                 case "结果显示":
                     tool = new GlueDetectionLib.工具.ResultShowTool();
 
-                    break;         
+                    break;
+                case "Tcp接收":
+                    tool = new GlueTcpRecvTool();
+
+                    break;
+                case "Tcp发送":
+                    tool = new GlueTcpSendTool();
+
+                    break;
             }
-            tool.OnGetManageHandle = new GlueBaseTool.GetManageHandle(GetManageOfGlue);          
+            tool.OnGetManageHandle = new GlueBaseTool.GetManageHandle(GetManageOfGlue);
             projectOfGlue.toolNamesList.Add(tool.GetToolName());
             projectOfGlue.toolsDic.Add(tool.GetToolName(), tool);
             Model.ToolsOfGlueList.Add(new
@@ -958,7 +1070,20 @@ namespace MainFormLib.ViewModels
                 ResultShowViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
-
+            else if (toolName.Contains("Tcp接收"))
+            {
+                FormTcpRecv f = new PositionToolsLib.窗体.Views.FormTcpRecv(tool);
+                TcpRecvViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
+                TcpRecvViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("Tcp发送"))
+            {
+                FormTcpSend f = new PositionToolsLib.窗体.Views.FormTcpSend(tool);
+                TcpSendViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
+                TcpSendViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
+            }
         }
         /// <summary>
         /// 胶水检测工具流程鼠标双击事件
@@ -1102,6 +1227,26 @@ namespace MainFormLib.ViewModels
                     += OnSaveParamEventOfGlue;
                 GlueDetectionLib.窗体.ViewModels.ResultShowViewModel.This.OnSaveManageHandle
                     = SaveManageOfGlue;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("Tcp接收"))
+            {
+                GlueDetectionLib.窗体.Views.FormTcpRecv f =
+                         new GlueDetectionLib.窗体.Views.FormTcpRecv(tool);
+                GlueDetectionLib.窗体.ViewModels.TcpRecvViewModel.
+                         This.OnSaveParamHandle += OnSaveParamEventOfGlue;
+                GlueDetectionLib.窗体.ViewModels.TcpRecvViewModel.
+                           This.OnSaveManageHandle = SaveManageOfGlue;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("Tcp发送"))
+            {
+                GlueDetectionLib.窗体.Views.FormTcpSend f =
+                       new GlueDetectionLib.窗体.Views.FormTcpSend(tool);
+                GlueDetectionLib.窗体.ViewModels.TcpSendViewModel.
+                        This.OnSaveParamHandle += OnSaveParamEventOfGlue;
+                GlueDetectionLib.窗体.ViewModels.TcpSendViewModel.
+                           This.OnSaveManageHandle = SaveManageOfGlue;
                 f.ShowDialog();
             }
         }
@@ -1636,6 +1781,27 @@ namespace MainFormLib.ViewModels
             GeneralUse.WriteValue("自动对焦", "限位阈值", LimitMethd.ToString(),
                 "config", rootFolder + "\\Config");
         }
+
+        /// <summary>
+        /// 辅助工具
+        /// </summary>
+        /// <param name="o"></param>
+        private void rdbtn_CheckedChanged(object o)
+        {
+            AddAssistToolToCross();
+
+        }
+        void AssistCircleKeyDown(object o)
+        {
+            KeyEventArgs args = (KeyEventArgs)o;
+            if (args.Key == Key.Enter)
+                  AddAssistToolToCross();
+        }
+        void AssistCircleEvent()
+        {
+            AddAssistToolToCross();
+        }
+
         #endregion
 
         #region--------------定位检测---------------
@@ -1660,6 +1826,87 @@ namespace MainFormLib.ViewModels
                 PosBaseTool tool = projectOfPos.toolsDic[toolName];
                 tool.SetParam(par);
                 projectOfPos.toolsDic[toolName] = tool;
+               
+                if (tool.GetType() == typeof(PosTcpRecvTool))
+                {
+                    if (projectOfPos.TcpRecvName== ((PosTcpRecvTool)tool).CommDevName)return;
+
+                        //如果存在先注销事件
+                     if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfPos.TcpRecvName)))
+                    {
+                        int index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpRecvName));
+
+                        //先清除旧的事件订阅
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= PosTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= PosTcpServer_ReceiveData;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpServer_RemoteClose;
+                        }                        
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= PosTcpClient_ReceiveData;
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpClient_RemoteClose;
+                        }
+                          
+                    }
+                    //重新订阅事件
+                    projectOfPos.TcpRecvName = ((PosTcpRecvTool)tool).CommDevName;
+                    int e_index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpRecvName));
+                    if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
+                    {
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).ReceiveData += PosTcpServer_ReceiveData;
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpServer_RemoteClose;
+                    }
+                    else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
+                    {
+                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).ReceiveData += PosTcpClient_ReceiveData;
+                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpClient_RemoteClose;
+                    }
+
+
+                }
+                else if (tool.GetType() == typeof(PosTcpSendTool))
+                {
+                    if (projectOfPos.TcpSendName == ((PosTcpSendTool)tool).CommDevName) return;
+                    if (projectOfPos.TcpSendName == projectOfPos.TcpRecvName) return;
+                    //如果存在先注销事件
+                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfPos.TcpSendName)))
+                    {                      
+                        int index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpSendName));
+
+                        //先清除旧的事件订阅
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= PosTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpClient_RemoteClose;
+                        }
+
+                    }
+                    //重新订阅事件
+                    projectOfPos.TcpSendName = ((PosTcpSendTool)tool).CommDevName;
+                    int e_index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpSendName));
+                    if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
+                    {
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpServer_RemoteClose;
+                    }
+                    else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
+                    {
+                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpClient_RemoteClose;
+                    }
+
+
+                }
             }
         }
         #endregion
@@ -1687,6 +1934,86 @@ namespace MainFormLib.ViewModels
                 GlueBaseTool tool = projectOfGlue.toolsDic[toolName];
                 tool.SetParam(par);
                 projectOfGlue.toolsDic[toolName] = tool;
+                if (tool.GetType() == typeof(PosTcpRecvTool))
+                {
+                    if (projectOfGlue.TcpRecvName == ((GlueTcpRecvTool)tool).CommDevName) return;
+
+                    //如果存在先注销事件
+                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfGlue.TcpRecvName)))
+                    {
+                        int index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpRecvName));
+
+                        //先清除旧的事件订阅
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpServer_ReceiveData;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpClient_ReceiveData;
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
+                        }
+
+                    }
+                    //重新订阅事件
+                    projectOfGlue.TcpRecvName = ((GlueTcpRecvTool)tool).CommDevName;
+                    int e_index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpRecvName));
+                    if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
+                    {
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += GlueTcpServer_RemoteConnect;
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).ReceiveData += GlueTcpServer_ReceiveData;
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpServer_RemoteClose;
+                    }
+                    else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
+                    {
+                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).ReceiveData += GlueTcpClient_ReceiveData;
+                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpClient_RemoteClose;
+                    }
+
+
+                }
+                else if (tool.GetType() == typeof(GlueTcpSendTool))
+                {
+                    if (projectOfGlue.TcpSendName == ((GlueTcpSendTool)tool).CommDevName) return;
+                    if (projectOfGlue.TcpSendName == projectOfGlue.TcpRecvName) return;
+                    //如果存在先注销事件
+                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfGlue.TcpSendName)))
+                    {
+                        int index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpSendName));
+
+                        //先清除旧的事件订阅
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
+                        }
+
+                    }
+                    //重新订阅事件
+                    projectOfGlue.TcpSendName = ((GlueTcpSendTool)tool).CommDevName;
+                    int e_index = CommDeviceController.g_CommDeviceList.
+                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpSendName));
+                    if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
+                    {
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
+                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpServer_RemoteClose;
+                    }
+                    else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
+                    {
+                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpClient_RemoteClose;
+                    }
+
+
+                }
             }
         }
         #endregion
@@ -1768,9 +2095,58 @@ namespace MainFormLib.ViewModels
             try
             {
                 ResetNumOfPos();
+                #region 需要先注销定位检测TCP
+             
+                foreach (var item in this.projectOfPos.toolsDic)
+                {
+                    if (item.Value.GetType() == typeof(PosTcpRecvTool))
+                    {
+                        projectOfPos.TcpRecvName = ((PosTcpRecvTool)item.Value).CommDevName;
+                        int index = CommDeviceController.g_CommDeviceList.
+                                              FindIndex(t => t.m_Name == projectOfPos.TcpRecvName);
+                        if (index < 0) continue;
+
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= PosTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= PosTcpServer_ReceiveData;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpServer_RemoteClose;
+
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= PosTcpClient_ReceiveData;
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpClient_RemoteClose;
+
+                        }
+                    }
+                    else if (item.Value.GetType() == typeof(PosTcpSendTool))
+                    {
+                     
+                        projectOfPos.TcpSendName = ((PosTcpSendTool)item.Value).CommDevName;
+                        //输出与输入是同一个TCP
+                        if (projectOfPos.TcpSendName == projectOfPos.TcpRecvName) continue;
+
+                        int index = CommDeviceController.g_CommDeviceList.
+                                              FindIndex(t => t.m_Name == projectOfPos.TcpSendName);
+                        if (index < 0) continue;
+
+                        //先清除旧的事件订阅
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= PosTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= PosTcpClient_RemoteClose;
+                        }
+                    }
+                }
+                #endregion
                 this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>
                     (saveToUsePath + "\\" + "定位检测" + "\\" + secondName + ".proj");
-
+                projectOfPos.GetNum();
                 projectOfPos.toolNamesList = new List<string>();
                 if (projectOfPos.dataManage == null)
                     projectOfPos.dataManage = new PosDataManage();
@@ -1796,6 +2172,53 @@ namespace MainFormLib.ViewModels
                     else
                         projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
 
+                #region 后订阅+定位检测TCP
+              
+                foreach (var item in this.projectOfPos.toolsDic)
+                {
+                    if (item.Value.GetType() == typeof(PosTcpRecvTool))
+                    {
+                        projectOfPos.TcpRecvName = ((PosTcpRecvTool)item.Value).CommDevName;
+                        int index = CommDeviceController.g_CommDeviceList.
+                                              FindIndex(t => t.m_Name == projectOfPos.TcpRecvName);
+                        if (index < 0) continue;
+
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData += PosTcpServer_ReceiveData;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose += PosTcpServer_RemoteClose;
+
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData += PosTcpClient_ReceiveData;
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose += PosTcpClient_RemoteClose;
+
+                        }
+                    }
+                    else if (item.Value.GetType() == typeof(PosTcpSendTool))
+                    {
+                        //重新订阅事件
+                        projectOfPos.TcpSendName = ((PosTcpSendTool)item.Value).CommDevName;
+                        //输出与输入是同一个TCP
+                        if (projectOfPos.TcpSendName == projectOfPos.TcpRecvName) continue;
+
+                        int e_index = CommDeviceController.g_CommDeviceList.
+                                           FindIndex(t => t.m_Name.Equals(projectOfPos.TcpSendName));
+                        if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpClient_RemoteClose;
+                        }
+                    }
+                }
+                #endregion
+
             }
             catch (Exception er)
             {
@@ -1816,8 +2239,58 @@ namespace MainFormLib.ViewModels
             {
 
                 ResetNumOfGlue();
+                #region 需要先注销胶水检测TCP
+
+                foreach (var item in this.projectOfGlue.toolsDic)
+                {
+                    if (item.Value.GetType() == typeof(GlueTcpRecvTool))
+                    {
+                        projectOfGlue.TcpRecvName = ((GlueTcpRecvTool)item.Value).CommDevName;
+                        int index = CommDeviceController.g_CommDeviceList.
+                                              FindIndex(t => t.m_Name == projectOfGlue.TcpRecvName);
+                        if (index < 0) continue;
+
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpServer_ReceiveData;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
+
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpClient_ReceiveData;
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
+
+                        }
+                    }
+                    else if (item.Value.GetType() == typeof(GlueTcpSendTool))
+                    {
+
+                        projectOfGlue.TcpSendName = ((GlueTcpSendTool)item.Value).CommDevName;
+                        //输出与输入是同一个TCP
+                        if (projectOfGlue.TcpSendName == projectOfGlue.TcpRecvName) continue;
+
+                        int index = CommDeviceController.g_CommDeviceList.
+                                              FindIndex(t => t.m_Name == projectOfGlue.TcpSendName);
+                        if (index < 0) continue;
+
+                        //先清除旧的事件订阅
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
+                        }
+                    }
+                }
+                #endregion
                 this.projectOfGlue = GeneralUse.ReadSerializationFile<ProjectOfGlue>
                     (saveToUsePath + "\\" + "胶水检测" + "\\" + "AOI.proj");
+                projectOfGlue.GetNum();
                 projectOfGlue.toolNamesList = new List<string>();
                 if (projectOfGlue.dataManage == null)
                     projectOfGlue.dataManage = new GlueDataManage();
@@ -1838,7 +2311,53 @@ namespace MainFormLib.ViewModels
                     else
                         projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
 
+                #region 后订阅+胶水检测TCP
 
+                foreach (var item in this.projectOfGlue.toolsDic)
+                {
+                    if (item.Value.GetType() == typeof(GlueTcpRecvTool))
+                    {
+                        projectOfGlue.TcpRecvName = ((GlueTcpRecvTool)item.Value).CommDevName;
+                        int index = CommDeviceController.g_CommDeviceList.
+                                              FindIndex(t => t.m_Name == projectOfGlue.TcpRecvName);
+                        if (index < 0) continue;
+
+                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect += GlueTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData += GlueTcpServer_ReceiveData;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose += GlueTcpServer_RemoteClose;
+
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData += GlueTcpClient_ReceiveData;
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose += GlueTcpClient_RemoteClose;
+
+                        }
+                    }
+                    else if (item.Value.GetType() == typeof(GlueTcpSendTool))
+                    {
+                        //重新订阅事件
+                        projectOfGlue.TcpSendName = ((GlueTcpSendTool)item.Value).CommDevName;
+                        //输出与输入是同一个TCP
+                        if (projectOfGlue.TcpSendName == projectOfGlue.TcpRecvName) continue;
+
+                        int e_index = CommDeviceController.g_CommDeviceList.
+                                           FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpSendName));
+                        if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
+                        {
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += GlueTcpServer_RemoteConnect;
+                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpServer_RemoteClose;
+                        }
+                        else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
+                        {
+                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpClient_RemoteClose;
+                        }
+                    }
+
+                }
+                #endregion
             }
             catch (Exception er)
             {
@@ -1899,7 +2418,7 @@ namespace MainFormLib.ViewModels
             Model.ModelType = currModelType;//当前模板类型
             Model.ModelTypeSelectIndex = (int)currModelType;
             if (currModelType == EumModelType.CaliBoardModel)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder);
+                f_NinePointsCalib = new FormNinePointsCalib(rootFolder,currCalibName);
             LoadPositionFlow(secondName);//加载定位检测流程
             LoadGlueAoiFlow();//加载胶水检测流程
             Appentxt(string.Format("当前加载配方：{0}，模板：{1}", currRecipeName, secondName));
@@ -2057,6 +2576,34 @@ namespace MainFormLib.ViewModels
             Model.BtnContinueGrabEnable = flag;
             Model.BtnStopGrabEnable = flag;
         }
+
+        void ManualOperateEnable(bool flag)
+        {
+            Model.BtnOneShotEnable = flag;
+            Model.BtnContinueGrabEnable = flag;
+            Model.BtnStopGrabEnable = flag;
+        }
+        /// <summary>
+        /// 加载外部通讯工具
+        /// </summary>
+        void LoadCommDev()
+        {
+            //if (projectOfPos.toolNamesList.Exists(t => t.Contains("Tcp接收")))
+            {
+
+                string path = rootFolder + "\\CommDev";
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                if (!File.Exists(path + "\\外部通讯.cdv")) return;
+                CommDeviceController.LoadCommDev(path + "\\外部通讯.cdv");
+                bool flag = CommDeviceController.InitialConnect();
+                if (!flag)
+                    Appentxt("外部通讯加载失败");
+
+               
+            }
+        }
+
         /// <summary>
         /// 坐标系变换矩阵
         /// </summary>
@@ -2148,54 +2695,13 @@ namespace MainFormLib.ViewModels
             }
             else
             {
-                string toolName = projectOfPos.toolNamesList[count - 1];
-                PosBaseTool tool = projectOfPos.toolsDic[toolName];
-                ShowTool.ClearAllOverLays();
-                ShowTool.DispConcatedObj(tool.GetParam().InputImg, EumCommonColors.green);
-                ShowTool.AddConcatedObjBuffer(tool.GetParam().InputImg, EumCommonColors.green);
-                bool flag = true;
-                if (tool.GetType() == typeof(PositionToolsLib.工具.MatchTool))
-                    flag = (tool.GetParam() as PositionToolsLib.参数.MatchParam).MatchRunStatus;
-                else if (tool.GetType() == typeof(PositionToolsLib.工具.FindLineTool))
-                    flag = (tool.GetParam() as PositionToolsLib.参数.FindLineParam).FindLineRunStatus;
-                else if (tool.GetType() == typeof(PositionToolsLib.工具.FindCircleTool))
-                    flag = (tool.GetParam() as PositionToolsLib.参数.FindCircleParam).FindCircleRunStatus;
-                else if (tool.GetType() == typeof(PositionToolsLib.工具.BlobTool))
-                    flag = (tool.GetParam() as PositionToolsLib.参数.BlobParam).BlobRunStatus;
-                else if (tool.GetType() == typeof(PositionToolsLib.工具.FitLineTool))
-                    flag = (tool.GetParam() as PositionToolsLib.参数.FitLineParam).FitLineRunStatus;
-                else if (tool.GetType() == typeof(PositionToolsLib.工具.LineOffsetTool))
-                    flag = (tool.GetParam() as PositionToolsLib.参数.LineOffsetParam).LineOffsetRunStatus;
+              
 
+                Appentxt("流程中无结果显示工具，无法输出正确结果");
+                InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
+                 0, 0, 0));
+                data = new StuCoordinateData(0, 0, 0);
 
-                if (projectOfPos.dataManage.resultBufDic.ContainsKey(toolName) && flag)
-                {
-                    ShowTool.DispRegion(projectOfPos.dataManage.resultBufDic[toolName], "green");
-                    ShowTool.AddregionBuffer(projectOfPos.dataManage.resultBufDic[toolName], "green");
-
-                    objs.Add(new StuWindowHobjectToPaint
-                    {
-                        color = "green",
-                        obj = projectOfPos.dataManage.resultBufDic[toolName].Clone()
-                    });
-                }
-                
-                if (projectOfPos.dataManage.PositionDataDic.ContainsKey(toolName) && flag)
-                {
-                    data = projectOfPos.dataManage.PositionDataDic[toolName];
-                   
-                    InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
-                    data.x, data.y, data.angle));
-
-                }
-                else
-                {
-                    InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
-                  0, 0, 0));
-                }
-
-                if (!flag)
-                    data = new StuCoordinateData(0, 0, 0);
 
             }
 
@@ -2337,6 +2843,7 @@ namespace MainFormLib.ViewModels
                     Info = content,
                     coorditionDat = new CoorditionDat(size * 2, 10)
                 });
+
             }
             #endregion
 
@@ -2366,6 +2873,34 @@ namespace MainFormLib.ViewModels
             }
             return true;
         }
+
+        /// <summary>
+        /// 机械坐标转像素坐标
+        /// </summary>
+        /// <param name="Px">机械坐标X</param>
+        /// <param name="Py">机械坐标Y</param>
+        /// <param name="Rx">像素坐标X</param>
+        /// <param name="Ry">像素坐标Y</param>
+        /// <returns></returns>
+        bool Transformation_POINT_INV(HTuple Rx, HTuple Ry,
+                       out HTuple Px, out HTuple Py)
+        {
+
+            Px = Py = 0;
+            if (hv_HomMat2D != null && hv_HomMat2D.Length > 0)
+            {
+                HOperatorSet.HomMat2dInvert(hv_HomMat2D, out HTuple homMat2DInvert);
+                HOperatorSet.AffineTransPoint2d(homMat2DInvert, Rx, Ry,
+                 out Px, out Py);
+            }
+            else
+            {
+                Appentxt("未建立标定关系，请确认！");
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// 计算胶水关键信息
         /// </summary>
@@ -2955,24 +3490,28 @@ namespace MainFormLib.ViewModels
         /// </summary>
         private void ResetNumOfPos()
         {
+            PositionToolsLib.工具.AngleConvertTool.inum = 0;
             PositionToolsLib.工具.BinaryzationTool.inum = 0;
             PositionToolsLib.工具.BlobTool.inum = 0;
             PositionToolsLib.工具.CalParallelLineTool.inum = 0;
             PositionToolsLib.工具.ClosingTool.inum = 0;
             PositionToolsLib.工具.ColorConvertTool.inum = 0;
+            PositionToolsLib.工具.CoordConvertTool.inum = 0;
             PositionToolsLib.工具.DilationTool.inum = 0;
             PositionToolsLib.工具.ErosionTool.inum = 0;
             PositionToolsLib.工具.FindCircleTool.inum = 0;
             PositionToolsLib.工具.FindLineTool.inum = 0;
             PositionToolsLib.工具.FitLineTool.inum = 0;
+            PositionToolsLib.工具.ImageCorrectTool.inum = 0;
             PositionToolsLib.工具.LineCentreTool.inum = 0;
             PositionToolsLib.工具.LineIntersectionTool.inum = 0;
+            PositionToolsLib.工具.LineOffsetTool.inum = 0;
             PositionToolsLib.工具.MatchTool.inum = 0;
             PositionToolsLib.工具.OpeningTool.inum = 0;
             PositionToolsLib.工具.ResultShowTool.inum = 0;
-            PositionToolsLib.工具.AngleConvertTool.inum = 0;
-            PositionToolsLib.工具.CoordConvertTool.inum = 0;
-            PositionToolsLib.工具.ImageCorrectTool.inum = 0;
+            PositionToolsLib.工具.TcpRecvTool.inum = 0;
+            PositionToolsLib.工具.TcpSendTool.inum = 0;
+
         }
         /// <summary>
         /// 复位AOI检测工具编号
@@ -2990,7 +3529,9 @@ namespace MainFormLib.ViewModels
             GlueDetectionLib.工具.GlueOffsetTool.inum = 0;
             GlueDetectionLib.工具.MatchTool.inum = 0;
             GlueDetectionLib.工具.OpeningTool.inum = 0;
-            GlueDetectionLib.工具.ResultShowTool.inum = 0;       
+            GlueDetectionLib.工具.ResultShowTool.inum = 0;
+            GlueDetectionLib.工具.TcpRecvTool.inum = 0;
+            GlueDetectionLib.工具.TcpSendTool.inum = 0;
         }
         /// <summary>
         /// 显示定位检测流程
@@ -3403,6 +3944,273 @@ namespace MainFormLib.ViewModels
             else
                 return null;
         }
+
+        /// <summary>
+        /// 生成刻度线,间距2mm
+        /// </summary>
+        /// <param name="space"></param>
+        /// <returns></returns>
+        HObject Gen_TickMarks(double space = 2.0)
+        {
+            int _width = ShowTool.ImageWidth;
+            int _height = ShowTool.ImageHeight;
+            HTuple _Rx, _Ry;
+            //图像中心为零点
+            this.Transformation_POINT(_width / 2, _height / 2,
+                            out _Rx, out _Ry);
+            //物理转像素间距
+            //像素
+            HTuple _Px, _Py, _distance;
+            //物理
+            space = Model.NumOfScale;
+            HTuple _Rx2 = _Rx + space;
+            HTuple _Ry2 = _Ry;
+            this.Transformation_POINT_INV(_Rx2, _Ry2, out _Px, out _Py);
+            HOperatorSet.DistancePp(_height / 2, _width / 2,
+                   _Py, _Px, out _distance);
+
+            //x正
+            HObject x_pos_ticks = null;
+            HOperatorSet.GenEmptyObj(out x_pos_ticks);
+            //x_pos_ticks.Dispose();
+            for (int i = 0; _width / 2 + _distance * i < _width; i++)
+            {
+                //消除累计误差
+                //物理
+                HTuple tem_Rx2 = _Rx + space * i;
+                HTuple tem_Ry2 = _Ry;
+                this.Transformation_POINT_INV(tem_Rx2, tem_Ry2, out _Px, out _Py);
+                HOperatorSet.DistancePp(_height / 2, _width / 2,
+                       _Py, _Px, out HTuple tem_distance);
+
+                //生成刻度尺
+                HTuple hv_col = _width / 2 + tem_distance;
+                HTuple hv_row1 = _height / 2 - 20;
+                HTuple hv_row2 = _height / 2 + 20;
+                HOperatorSet.GenContourPolygonXld(out HObject ho_Contour, hv_row1.TupleConcat(hv_row2),
+                                hv_col.TupleConcat(hv_col));
+                HOperatorSet.ConcatObj(x_pos_ticks, ho_Contour, out x_pos_ticks);
+            }
+
+            //x负
+            HObject x_neg_ticks = null;
+            HOperatorSet.GenEmptyObj(out x_neg_ticks);
+            //x_neg_ticks.Dispose();
+            for (int i = 0; _width / 2 - _distance * i > 0; i++)
+            {
+                //消除累计误差
+                //物理
+                HTuple tem_Rx2 = _Rx - space * i;
+                HTuple tem_Ry2 = _Ry;
+                this.Transformation_POINT_INV(tem_Rx2, tem_Ry2, out _Px, out _Py);
+                HOperatorSet.DistancePp(_height / 2, _width / 2,
+                       _Py, _Px, out HTuple tem_distance);
+
+                //生成刻度尺
+                HTuple hv_col = _width / 2 - tem_distance;
+                HTuple hv_row1 = _height / 2 - 20;
+                HTuple hv_row2 = _height / 2 + 20;
+                HOperatorSet.GenContourPolygonXld(out HObject ho_Contour, hv_row1.TupleConcat(hv_row2),
+                                hv_col.TupleConcat(hv_col));
+                HOperatorSet.ConcatObj(x_neg_ticks, ho_Contour, out x_neg_ticks);
+            }
+            //y正
+            HObject y_pos_ticks = null;
+            HOperatorSet.GenEmptyObj(out y_pos_ticks);
+            ////y_pos_ticks.Dispose();
+            for (int i = 0; _height / 2 + _distance * i < _height; i++)
+            {
+                //消除累计误差
+                //物理
+                HTuple tem_Rx2 = _Rx;
+                HTuple tem_Ry2 = _Ry + space * i;
+                this.Transformation_POINT_INV(tem_Rx2, tem_Ry2, out _Px, out _Py);
+                HOperatorSet.DistancePp(_height / 2, _width / 2,
+                       _Py, _Px, out HTuple tem_distance);
+
+                //生成刻度尺
+                HTuple hv_row = _height / 2 + tem_distance;
+                HTuple hv_col1 = _width / 2 - 20;
+                HTuple hv_col2 = _width / 2 + 20;
+                HOperatorSet.GenContourPolygonXld(out HObject ho_Contour, hv_row.TupleConcat(hv_row),
+                                hv_col1.TupleConcat(hv_col2));
+                HOperatorSet.ConcatObj(y_pos_ticks, ho_Contour, out y_pos_ticks);
+            }
+            //y负
+            HObject y_neg_ticks = null;
+            HOperatorSet.GenEmptyObj(out y_neg_ticks);
+            //y_neg_ticks.Dispose();
+            for (int i = 0; _height / 2 - _distance * i > 0; i++)
+            {
+
+                //消除累计误差
+                //物理
+                HTuple tem_Rx2 = _Rx;
+                HTuple tem_Ry2 = _Ry - space * i;
+                this.Transformation_POINT_INV(tem_Rx2, tem_Ry2, out _Px, out _Py);
+                HOperatorSet.DistancePp(_height / 2, _width / 2,
+                       _Py, _Px, out HTuple tem_distance);
+                //生成刻度尺
+                HTuple hv_row = _height / 2 - tem_distance;
+                HTuple hv_col1 = _width / 2 - 20;
+                HTuple hv_col2 = _width / 2 + 20;
+                HOperatorSet.GenContourPolygonXld(out HObject ho_Contour, hv_row.TupleConcat(hv_row),
+                                hv_col1.TupleConcat(hv_col2));
+                HOperatorSet.ConcatObj(y_neg_ticks, ho_Contour, out y_neg_ticks);
+            }
+
+            HOperatorSet.ConcatObj(x_pos_ticks, x_neg_ticks, out HObject objectsConcat);
+            HOperatorSet.ConcatObj(objectsConcat, y_pos_ticks, out HObject objectsConcat2);
+            HOperatorSet.ConcatObj(objectsConcat2, y_neg_ticks, out HObject objectsConcat3);
+            return objectsConcat3;
+        }
+        void AddAssistToolToCross()
+        {
+            if (!ShowTool.IsShowCenterCross)
+                return;
+
+            int _width = ShowTool.ImageWidth;
+            int _height = ShowTool.ImageHeight;
+
+            switch (Model.AssistTool)
+            {
+                case EumAssistTool.None:
+                    ShowTool.AddAssistToolToCross(null);
+                    break;
+                #region---圆------
+                case EumAssistTool.Circle:
+                    double ActualSizeOfRadium = (double)Model.AssistCircleRadius;
+
+                    HTuple _Rx, _Ry;
+                    bool Circleflag = this.Transformation_POINT(_width / 2, _height / 2,
+                                    out _Rx, out _Ry);
+
+                    //像素
+                    HTuple _Px, _Py, _distanceX, _distanceY;
+
+                    //物理
+                    HTuple _Rx2 = _Rx;
+                    HTuple _Ry2 = _Ry + ActualSizeOfRadium;
+                    this.Transformation_POINT_INV(_Rx2, _Ry2, out _Px, out _Py);
+                    HOperatorSet.DistancePp(_height / 2, _width / 2,
+                           _Py, _Px, out _distanceY);
+                    //物理
+                    HTuple _Rx22 = _Rx + ActualSizeOfRadium;
+                    HTuple _Ry22 = _Ry;
+                    this.Transformation_POINT_INV(_Rx22, _Ry22, out _Px, out _Py);
+                    HOperatorSet.DistancePp(_height / 2, _width / 2,
+                           _Py, _Px, out _distanceX);
+
+                    HObject xldOBJ = null;
+                    HOperatorSet.GenEmptyObj(out xldOBJ);
+                    xldOBJ.Dispose();
+                    HOperatorSet.GenEllipseContourXld(out HObject circleXldOBJ, _height / 2, _width / 2, 0, _distanceX, _distanceY,
+                         0, 6.28318, "positive", 1);
+                    // HOperatorSet.GenCircleContourXld(out HObject  circleXldOBJ, _height / 2, _width / 2, _distance, 0, 6.28318, "positive", 1);
+                    //排布刻度线
+                    HObject tickMarks = Gen_TickMarks();
+                    xldOBJ = circleXldOBJ.ConcatObj(tickMarks);
+                    ShowTool.AddAssistToolToCross(xldOBJ);
+
+
+                    HOperatorSet.GenEmptyObj(out autoFocusRegion);
+                    autoFocusRegion.Dispose();                
+                    HOperatorSet.GenEllipse(out autoFocusRegion, _height / 2, _width / 2, 0, _distanceX, _distanceY);
+                    break;
+                #endregion
+                #region----矩形-----
+                case EumAssistTool.Rectangle:
+                    double ActualSizeOfWidth = Model.AssistRectWidth;
+
+                    HTuple Rx, Ry;
+                    bool Rectangleflag = this.Transformation_POINT(_width / 2, _height / 2,
+                                   out Rx, out Ry);
+                    //像素
+                    HTuple Px, Py, distanceX, distanceY;
+
+                    //物理
+                    HTuple Rx2 = Rx;
+                    HTuple Ry2 = Ry + ActualSizeOfWidth / 2;
+                    this.Transformation_POINT_INV(Rx2, Ry2, out Px, out Py);
+                    HOperatorSet.DistancePp(_height / 2, _width / 2,
+                           Py, Px, out distanceY);
+                    //物理
+                    HTuple Rx22 = Rx + ActualSizeOfWidth / 2;
+                    HTuple Ry22 = Ry;
+                    this.Transformation_POINT_INV(Rx22, Ry22, out Px, out Py);
+                    HOperatorSet.DistancePp(_height / 2, _width / 2,
+                           Py, Px, out distanceX);
+
+
+                    //HTuple R1_x = Rx - ActualSizeOfWidth / 2, R1_y = Ry - ActualSizeOfWidth / 2;
+                    //HTuple R2_x = Rx + ActualSizeOfWidth / 2, R2_y = Ry - ActualSizeOfWidth / 2;
+                    //HTuple R3_x = Rx + ActualSizeOfWidth / 2, R3_y = Ry + ActualSizeOfWidth / 2;
+                    //HTuple R4_x = Rx - ActualSizeOfWidth / 2, R4_y = Ry + ActualSizeOfWidth / 2;
+
+                    HTuple P1_x = _width / 2 - distanceX, P1_y = _height / 2 - distanceY;
+                    HTuple P2_x = _width / 2 + distanceX, P2_y = _height / 2 - distanceY;
+                    HTuple P3_x = _width / 2 + distanceX, P3_y = _height / 2 + distanceY;
+                    HTuple P4_x = _width / 2 - distanceX, P4_y = _height / 2 + distanceY;
+                    //this.Transformation_POINT_INV(R1_x, R1_y, out P1_x, out P1_y);
+                    //this.Transformation_POINT_INV(R2_x, R2_y, out P2_x, out P2_y);
+                    //this.Transformation_POINT_INV(R3_x, R3_y, out P3_x, out P3_y);
+                    //this.Transformation_POINT_INV(R4_x, R4_y, out P4_x, out P4_y);
+                    HObject xldOBJ2 = null;
+                    HOperatorSet.GenEmptyObj(out xldOBJ2);
+                    xldOBJ2.Dispose();
+                    HOperatorSet.GenContourPolygonXld(out HObject rectangleXldOBJ, P1_y.TupleConcat(P2_y, P3_y, P4_y, P1_y),
+                        P1_x.TupleConcat(P2_x, P3_x, P4_x, P1_x));
+                    //排布刻度线
+                    HObject tickMarks2 = Gen_TickMarks();
+                    xldOBJ2 = rectangleXldOBJ.ConcatObj(tickMarks2);
+                    ShowTool.AddAssistToolToCross(xldOBJ2);
+                    //生成自动对焦区域
+                    HOperatorSet.GenEmptyObj(out autoFocusRegion);
+                    autoFocusRegion.Dispose();
+                    HOperatorSet.GenRegionPolygon(out autoFocusRegion, P1_y.TupleConcat(P2_y, P3_y, P4_y, P1_y),
+                        P1_x.TupleConcat(P2_x, P3_x, P4_x, P1_x));
+                    break;
+                    #endregion
+            }
+        }
+
+        /// <summary>
+        /// CurrCam.OneShot()==替换===>OneGrab();
+        /// </summary>
+        bool OneGrab(EunmCamWorkStatus status)
+        {
+            // lock (camlock)
+            {
+                if (CurrCam == null)
+                {
+                    Appentxt("相机对象为空");
+                    return false;
+                }
+                if (!CurrCam.IsAlive)
+                {
+                    Appentxt("相机未在线");
+                    return false;
+                }
+
+
+                Thread.Sleep(10);
+                Task.Run(() =>
+                {
+                    if (CurrCam.IsGrabing)
+                    {
+                        CurrCam.StopGrab();  //如果已在采集中则先停止采集
+                        Thread.Sleep(50);
+                    }
+
+                }).ContinueWith(t =>
+                {
+                    workstatus = status;
+                    CurrCam.OneShot();
+                });
+                return true;
+            }
+        }
+
         #endregion
 
         #region   External Communication
@@ -3427,7 +4235,16 @@ namespace MainFormLib.ViewModels
         /// <param name="e"></param>
         void GetDataEvent(object sender, EventArgs e)
         {
-
+            string strData = sender.ToString();
+            Appentxt(string.Format("控制端接收信息：{0}", strData));
+            if (!ContinueRunFlag)
+            {
+                Appentxt("请开启连续运行");
+                return;
+            }
+            Monitor.Enter(locker);
+            FlowHandle(strData);
+            Monitor.Exit(locker);
         }
         /// <summary>
         /// 发送数据
@@ -3627,28 +4444,36 @@ namespace MainFormLib.ViewModels
         /// <returns>模板切换是否成功标志</returns>
         public bool SwitchModelType(EumModelType eumModelType)
         {
-            Appentxt(string.Format("外部指令开启模板切换,模板名称:{0}",
-                              Enum.GetName(typeof(EumModelType), eumModelType)));
-            if (currModelType == eumModelType)//如果无切换则不重载
-            {
-                Appentxt(string.Format("当前切换模板类型:{0}与当前正使用的同名！",
-                       Enum.GetName(typeof(EumModelType), eumModelType)));
-                return true;
-            }
-            Model.ModelType = eumModelType;         
-            if (eumModelType == EumModelType.CaliBoardModel)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder);
-            currModelType = eumModelType;
-            string secondName = Enum.GetName(typeof(EumModelType), currModelType);
-            bool loadFlag=  LoadPositionFlow(secondName);
-            Model.ModelTypeSelectIndex = (int)eumModelType;
-            return loadFlag;
-            //if (!PosBaseTool.ObjectValided(this.GrabImg))
-            //    return;
-            //ShowTool.ClearAllOverLays();
-            //ShowTool.DispImage(this.GrabImg);
+          
+            Application.Current.Dispatcher.Invoke(() =>
+            {            
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
 
-            //return true;
+                Appentxt(string.Format("指令开启模板切换,模板名称:{0}",
+                                  Enum.GetName(typeof(EumModelType), eumModelType)));
+                if (currModelType == eumModelType)//如果无切换则不重载
+                {
+                    Appentxt(string.Format("当前切换模板类型:{0}与当前正使用的同名！",
+                           Enum.GetName(typeof(EumModelType), eumModelType)));
+                    return true;
+                }
+                Model.ModelType = eumModelType;
+                if (eumModelType == EumModelType.CaliBoardModel)
+                    f_NinePointsCalib = new FormNinePointsCalib(rootFolder, currCalibName);
+                currModelType = eumModelType;
+                string secondName = Enum.GetName(typeof(EumModelType), currModelType);
+                bool loadFlag = LoadPositionFlow(secondName);
+                Model.ModelTypeSelectIndex = (int)eumModelType;
+                return loadFlag;
+                //if (!PosBaseTool.ObjectValided(this.GrabImg))
+                //    return;
+                //ShowTool.ClearAllOverLays();
+                //ShowTool.DispImage(this.GrabImg);
+
+                //return true;
+            });
+            return true;
         }
         /// <summary>
         /// 标定前准备
@@ -3729,7 +4554,7 @@ namespace MainFormLib.ViewModels
         /// <param name="imageName"></param>
         public void SaveWindowImg(string DirPath, string imageName)
         {
-            if (!GuidePositioning_HDevelopExport.ObjectValided(this.GrabImg))
+            if (!ObjectValided(this.GrabImg))
             {
                 Appentxt("图片为空保存失败！");
                 return;
@@ -3737,7 +4562,7 @@ namespace MainFormLib.ViewModels
 
             HObject img = GetWindowImage(this.GrabImg, infos, objs);
 
-            if (!GuidePositioning_HDevelopExport.ObjectValided(img))
+            if (!ObjectValided(img))
             {
                 Appentxt("图片为空保存失败！");
                 return;
@@ -4036,8 +4861,29 @@ namespace MainFormLib.ViewModels
                 });
             }
         }
+        /// <summary>
+        /// 资源释放
+        /// </summary>
+        public void Release()
+        {
+            ContinueRunFlag = false;
+            ShowTool.Dispose();        
+            if (CurrCam != null)
+            {
+                CurrCam.setImgGetHandle -= GetImageDelegate;
+                CurrCam.CloseCam();
+            }
+            string path = rootFolder + "\\CommDev";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            CommDeviceController.SaveCommDev(path + "\\外部通讯.cdv");      
+            CommDeviceController.DisposeConnect();
+            CommDeviceController.ReleaseDev();
 
-
+            if (GrabImg != null) GrabImg.Dispose();
+            Disconnect();
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
+        }
         #endregion
 
         #region  Property
@@ -4063,14 +4909,36 @@ namespace MainFormLib.ViewModels
         #endregion
 
         #region Image
+        void OnSaveWindowImageHnadle(object sender, EventArgs e)
+        {
+            SaveFileDialog m_SaveFileDialog = new SaveFileDialog();
+            m_SaveFileDialog.Filter = "BMP文件|*.bmp*";
+            m_SaveFileDialog.DereferenceLinks = true;
 
+            if ((bool)m_SaveFileDialog.ShowDialog())
+            {
+                string name = m_SaveFileDialog.FileName;
+                int index = name.LastIndexOf("\\");
+                string direc = name.Substring(0, index);
+                string filename = name.Substring(10, name.Length - 1 - index);
+                SaveWindowImg(direc, filename);
+            }
+        }
         void 彩色显示ChangeEvent(object sender, EventArgs e)
         {
-          
+            isColorPalette = ShowTool.IsShowCoLorPalette;
+            GeneralUse.WriteValue("图像制式", "彩色",
+                isColorPalette.ToString(), "config", rootFolder + "\\Config");
         }
         void 显示中心十字坐标Event(object sender, EventArgs e)
         {
-           
+           bool showCross = ShowTool.IsShowCenterCross;
+            if(!showCross)
+            {
+                Model.AssistTool = EumAssistTool.None;
+                AddAssistToolToCross();
+            }
+            
         }
         /// <summary>
         /// 图像采集
@@ -4166,13 +5034,327 @@ namespace MainFormLib.ViewModels
             imageHeight = height.I;
             Create_Physical_coorsys();
         }
+        /// <summary>
+        /// 是否进行彩色转换
+        /// </summary>
+        /// <param name="is2gray"></param>
+        void Rgb2Gray(bool is2gray)
+        {
+            if (!ObjectValided(GrabImg))
+                return;
+            HOperatorSet.CountChannels(GrabImg, out HTuple channels);
+            //原图显示    
+            if (channels[0].I != 3)
+                ;
+            else
+            {
+                //是否需要转换标志
+                if (is2gray)
+                    //黑白显示
+                    HOperatorSet.Rgb1ToGray(GrabImg, out GrabImg);
 
+            }
+            string ImageRotation = Enum.GetName(typeof(EumImageRotation), ShowTool.eumImageRotation);
+            string[] buf = ImageRotation.Split('_');
+            int rotationAngle = int.Parse(buf[1]);
+            ShowTool.ClearAllOverLays();
+            try
+            {
+                ShowTool.DispImage(ref GrabImg, -rotationAngle);
+                ShowTool.D_HImage = GrabImg;
+
+            }
+            catch (HOperatorException er)
+            {
+                Appentxt(er.Message);
+                //  currvisiontool.DispImage( GrabImg);
+            }
+        }
         #endregion
 
         #region Cam
+        /// <summary>
+        /// 图像获取委托事件
+        /// </summary>
+        /// <param name="img"></param>
         void GetImageDelegate(HObject img)
         {
+            //GC.Collect();
+            objs.Clear();
+            infos.Clear();
 
+            if (workstatus == EunmCamWorkStatus.Freestyle) //自由模式只采图不做检测
+                System.Threading.Thread.Sleep(10);
+
+            HOperatorSet.GenEmptyObj(out GrabImg);
+            GrabImg.Dispose();
+            HOperatorSet.CopyObj(img, out GrabImg, 1, 1);
+
+            HOperatorSet.CountChannels(GrabImg, out HTuple channels);
+            if (channels[0].I != 3)
+            {
+                ShowTool.SetColorChangeBtnEnable(false);//彩色切换按钮使能
+                isColorPalette = false;
+                ShowTool.IsShowCoLorPalette = false;
+            }
+            else
+                ShowTool.SetColorChangeBtnEnable(true);//彩色切换按钮使能
+
+            //彩色转换       
+            Rgb2Gray(!isColorPalette);
+            //添加图像到缓存集合
+            if (GlueBaseTool.ObjectValided(this.GrabImg))
+                if (!projectOfGlue.dataManage.imageBufDic.ContainsKey("原始图像"))
+                    projectOfGlue.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
+                else
+                    projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+            //添加图像到缓存集合
+            if (PosBaseTool.ObjectValided(this.GrabImg))
+                if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
+                    projectOfPos.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
+                else
+                    projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+            if (workstatus == EunmCamWorkStatus.Freestyle) //自由模式只采图不做检测
+            {
+                //if (!CurrCam.IsAlive) return;
+
+                if (!CurrCam.IsContinueGrab)        
+                return;
+            }
+            else
+            {
+
+                ManualOperateEnable(false);
+                Appentxt(string.Format("相机当前工作状态：{0}",
+                         Enum.GetName(typeof(EunmCamWorkStatus), workstatus)));
+
+                if (workstatus == EunmCamWorkStatus.NinePointcLocation)  //9点标定定位模式
+                {
+                    DgPixelPointIndexer++;
+                    StuCoordinateData data = RunTestFlowOfPosition();
+                    NinePointsCalibViewModel.This.Model.DgPixelPointDataList.Add(
+                          new DgPixelPointData(DgPixelPointIndexer, data.x, data.y));
+
+                    if (data.x == 0 && data.y == 0 && data.angle == 0)
+                    {
+                      
+                        NinePointsCalibViewModel.This.Model.TxbPixelX = double.NaN;
+                        NinePointsCalibViewModel.This.Model.TxbPixelY = double.NaN;        
+                        NinePointStatusDic.Add(DgPixelPointIndexer, false);
+                        //sendToRobCmdMsg(string.Format("{0},{1},{2}", "NP", i.ToString(), "NG"));//发送模板匹配NG
+                        virtualConnect.WriteData(string.Format("{0},{1},{2}", "NP", 
+                            DgPixelPointIndexer.ToString(), "NG"));//发送模板匹配NG
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData(string.Format("{0},{1},{2}", "NP",
+                                        DgPixelPointIndexer.ToString(), "NG"));
+                        }
+                        Appentxt(string.Format("模板匹配失败，当期模板类型：{0}，9点标定无法获取像素坐标点",
+                                Enum.GetName(typeof(EumModelType), currModelType)));
+                        //MessageBox.Show("模板匹配失败，9点标定无法获取像素坐标点");
+                        return;
+                    }
+                    else
+                    {
+                        NinePointsCalibViewModel.This.Model.TxbPixelX = data.x;
+                        NinePointsCalibViewModel.This.Model.TxbPixelY = data.y;             
+                        NinePointStatusDic.Add(DgPixelPointIndexer, true);
+                        // sendToRobCmdMsg(string.Format("{0},{1},{2}", "NP", i.ToString(), "OK"));//发送模板匹配OK
+                        virtualConnect.WriteData(string.Format("{0},{1},{2}", "NP", 
+                            DgPixelPointIndexer.ToString(), "OK"));//发送模板匹配OK
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData(string.Format("{0},{1},{2}", "NP",
+                                         DgPixelPointIndexer.ToString(), "OK"));
+                        }
+                    }
+                }
+                else if (workstatus == EunmCamWorkStatus.RotatoLocation)  //旋转中心计定位模式
+                {
+                    DgRotatePointIndexer++;
+                   StuCoordinateData data = RunTestFlowOfPosition();
+                    NinePointsCalibViewModel.This.Model.DgRotatePointDataList.Add(
+                         new DgRotatePointData (DgRotatePointIndexer, data.x, data.y));
+                    if (data.x == 0 && data.y == 0 && data.angle == 0)
+                    {
+
+                        NinePointsCalibViewModel.This.Model.TxbRotatePixelX = double.NaN;
+                        NinePointsCalibViewModel.This.Model.TxbRotatePixelY = double.NaN;                     
+                        RotatoStatusDic.Add(DgRotatePointIndexer, false);
+                        //sendToRobCmdMsg(string.Format("{0},{1},{2}", "C", k.ToString(), "NG"));//发送模板匹配NG
+                        virtualConnect.WriteData(string.Format("{0},{1},{2}", "C",
+                            DgRotatePointIndexer.ToString(), "NG"));//发送模板匹配NG   
+                        // MessageBox.Show("定位失败，无法获取像素坐标点");
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData(string.Format("{0},{1},{2}", "C",
+                            DgRotatePointIndexer.ToString(), "NG"));
+                        }
+                        Appentxt("定位失败，无法获取像素坐标点");
+                        return;
+                    }
+                    else
+                    {
+                        NinePointsCalibViewModel.This.Model.TxbRotatePixelX = data.x;
+                        NinePointsCalibViewModel.This.Model.TxbRotatePixelY = data.y;
+                        RotatoStatusDic.Add(DgRotatePointIndexer, true);
+                        //sendToRobCmdMsg(string.Format("{0},{1},{2}", "C", k.ToString(), "OK"));//发送模板匹配OK
+                        virtualConnect.WriteData(string.Format("{0},{1},{2}", "C",
+                            DgRotatePointIndexer.ToString(), "OK"));//发送模板匹配OK
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData(string.Format("{0},{1},{2}", "C",
+                                DgRotatePointIndexer.ToString(), "OK"));
+                        }
+                    }
+
+                }
+                else if (workstatus == EunmCamWorkStatus.DeviationLocation)  //标定偏差校验
+                {
+                   StuCoordinateData data = RunTestFlowOfPosition();
+
+                    Create_Physical_coorsys();
+                    if (data.x == 0 && data.y == 0 && data.angle == 0)
+                    {
+                        virtualConnect.WriteData("NG");//发送模板匹配NG
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData("NG");
+                        }
+                        Appentxt("定位失败，无法获取像素坐标点");
+                        return;
+                    }
+                    else
+                    {
+                        HTuple centreRow = this.imageHeight / 2;
+                        HTuple centreCol = this.imageWidth / 2;
+                        HTuple _Rx, _Ry, _Rx2, _Ry2;
+                        this.Transformation_POINT(data.x,
+                                data.y, out _Rx, out _Ry);  //像素坐标转物理坐标                              
+                        //_Rx = data.x;
+                        //_Ry = data.y;
+                        this.Transformation_POINT(centreCol,
+                            centreRow, out _Rx2, out _Ry2);//像素坐标转物理坐标
+
+                        HOperatorSet.GenContourPolygonXld(out HObject ho_Contour,
+                              centreRow.TupleConcat(data.y), centreCol.TupleConcat(data.x));
+                        ShowTool.DispRegion(ho_Contour, "green");
+                        ShowTool.AddregionBuffer(ho_Contour, "green");
+                        double offsetX = _Rx.D - _Rx2.D;
+                        double offsetY = _Ry.D - _Ry2.D;
+                        //  double distance = Math.Sqrt(Math.Pow(_Rx- _Rx2,2)+ Math.Pow(_Ry - _Ry2, 2));
+                        virtualConnect.WriteData(string.Format("offsetX:{0:f3};offsetY:{1:f3}", offsetX, offsetY));//发送偏差数据
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData(string.Format("offsetX:{0:f3};offsetY:{1:f3}", offsetX, offsetY));
+                        }
+                        Appentxt(string.Format("标定偏差校验，发送数据 offsetX:{0:f3};offsetY:{1:f3}", offsetX, offsetY));
+                    }
+                    ContinueGrab(true);
+                }
+                else if (workstatus == EunmCamWorkStatus.NormalTest_T1)  //正常定位测试(产品1)
+                {
+         
+                   StuCoordinateData data = RunTestFlowOfPosition();
+                    Create_Physical_coorsys();
+                      
+                    string buff = "[发送特征点位数据]";
+                    buff += string.Format("x:{0:f3},y:{1:f3},a:{2:f3};",
+                               data.x, data.y, data.angle);
+                    Appentxt(buff);                   
+                    virtualConnect.WriteData(buff.Replace("[发送特征点位数据]", ""));
+                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(buff.Replace("[发送特征点位数据]", ""));
+                    }
+
+                    stopwatch.Stop();
+                    int spend = (int)stopwatch.ElapsedMilliseconds;
+                    ShowTool.DetectionTime = spend;
+
+                }
+                else if (workstatus == EunmCamWorkStatus.NormalTest_T2)  //正常定位测试(产品2)
+                {
+                    StuCoordinateData data = RunTestFlowOfPosition();
+
+                    Create_Physical_coorsys();
+                   
+                    string buff = "[发送特征点位数据]";
+                    buff += string.Format("x:{0:f3},y:{1:f3},a:{2:f3};",
+                             data.x, data.y, data.angle);
+                    Appentxt(buff);                 
+                    virtualConnect.WriteData(buff.Replace("[发送特征点位数据]", ""));
+
+                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(buff.Replace("[发送特征点位数据]", ""));
+                    }
+                    stopwatch.Stop();
+                    int spend = (int)stopwatch.ElapsedMilliseconds;
+                    ShowTool.DetectionTime = spend;
+
+                }
+                else if (workstatus == EunmCamWorkStatus.NormalTest_G)  //正常定位测试(点胶阀)
+                {
+                 
+                    StuCoordinateData data = RunTestFlowOfPosition();
+                    Create_Physical_coorsys();                  
+                    string buff = "[发送特征点位数据]";
+                    buff += string.Format("x:{0:f3},y:{1:f3},a:{2:f3};",
+                              data.x, data.y, data.angle);
+                    Appentxt(buff);
+                    virtualConnect.WriteData(buff.Replace("[发送特征点位数据]", ""));
+                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(buff.Replace("[发送特征点位数据]", ""));
+                    }
+                    stopwatch.Stop();
+                    int spend = (int)stopwatch.ElapsedMilliseconds;
+                    ShowTool.DetectionTime = spend;
+                }
+                else if (workstatus == EunmCamWorkStatus.AutoFocus)  //自动对焦
+                {
+                    StuProcessFocusSendData stuProcessFocusSendData = new StuProcessFocusSendData(-1);
+                    bool flag = AutoFocus.calculateState(GrabImg, autoFocusRegion, DeviationThd, LimitMethd);
+                    if (!flag)
+                    {
+                        stuProcessFocusSendData.eumtendency = Eumtendency.error;
+                        Appentxt("对焦错误，请检查流程及参数！");
+                    }
+                    else
+                        stuProcessFocusSendData = AutoFocus.sendCmdOfAutoAdjust();
+
+                    Appentxt(stuProcessFocusSendData.ToString());
+                    AutoFocusDataHandle?.Invoke(stuProcessFocusSendData, null);
+                }
+                else if (workstatus == EunmCamWorkStatus.AOI) //胶水AOI检测
+                {
+
+                    Appentxt("图像采集完成，开始胶水AOI检测");
+                    bool resultFlag = RunTestFlowOfGlue();
+                    Appentxt("胶水AOI检测完成，结果：" + (resultFlag ? "OK" : "NG"));
+                    virtualConnect.WriteData(resultFlag ? "OK" : "NG");//发送胶水AOI检测结果
+                    GlueTcpSendTool tool = GetToolToSendOfGlue();
+                    if (tool != null)
+                    {
+                        tool.SendData(resultFlag ? "OK" : "NG");
+                    }
+                }         
+                else if (workstatus == EunmCamWorkStatus.Trajectory)
+                {
+                    
+                }
+
+            }
         }
         //相机连接状态
         void CamConnectEvent(object sender, EventArgs e)
@@ -4180,6 +5362,509 @@ namespace MainFormLib.ViewModels
             CamConnectStatusHandle?.Invoke(sender, e);
         }
 
+        #endregion
+
+        #region TCP
+        /// <summary>
+        /// 获取定位检测TCP发送工具
+        /// </summary>
+        /// <returns></returns>
+        PosTcpSendTool GetToolToSendOfPos()
+        {
+            //string name = this.projectOfPos.TcpSendName;
+            int index = this.projectOfPos.toolNamesList.FindIndex(t => t.Contains("Tcp发送"));
+
+            if (index < 0) return null;
+            string name = this.projectOfPos.toolNamesList[index];
+            if (this.projectOfPos.toolNamesList.Contains(name))
+            {
+                PosBaseTool tool = this.projectOfPos.toolsDic[name];
+                if (tool.GetType() == typeof(PosTcpSendTool))
+                    return (PosTcpSendTool)tool;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 获取定位检测TCP发送工具
+        /// </summary>
+        /// <returns></returns>
+        GlueTcpSendTool GetToolToSendOfGlue()
+        {
+            //string name = this.projectOfGlue.TcpSendName;
+            int index = this.projectOfGlue.toolNamesList.FindIndex(t => t.Contains("Tcp发送"));
+
+            if (index < 0) return null;
+            string name = this.projectOfGlue.toolNamesList[index];
+            if (this.projectOfGlue.toolNamesList.Contains(name))
+            {
+                GlueBaseTool tool = this.projectOfGlue.toolsDic[name];
+                if (tool.GetType() == typeof(GlueTcpSendTool))
+                    return (GlueTcpSendTool)tool;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 流程处理
+        /// </summary>
+        /// <param name="strData"></param>
+        void FlowHandle(string strData)
+        {
+            if (strData.Contains("NP,") || strData.Contains("C,") || strData.Contains("Deviation")
+       || strData.Contains("T1") || strData.Contains("T2") || strData.Contains("G")
+         || strData.Contains("AF") || strData.Contains("AOI") || strData.Contains("Trajectory"))
+
+            {
+                if (strData.Contains("NP,")) //9点标定流程
+                {
+                    if (currModelType != EumModelType.CaliBoardModel)
+                        SwitchModelType(EumModelType.CaliBoardModel);
+                    string[] tempdataArray = strData.Split(',');
+                    #region---//9点标定流程----------
+                    switch (tempdataArray[1])
+                    {
+                        case "S":
+
+                            //检测当前是否已经做好模板
+                            //检查当前是否相机正常连接
+                            //清除历史标记点位
+                            //发送准备好信号，等待9点标记
+                            DgPixelPointIndexer = 0;
+                            NinePointsCalibViewModel.This.Model.DgPixelPointDataList.Clear();
+                            DgRotatePointIndexer = 0;
+                            NinePointsCalibViewModel.This.Model.DgRobotPointDataList.Clear();
+
+                            NinePointStatusDic.Clear();
+                            if (this.projectOfPos.toolsDic.Count > 0 &&
+                                    CurrCam.IsAlive)
+                            {
+                                virtualConnect.WriteData("NP,S,OK");   //准备OK
+                                Appentxt("9点标定准备好，开始标定");
+                            }
+                            else
+                                virtualConnect.WriteData("NP,S,NG");  //未准备好
+                            break;
+                        case "E":
+                            //校验9次模板匹配是否OK
+                            //检测当前标定关系转换是否正常                     
+                            //发送标定结果信号
+
+                            bool flag = true;
+                            foreach (var s in NinePointStatusDic)
+                                flag &= s.Value;
+                            Task.Factory.StartNew(new Action(() =>
+                            {
+                                NinePointsCalibModel model = NinePointsCalibViewModel.This.Model;
+                                bool genFlag = NinePointsCalibTool.GenNineCaliMatrix(ref model,
+                                      out string info);
+                                if (!genFlag) Appentxt(info);
+                                NinePointsCalibViewModel.This.Model = model;
+                                NinePointsCalibTool.SaveNineCaliData(NinePointsCalibViewModel.This.Model,
+                                    rootFolder, currCalibName);
+
+                            })).ContinueWith(t =>
+                            {
+                                virtualConnect.WriteData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
+                                Appentxt("9点标定结束，标定结果" + (flag ? "OK" : "NG"));
+                            });
+                            break;
+                        case "1":
+                        case "2":
+                        case "3":
+                        case "4":
+                        case "5":
+                        case "6":
+                        case "7":
+                        case "8":
+                        case "9":
+                            //记录xy机械坐标点
+                            //相机采集，模板匹配
+                            //发送匹配结果信号
+                            int key = int.Parse(tempdataArray[1]);
+                            if (NinePointStatusDic.ContainsKey(key))
+                            {
+                                //TCPInfoAddText(string.Format("当前已经标记过第{0}点位", key));
+                                virtualConnect.WriteData(string.Format("{0},{1},{2}", tempdataArray[0],
+                                    tempdataArray[1], "NG"));
+                            }
+                            else
+                            {
+                                DgRobotPointIndexer = int.Parse(tempdataArray[1]);
+                                double rx = double.Parse(tempdataArray[2]);
+                                double ry = double.Parse(tempdataArray[3]);
+                                NinePointsCalibViewModel.This.Model.DgRobotPointDataList.Add(
+                                    new DgRobotPointData(DgRobotPointIndexer, rx, ry));
+
+                                ManualOperateEnable(false);
+                                OneGrab(EunmCamWorkStatus.NinePointcLocation);
+
+                            }
+                            break;
+
+                    }
+                    #endregion
+                }
+                else if (strData.Contains("C,"))//旋转中心标定流程
+                {
+                    if (currModelType != EumModelType.CaliBoardModel)
+                        SwitchModelType(EumModelType.CaliBoardModel);
+
+                    string[] tempdataArray = strData.Split(',');
+                    #region---//旋转中心标定流程---------
+                    switch (tempdataArray[1])
+                    {
+                        case "S":
+
+                            //检测当前是否已经做好模板
+                            //检查当前是否相机正常连接
+                            //清除历史标记点位
+                            //发送准备好信号，等待旋转中心标定
+                            DgRotatePointIndexer = 0;
+                            NinePointsCalibViewModel.This.Model.DgRotatePointDataList.Clear();
+                            RotatoStatusDic.Clear();
+                            if (this.projectOfPos.toolsDic.Count > 0 &&
+                                    CurrCam.IsAlive)
+                            {
+                                virtualConnect.WriteData("C,S,OK");   //准备OK
+                                Appentxt("旋转中心标定准备好,开始标定");
+                            }
+
+                            else
+                                virtualConnect.WriteData("C,S,NG");  //未准备好
+
+                            break;
+                        case "E":
+                            //校验5次模板匹配是否OK
+                            //计算旋转中心                
+                            //发送旋转中心标定结果信号
+
+                            bool flag = true;
+                            foreach (var s in RotatoStatusDic)
+                                flag &= s.Value;
+
+                            Task.Factory.StartNew(new Action(() =>
+                            {
+                                NinePointsCalibModel model = NinePointsCalibViewModel.This.Model;
+                                bool calFlag = NinePointsCalibTool.CalRotateCenter(ref model, out string info);
+                                if (!calFlag) Appentxt(info);
+                                NinePointsCalibViewModel.This.Model = model;
+                                NinePointsCalibTool.SaveRatateData(NinePointsCalibViewModel.This.Model,
+                                    rootFolder, currCalibName);
+
+                            })).ContinueWith(t =>
+                            {
+                                virtualConnect.WriteData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
+                                Appentxt("旋转中心标定结束，标定结果" + (flag ? "OK" : "NG"));
+                            });
+                            break;
+                        case "1":
+                        case "2":
+                        case "3":
+                        case "4":
+                        case "5":
+                            //相机采集，模板匹配
+                            //发送匹配结果信号
+                            int key = int.Parse(tempdataArray[1]);
+                            if (RotatoStatusDic.ContainsKey(key))
+                            {
+                                //CPInfoAddText(string.Format("当前旋转已经标记过第{0}点位", key));
+                                virtualConnect.WriteData(string.Format("{0},{1},{2}", tempdataArray[0],
+                                    tempdataArray[1], "NG"));
+                            }
+                            else
+                            {
+
+                                ManualOperateEnable(false);
+                                OneGrab(EunmCamWorkStatus.RotatoLocation);
+
+                            }
+                            break;
+
+                    }
+                    #endregion
+                }
+                else if (strData.Equals("Deviation"))//标定偏差校验
+                {
+                    if (currModelType != EumModelType.CaliBoardModel)
+                        SwitchModelType(EumModelType.CaliBoardModel);
+                    if (this.projectOfPos.toolsDic.Count > 0 &&
+                                  CurrCam.IsAlive)
+                    {
+                        Appentxt("标定准备好,开始偏差校验");
+                        ManualOperateEnable(false);
+                        OneGrab(EunmCamWorkStatus.DeviationLocation);
+                    }
+
+                    else
+                    {
+                        virtualConnect.WriteData("NG");  //未准备好
+                        Appentxt("标定未准备好,校验失败");
+                    }
+
+                }
+                else if (strData.Equals("T1"))
+                {
+                    if (currModelType != EumModelType.ProductModel_1)
+                        SwitchModelType(EumModelType.ProductModel_1);
+
+                    stopwatch.Restart();
+                    ManualOperateEnable(false);
+                    Appentxt("开始自动检测,使用模板为产品1模板！");
+                    OneGrab(EunmCamWorkStatus.NormalTest_T1);
+                   
+                }
+                else if (strData.Equals("T2"))
+                {
+                    if (currModelType != EumModelType.ProductModel_2)
+                        SwitchModelType(EumModelType.ProductModel_2);
+
+                    stopwatch.Restart();
+                    ManualOperateEnable(false);
+                    Appentxt("开始自动检测,使用模板为产品2模板！");
+                    OneGrab(EunmCamWorkStatus.NormalTest_T2);
+
+                }
+                else if (strData.Equals("G"))
+                {
+
+                    if (currModelType != EumModelType.GluetapModel)
+                        SwitchModelType(EumModelType.GluetapModel);
+
+                    stopwatch.Restart();
+                    ManualOperateEnable(false);
+                    Appentxt("开始点胶阀示教检测");
+                    OneGrab(EunmCamWorkStatus.NormalTest_G);
+                  
+                }
+                else if (strData.Contains("AF"))
+                {
+                    switch (strData)
+                    {
+                        case "Request AF":
+                            if (!GuidePositioning_HDevelopExport.ObjectValided(ShowTool.D_HImage) ||
+                                ShowTool.D_HImage == null)
+                            {
+                                AutoFocusDataHandle?.Invoke("Operation exception", null);
+
+                                Appentxt("图像为空，请采集一张图片！");
+                                return;
+                            }
+
+                            AutoFocus.resetData();
+                            bool showCross = ShowTool.IsShowCenterCross;
+                            if (!showCross)
+                            {
+                                Model.AssistTool = EumAssistTool.None;
+                                AddAssistToolToCross();
+                            }
+                            System.Threading.Thread.Sleep(500);
+
+                            if (!ObjectValided(autoFocusRegion) ||
+                               autoFocusRegion == null)
+                            {
+                                AutoFocusDataHandle?.Invoke("Operation exception", null);
+                                Appentxt("对焦区域为空，请先打开辅助工具！");
+                                return;
+                            }
+                            AutoFocusDataHandle?.Invoke("Ready AF", null);
+                            //workstatus = EunmcurrCamWorkStatus.AutoFocus;
+                            Appentxt("开始自动对焦");
+                            break;
+                        case "AFT":
+                            ManualOperateEnable(false);
+                            OneGrab(EunmCamWorkStatus.AutoFocus); //Z自动对焦         
+                            Appentxt("自动对焦进行中");
+                            break;
+                        case "Finish AF":
+                            workstatus = EunmCamWorkStatus.None;
+                            AutoFocusDataHandle?.Invoke("OK AF", null);
+                            Appentxt("自动对焦结束");
+                            break;
+                    }
+
+                }
+                else if (strData.Equals("AOI"))//胶水外观检测请求
+                {
+                    stopwatch.Restart();
+                    ManualOperateEnable(false);
+                    Appentxt("开始胶水AOI外观检测");
+                    OneGrab(EunmCamWorkStatus.AOI);
+                   
+
+                }
+                else if (strData.Contains("Trajectory"))//轨迹提取
+                {
+
+                }
+                else
+                    return;
+            }
+        }
+        /// <summary>
+        /// 远程连接
+        /// </summary>
+        private void PosTcpServer_RemoteConnect(string key)
+        {
+          
+            Appentxt(string.Format("Pos客户端[{0}]上线", key));
+         
+        }
+        /// <summary>
+        /// 远程关闭
+        /// </summary>
+        /// <param name="key"></param>
+        private void PosTcpServer_RemoteClose(string key)
+        {
+            Appentxt(string.Format("Pos客户端[{0}]下线", key));
+
+        }
+
+        /// <summary>
+        /// 远程关闭
+        /// </summary>
+        /// <param name="key"></param>
+        private void PosTcpClient_RemoteClose(string key)
+        {       
+            Appentxt( string.Format("Pos服务端[{0}]断开连接", key));       
+        }
+
+        /// <summary>
+        /// 数据接收
+        /// </summary>
+        /// <param name="remote"></param>
+        /// <param name="buffer"></param>
+        /// <param name="count"></param>
+        private void PosTcpServer_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
+        {
+
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
+            buf += "[Pos：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+            if (!ContinueRunFlag)
+            {
+                Appentxt("请开启连续运行");
+                return;
+            }
+            if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+            Monitor.Enter(locker);
+            FlowHandle(strData);
+            Monitor.Exit(locker);
+        }
+        /// <summary>
+        /// 数据接收
+        /// </summary>
+        /// <param name="remote"></param>
+        /// <param name="buffer"></param>
+        /// <param name="count"></param>
+        private void PosTcpClient_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
+        {
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
+            buf += "[Pos：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+            if (!ContinueRunFlag)
+            {
+                Appentxt("请开启连续运行");
+                return;
+            }
+            if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+            Monitor.Enter(locker);
+            FlowHandle(strData);
+            Monitor.Exit(locker);
+        }
+        /// <summary>
+        /// 远程连接
+        /// </summary>
+        private void GlueTcpServer_RemoteConnect(string key)
+        {
+
+            Appentxt(string.Format("Glue客户端[{0}]上线", key));
+
+        }
+        /// <summary>
+        /// 远程关闭
+        /// </summary>
+        /// <param name="key"></param>
+        private void GlueTcpServer_RemoteClose(string key)
+        {
+            Appentxt(string.Format("Glue客户端[{0}]下线", key));
+
+        }
+
+        /// <summary>
+        /// 远程关闭
+        /// </summary>
+        /// <param name="key"></param>
+        private void GlueTcpClient_RemoteClose(string key)
+        {
+            Appentxt(string.Format("Glue服务端[{0}]断开连接", key));
+        }
+
+        /// <summary>
+        /// 数据接收
+        /// </summary>
+        /// <param name="remote"></param>
+        /// <param name="buffer"></param>
+        /// <param name="count"></param>
+        private void GlueTcpServer_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
+        {
+
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
+            buf += "[Glue：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+            if (!ContinueRunFlag)
+            {
+                Appentxt("请开启连续运行");
+                return;
+            }
+            if (!strData.Contains("AOI")) return;//只处理AOI流程
+            Monitor.Enter(locker);
+            FlowHandle(strData);
+            Monitor.Exit(locker);
+        }
+        /// <summary>
+        /// 数据接收
+        /// </summary>
+        /// <param name="remote"></param>
+        /// <param name="buffer"></param>
+        /// <param name="count"></param>
+        private void GlueTcpClient_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
+        {
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
+            buf += "[Glue：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+            if (!ContinueRunFlag)
+            {
+                Appentxt("请开启连续运行");
+                return;
+            }
+            if (!strData.Contains("AOI")) return;//只处理AOI流程
+            Monitor.Enter(locker);
+            FlowHandle(strData);
+            Monitor.Exit(locker);
+        }
         #endregion
 
     }

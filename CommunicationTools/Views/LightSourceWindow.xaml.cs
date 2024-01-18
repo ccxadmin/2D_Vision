@@ -13,10 +13,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ControlShareResources;
-using LightSourceController.Models;
-using LightSourceController.ViewModels;
+using CommunicationTools.Models;
+using CommunicationTools.ViewModels;
 
-namespace LightSourceController.Views
+namespace CommunicationTools.Views
 {
     /// <summary>
     /// LightSourceWindow.xaml 的交互逻辑

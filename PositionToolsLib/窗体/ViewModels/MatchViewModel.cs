@@ -93,7 +93,7 @@ namespace PositionToolsLib.窗体.ViewModels
             }
             if (BaseTool.ObjectValided((par as MatchParam).MaskROI))
             {
-                maskRegion.Dispose();
+                maskRegion?.Dispose();
                 HOperatorSet.CopyObj((par as MatchParam).MaskROI, out maskRegion, 1, -1);
             }
             foreach (var s in dataManage.imageBufDic)

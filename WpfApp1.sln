@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExternalFunctionLib", "Exte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FunctionLib", "FunctionLib\FunctionLib.csproj", "{2BE3FDE8-0402-4609-89CC-3EEF3F15EB9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightSourceController", "LightSourceController\LightSourceController.csproj", "{DBAC7BA7-1608-4F60-8FC2-6B06034CD455}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlShareResources", "ControlShareResources\ControlShareResources.csproj", "{2B70C8D1-20CD-46DA-BACB-FF45A34BDA41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GlueDetectionLib", "GlueDetectionLib\GlueDetectionLib.csproj", "{555EFA77-5B9A-49FA-8D03-14A237F4E776}"
@@ -24,6 +22,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DlasaCameraLib", "DlasaCameraLib\DlasaCameraLib.csproj", "{6C195EB7-3BC1-468A-8C11-D27074A6F303}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MainFormLib", "MainFormLib\MainFormLib.csproj", "{63A575F1-369E-4E72-A58A-CEE3639073F2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommunicationTools", "CommunicationTools\CommunicationTools.csproj", "{AEA5B80F-86F7-421D-BE39-9A33E6617AF7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,10 +51,6 @@ Global
 		{2BE3FDE8-0402-4609-89CC-3EEF3F15EB9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BE3FDE8-0402-4609-89CC-3EEF3F15EB9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BE3FDE8-0402-4609-89CC-3EEF3F15EB9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DBAC7BA7-1608-4F60-8FC2-6B06034CD455}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBAC7BA7-1608-4F60-8FC2-6B06034CD455}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DBAC7BA7-1608-4F60-8FC2-6B06034CD455}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DBAC7BA7-1608-4F60-8FC2-6B06034CD455}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2B70C8D1-20CD-46DA-BACB-FF45A34BDA41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B70C8D1-20CD-46DA-BACB-FF45A34BDA41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B70C8D1-20CD-46DA-BACB-FF45A34BDA41}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,6 +71,10 @@ Global
 		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63A575F1-369E-4E72-A58A-CEE3639073F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEA5B80F-86F7-421D-BE39-9A33E6617AF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEA5B80F-86F7-421D-BE39-9A33E6617AF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEA5B80F-86F7-421D-BE39-9A33E6617AF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEA5B80F-86F7-421D-BE39-9A33E6617AF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

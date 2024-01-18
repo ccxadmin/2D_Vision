@@ -1,14 +1,14 @@
-﻿<Window x:Class="LightSourceController.Views.LightSourceWindow"
+﻿<Window x:Class="CommunicationTools.Views.LightSourceWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LightSourceController.Views"  
+        xmlns:local="clr-namespace:CommunicationTools.Views"  
         xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"     
         xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
         xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
         xmlns:ll="clr-namespace:ControlShareResources.Controls;assembly=ControlShareResources"
-        xmlns:vm="clr-namespace:LightSourceController.ViewModels"
+        xmlns:vm="clr-namespace:CommunicationTools.ViewModels"
         mc:Ignorable="d"  Style="{x:Null}" Loaded="Window_Loaded" Closing="Window_Closing"
         Title="串口通讯助手（数字控制器）" Height="700" Width="428">
 

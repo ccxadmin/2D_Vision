@@ -1,6 +1,6 @@
 ﻿using ControlShareResources.Common;
 using FilesRAW.Common;
-using LightSourceController.Models;
+using CommunicationTools.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using static LightSourceController.Models.LightSource;
+using static CommunicationTools.Models.LightSource;
 
-namespace LightSourceController.ViewModels
+namespace CommunicationTools.ViewModels
 {
     public class LightSourceViewModel
     {

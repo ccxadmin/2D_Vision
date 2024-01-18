@@ -9,8 +9,14 @@
 
   <ItemGroup>
     <Compile Remove="dll\**" />
+    <Compile Remove="变形检测\**" />
+    <Compile Remove="胶宽测量\**" />
     <EmbeddedResource Remove="dll\**" />
+    <EmbeddedResource Remove="变形检测\**" />
+    <EmbeddedResource Remove="胶宽测量\**" />
     <None Remove="dll\**" />
+    <None Remove="变形检测\**" />
+    <None Remove="胶宽测量\**" />
   </ItemGroup>
 
   <ItemGroup>

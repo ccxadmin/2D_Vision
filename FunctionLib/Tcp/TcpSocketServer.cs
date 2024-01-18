@@ -7,40 +7,31 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
-namespace FunctionLib
-{
+namespace FunctionLib.TCP
+{ 
     /// <summary>
     /// Tcp Server
     /// </summary>
+    [Serializable]
     public class TcpSocketServer : IDisposable
     {
-        /// <summary>
-        /// 接收数据委托
-        /// </summary>
-        /// <param name="remote"></param>
-        /// <param name="buffer"></param>
-        public delegate void OnReceiveDataHanlder(IPEndPoint remote, byte[] buffer, int count);
+       
 
-        /// <summary>
-        /// 远程连接
-        /// </summary>
-        public delegate void OnRemoteConnectHanlder();
 
-        /// <summary>
-        /// 远程关闭
-        /// </summary>
-        /// <param name="key"></param>
-        public delegate void OnRemoteCloseHanlder(string key);
+        public string IP { get; set; } = "127.0.0.1";
+       
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public Socket Socket
-        {
-            get;
-            private set;
-        }
+        public int Port { get; set; } = 60000;
+
+
+        [NonSerialized]
+        public Socket Socket;
+        //{
+        //    get;
+        //    private set;
+        //}
         /// <summary>
         /// 
         /// </summary>
@@ -52,62 +43,84 @@ namespace FunctionLib
         /// <summary>
         /// 接收数据状态
         /// </summary>
-        public bool State
-        {
-            get;
-            private set;
-        }
+        [NonSerialized]
+        public bool State;
+        //{
+        //    get;
+        //    private set;
+        //}
         /// <summary>
         /// 本地服务器
         /// </summary>
-        public EndPoint Local
-        {
-            get;
-            private set;
-        }
+        [NonSerialized]
+        public EndPoint Local;
+        //{
+        //    get;
+        //    private set;
+        //}
         /// <summary>
         /// 接收数据编码格式
         /// </summary>
-        public Encoding ReceiveEncoding
-        {
-            get; set;
-        }
+        [NonSerialized]
+        public Encoding ReceiveEncoding;
+        //{
+        //    get; set;
+        //}
         /// <summary>
-        /// 响应数据
+        /// 数据编码
         /// </summary>
-        public event OnRemoteConnectHanlder RemoteConnect = null;
-        /// <summary>
-        /// 响应数据
-        /// </summary>
-        public event OnReceiveDataHanlder ReceiveData = null;
+        public EumEncoding encoding { get; set; } = EumEncoding.UTF_8;
 
         /// <summary>
         /// 响应数据
         /// </summary>
-        public event OnRemoteCloseHanlder RemoteClose = null;
+        [NonSerialized]
+        public  OnRemoteConnectHanlder RemoteConnect = null;
+        /// <summary>
+        /// 响应数据
+        /// </summary>
+        [NonSerialized]
+        public  OnReceiveDataHanlder ReceiveData = null;
 
+        /// <summary>
+        /// 响应数据
+        /// </summary>
+        [NonSerialized]
+        public  OnRemoteCloseHanlder RemoteClose = null;
+        [NonSerialized]
         private Dictionary<string, SocketSession> _dicSessions = new Dictionary<string, SocketSession>();
         /// <summary>
         /// 获取连接对象
-        /// </summary>
+        /// </summary>    
         public Dictionary<string, SocketSession> Sessions
         {
             get { return this._dicSessions; }
         }
+        [NonSerialized]
         private System.Timers.Timer _SysTimer = null;
+        [NonSerialized]
         private BackgroundWorker _Worker = null;
         private DateTime _RunTime = DateTime.Now;
 
+        [OnDeserialized()]
+        internal void OnDeserializedMethod(StreamingContext context)
+        {
+            _dicSessions = new Dictionary<string, SocketSession>();
+        }
         public TcpSocketServer() { }
 
         public TcpSocketServer(string ipString, int port)
         {
             this.Local = new IPEndPoint(IPAddress.Parse(ipString), port);
+            IP = ipString;
+            Port = port;
             this.Bind(this.Local);
         }
         public TcpSocketServer(IPEndPoint local)
         {
             this.Local = local;
+            IP = local.Address.ToString();
+            Port = local.Port;
             this.Bind(this.Local);
         }
         /// <summary>
@@ -136,6 +149,8 @@ namespace FunctionLib
                 //Logger.Info("IP地址格式不正确！" + ipString);
                 return false;
             }
+            IP = ipString;
+            Port = port;
             this.Bind(new IPEndPoint(address, port));
             return this.Start();
         }
@@ -234,7 +249,7 @@ namespace FunctionLib
                             session.ReceiveData += Session_ReceiveData;
                             this._dicSessions.Add(key, session);
                             if (this.RemoteConnect != null)
-                                this.RemoteConnect();
+                                this.RemoteConnect(key);
 
                             //开始接收数据
                             session.StartReceive();
@@ -372,6 +387,7 @@ namespace FunctionLib
                 this.Socket.Dispose();
                 this.Socket = null;
             }
+            State = false;
         }
 
         private void ClientClose()
@@ -400,5 +416,23 @@ namespace FunctionLib
         {
             this.Close();
         }
+    }
+
+    [Serializable]
+    public enum EumStatus
+    {
+        连接,
+        未连接
+    }
+    /// <summary>
+    /// 数据编码
+    /// </summary>
+
+    public enum EumEncoding
+    {
+        _16进制,
+        GB2312,
+        UTF_8,
+        US_ASCII
     }
 }

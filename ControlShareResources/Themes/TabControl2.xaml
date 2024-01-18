@@ -51,6 +51,9 @@
                             <Setter Property="Foreground" TargetName="text" Value="#ff6d3c"/>
                             <Setter Property="Background" TargetName="border" Value="{DynamicResource MainLineBackColor}"/>
                         </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" TargetName="border" Value="#dddddd"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

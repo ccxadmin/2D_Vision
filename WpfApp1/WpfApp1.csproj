@@ -13,7 +13,6 @@
     <ProjectReference Include="..\ExternalFunctionLib\ExternalFunctionLib.csproj" />
     <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
     <ProjectReference Include="..\GlueDetectionLib\GlueDetectionLib.csproj" />
-    <ProjectReference Include="..\LightSourceController\LightSourceController.csproj" />
     <ProjectReference Include="..\MainFormLib\MainFormLib.csproj" />
     <ProjectReference Include="..\PositionToolsLib\PositionToolsLib.csproj" />
     <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />

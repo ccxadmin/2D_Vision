@@ -33,7 +33,9 @@ namespace VisionShowLib.UserControls
         public EventHandler ImageGetRotationHandle;//图像旋转更新通知
         public EventHandler 彩色显示ChangeEventHandle;//图像彩色显示
         public EventHandler SaveWindowImageHnadle;//保存窗体图像
-        public EventHandler CamGrabHandle;   //相机采集     
+        public EventHandler CamGrabHandle;   //相机采集
+        public Action BtnRunClick;
+        public Action BtnStopClick;
         public OutPointGray DoubleClickGetMousePosHandle;// 双击获取像素坐标
 
         #endregion
@@ -73,7 +75,7 @@ namespace VisionShowLib.UserControls
             //HOperatorSet.SetSystem("temporary_mem_cache", "false");
             //HOperatorSet.SetSystem("clip_region", "false");
             InitializeComponent();
-
+            SetEnable(true);
             statusStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
 
             LocationLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
@@ -963,8 +965,8 @@ namespace VisionShowLib.UserControls
         /// </summary>
         /// <param name="region"></param>
         /// <param name="color"></param>
-        public void DispRegion(HObject region, string color, 
-                            EumDrawModel draw= EumDrawModel.margin)
+        public void DispRegion(HObject region, string color,
+                            EumDrawModel draw = EumDrawModel.margin)
         {
             if (!ObjectValided(region))
             {
@@ -1947,6 +1949,38 @@ namespace VisionShowLib.UserControls
             return;
         }
         #endregion
+
+        private void 运行toolStripButton_Click(object sender, EventArgs e)
+        {
+            BtnRunClick?.Invoke();
+            SetEnable(false);
+        }
+
+        private void 停止toolStripButton_Click(object sender, EventArgs e)
+        {
+            BtnStopClick?.Invoke();
+            SetEnable(true);
+        }
+
+        void SetEnable(bool flag)
+        {
+            图像旋转toolStripButton.Enabled = flag;
+            图像采集toolStripButton.Enabled = flag;
+            运行toolStripButton.Enabled = flag;
+            if (flag)
+            {
+                图像旋转toolStripButton.Image = Resource.旋转;
+                图像采集toolStripButton.Image = Resource.相机;
+                运行toolStripButton.Image = Resource.运行;
+
+            }
+            else
+            {
+                图像旋转toolStripButton.Image = Resource.旋转2;
+                图像采集toolStripButton.Image = Resource.相机2;
+                运行toolStripButton.Image = Resource.运行2;
+            }
+        }
 
     }
 

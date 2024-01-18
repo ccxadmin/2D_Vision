@@ -440,8 +440,49 @@ namespace MainFormLib.Models
             }
         }
 
+        private EumAssistTool assistTool = EumAssistTool.None;
+        public EumAssistTool AssistTool
+        {
+            get { return this.assistTool; }
+            set
+            {
+                assistTool = value;
+                DoNotify();
+            }
+        }
 
+        private double assistCircleRadius = 1;
+        public double AssistCircleRadius
+        {
+            get { return this.assistCircleRadius; }
+            set
+            {
+                assistCircleRadius = value;
+                DoNotify();
+            }
+        }
 
+        private double assistRectWidth = 1;
+        public double AssistRectWidth
+        {
+            get { return this.assistRectWidth; }
+            set
+            {
+                assistRectWidth = value;
+                DoNotify();
+            }
+        }
+        private double numOfScale = 1;
+        public double NumOfScale
+        {
+            get { return this.numOfScale; }
+            set
+            {
+                numOfScale = value;
+                DoNotify();
+            }
+        }
+        
         /// <summary>
         /// 富文本信息
         /// </summary>
@@ -469,6 +510,31 @@ namespace MainFormLib.Models
                 DoNotify();
             }
         }
+
+        private Action assistCircleCommand;
+        public Action AssistCircleCommand
+        {
+            get { return assistCircleCommand; }
+            set
+            {
+                assistCircleCommand = value;
+                DoNotify();
+            }
+        }
+
+        private bool continueRunFlag;
+        public bool ContinueRunFlag
+        {
+            get { return continueRunFlag; }
+            set
+            {
+                continueRunFlag = value;
+                DoNotify();
+            }
+        }
+
+      
+
     }
 
 
@@ -488,7 +554,6 @@ namespace MainFormLib.Models
             return Binding.DoNothing;
         }
     }
-
     public class EnumConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -518,7 +583,19 @@ namespace MainFormLib.Models
             return Binding.DoNothing;
         }
     }
+    public class CheckConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value.Equals(parameter);
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b && b) return parameter;
+            return Binding.DoNothing;
+        }
+    }
     #endregion
 
     #region---------数据类型-------------
@@ -631,7 +708,7 @@ namespace MainFormLib.Models
         Rectangle
 
     }
-
+   
     /// <summary>
     /// 模板类型
     /// </summary>
@@ -713,6 +790,10 @@ namespace MainFormLib.Models
         public Dictionary<string, GlueBaseTool> toolsDic = new Dictionary<string, GlueBaseTool>();
         [NonSerialized]
         public GlueDataManage dataManage = new GlueDataManage();
+        [NonSerialized]
+        int[] nums ;
+        public string TcpRecvName;
+        public string TcpSendName;
         public void Refresh()
         {
             Dictionary<string, GlueBaseTool> tools = new Dictionary<string, GlueBaseTool>();
@@ -721,6 +802,42 @@ namespace MainFormLib.Models
                 tools.Add(s, toolsDic[s]);
 
             toolsDic = tools;
+        }
+        public void GetNum()
+        {          
+            nums = new int[14];
+            nums[0] = GlueDetectionLib.工具.BinaryzationTool.inum;
+            nums[1] = GlueDetectionLib.工具.ClosingTool.inum;
+            nums[2] = GlueDetectionLib.工具.ColorConvertTool.inum;
+            nums[3] = GlueDetectionLib.工具.DilationTool.inum;
+            nums[4] = GlueDetectionLib.工具.ErosionTool.inum;
+            nums[5] = GlueDetectionLib.工具.GlueCaliperWidthTool.inum;
+            nums[6] = GlueDetectionLib.工具.GlueGapTool.inum;
+            nums[7] = GlueDetectionLib.工具.GlueMissTool.inum;
+            nums[8] = GlueDetectionLib.工具.GlueOffsetTool.inum;
+            nums[9] = GlueDetectionLib.工具.MatchTool.inum;
+            nums[10] = GlueDetectionLib.工具.OpeningTool.inum;
+            nums[11] = GlueDetectionLib.工具.ResultShowTool.inum;
+            nums[12] = GlueDetectionLib.工具.TcpRecvTool.inum;
+            nums[13] = GlueDetectionLib.工具.TcpSendTool.inum;
+        }
+        public void SetNum()
+        {
+            if (nums == null) return;
+            GlueDetectionLib.工具.BinaryzationTool.inum = nums[0];
+            GlueDetectionLib.工具.ClosingTool.inum = nums[1];
+            GlueDetectionLib.工具.ColorConvertTool.inum = nums[2];
+            GlueDetectionLib.工具.DilationTool.inum = nums[3];
+            GlueDetectionLib.工具.ErosionTool.inum = nums[4];
+            GlueDetectionLib.工具.GlueCaliperWidthTool.inum = nums[5];
+            GlueDetectionLib.工具.GlueGapTool.inum = nums[6];
+            GlueDetectionLib.工具.GlueMissTool.inum = nums[7];
+            GlueDetectionLib.工具.GlueOffsetTool.inum = nums[8];
+            GlueDetectionLib.工具.MatchTool.inum = nums[9];
+            GlueDetectionLib.工具.OpeningTool.inum = nums[10];
+            GlueDetectionLib.工具.ResultShowTool.inum = nums[11];
+            GlueDetectionLib.工具.TcpRecvTool.inum = nums[12] ;
+            GlueDetectionLib.工具.TcpSendTool.inum = nums[13];
         }
     }
     /// <summary>
@@ -734,6 +851,10 @@ namespace MainFormLib.Models
         public Dictionary<string, PosBaseTool> toolsDic = new Dictionary<string, PosBaseTool>();
         [NonSerialized]
         public PosDataManage dataManage = new PosDataManage();
+        [NonSerialized]
+        int[] nums ;
+        public string TcpRecvName;
+        public string TcpSendName;
         public void Refresh()
         {
             Dictionary<string, PosBaseTool> tools = new Dictionary<string, PosBaseTool>();
@@ -743,7 +864,56 @@ namespace MainFormLib.Models
 
             toolsDic = tools;
         }
-
+        public void GetNum()
+        {
+            nums = new int[21];
+            nums[0] = PositionToolsLib.工具.AngleConvertTool.inum;    
+            nums[1] = PositionToolsLib.工具.BinaryzationTool.inum ;
+            nums[2] = PositionToolsLib.工具.BlobTool.inum ;
+            nums[3] = PositionToolsLib.工具.CalParallelLineTool.inum ;
+            nums[4] = PositionToolsLib.工具.ClosingTool.inum ;
+            nums[5] = PositionToolsLib.工具.ColorConvertTool.inum ;
+            nums[6] = PositionToolsLib.工具.CoordConvertTool.inum;
+            nums[7] = PositionToolsLib.工具.DilationTool.inum ;
+            nums[8] = PositionToolsLib.工具.ErosionTool.inum ;
+            nums[9] = PositionToolsLib.工具.FindCircleTool.inum ;
+            nums[10] = PositionToolsLib.工具.FindLineTool.inum ;
+            nums[11] = PositionToolsLib.工具.FitLineTool.inum ;
+            nums[12] = PositionToolsLib.工具.ImageCorrectTool.inum;
+            nums[13] = PositionToolsLib.工具.LineCentreTool.inum ;
+            nums[14] = PositionToolsLib.工具.LineIntersectionTool.inum ;
+            nums[15] = PositionToolsLib.工具.LineOffsetTool.inum;
+            nums[16] = PositionToolsLib.工具.MatchTool.inum ;
+            nums[17] = PositionToolsLib.工具.OpeningTool.inum ;
+            nums[18] = PositionToolsLib.工具.ResultShowTool.inum ;
+            nums[19] = PositionToolsLib.工具.TcpRecvTool.inum;
+            nums[20] = PositionToolsLib.工具.TcpSendTool.inum;
+        }
+        public void SetNum()
+        {
+            if (nums == null) return;
+            PositionToolsLib.工具.AngleConvertTool.inum = nums[0];
+            PositionToolsLib.工具.BinaryzationTool.inum = nums[1];
+            PositionToolsLib.工具.BlobTool.inum = nums[2];
+            PositionToolsLib.工具.CalParallelLineTool.inum = nums[3];
+            PositionToolsLib.工具.ClosingTool.inum = nums[4];
+            PositionToolsLib.工具.ColorConvertTool.inum = nums[5];
+            PositionToolsLib.工具.CoordConvertTool.inum = nums[6];
+            PositionToolsLib.工具.DilationTool.inum = nums[7];
+            PositionToolsLib.工具.ErosionTool.inum = nums[8];
+            PositionToolsLib.工具.FindCircleTool.inum = nums[9];
+            PositionToolsLib.工具.FindLineTool.inum = nums[10];
+            PositionToolsLib.工具.FitLineTool.inum = nums[11];
+            PositionToolsLib.工具.ImageCorrectTool.inum = nums[12];
+            PositionToolsLib.工具.LineCentreTool.inum = nums[13];
+            PositionToolsLib.工具.LineIntersectionTool.inum = nums[14];
+            PositionToolsLib.工具.LineOffsetTool.inum = nums[15];
+            PositionToolsLib.工具.MatchTool.inum = nums[16];
+            PositionToolsLib.工具.OpeningTool.inum = nums[17];
+            PositionToolsLib.工具.ResultShowTool.inum = nums[18];
+            PositionToolsLib.工具.TcpRecvTool.inum = nums[19];
+            PositionToolsLib.工具.TcpSendTool.inum = nums[20];
+        }
     }
 
     [Serializable]
@@ -812,6 +982,17 @@ namespace MainFormLib.Models
             }
 
         }
+        private Visibility contextMenuVisib = Visibility.Visible;
+        public Visibility ContextMenuVisib
+        {
+            get { return contextMenuVisib; }
+            set
+            {
+                contextMenuVisib = value;
+                DoNotify();
+            }
+        }
+
         //public bool ToolsOfPosition_ContextMenu_FirstEnable { get; set; }
 
         //public bool ToolsOfPosition_ContextMenu_LastEnable { get; set; }

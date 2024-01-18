@@ -22,17 +22,30 @@
     <None Remove="images\删除.png" />
     <None Remove="images\备注 %281%29.png" />
     <None Remove="images\打开 %282%29.png" />
+    <None Remove="imgs\保存 %281%29.png" />
     <None Remove="imgs\保存.png" />
     <None Remove="imgs\保存项目.png" />
+    <None Remove="imgs\停止 %282%29.png" />
+    <None Remove="imgs\停止.png" />
     <None Remove="imgs\删除.png" />
+    <None Remove="imgs\删除项目.png" />
     <None Remove="imgs\另存为.png" />
     <None Remove="imgs\打开.png" />
+    <None Remove="imgs\打开文件.png" />
     <None Remove="imgs\打开项目.png" />
+    <None Remove="imgs\指标定义.png" />
     <None Remove="imgs\新建.png" />
+    <None Remove="imgs\新建项目.png" />
     <None Remove="imgs\标定助手.png" />
+    <None Remove="imgs\清空.png" />
     <None Remove="imgs\清空_清空.png" />
     <None Remove="imgs\点点点.png" />
+    <None Remove="imgs\试运行 %282%29.png" />
     <None Remove="imgs\试运行.png" />
+    <None Remove="imgs\运行 %282%29.png" />
+    <None Remove="imgs\运行.png" />
+    <None Remove="imgs\通讯 %282%29.png" />
+    <None Remove="imgs\通讯.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,12 +58,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommunicationTools\CommunicationTools.csproj" />
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
     <ProjectReference Include="..\DlasaCameraLib\DlasaCameraLib.csproj" />
     <ProjectReference Include="..\ExternalFunctionLib\ExternalFunctionLib.csproj" />
     <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
     <ProjectReference Include="..\GlueDetectionLib\GlueDetectionLib.csproj" />
-    <ProjectReference Include="..\LightSourceController\LightSourceController.csproj" />
     <ProjectReference Include="..\PositionToolsLib\PositionToolsLib.csproj" />
     <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />
     <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
@@ -93,13 +106,25 @@
     <Resource Include="images\打开 (2).png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="imgs\保存 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\保存.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="imgs\保存项目.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="imgs\停止 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\停止.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\删除项目.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="imgs\另存为.png">
@@ -108,13 +133,25 @@
     <Resource Include="imgs\打开.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="imgs\打开文件.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\打开项目.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\指标定义.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="imgs\新建.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="imgs\新建项目.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\标定助手.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\清空.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="imgs\清空_清空.png">
@@ -123,7 +160,22 @@
     <Resource Include="imgs\点点点.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="imgs\试运行 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\试运行.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\运行 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\运行.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\通讯 (2).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\通讯.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

@@ -46,6 +46,10 @@
             图像旋转toolStripButton = new ToolStripButton();
             toolStripSeparator10 = new ToolStripSeparator();
             图像采集toolStripButton = new ToolStripButton();
+            toolStripSeparator11 = new ToolStripSeparator();
+            运行toolStripButton = new ToolStripButton();
+            toolStripSeparator12 = new ToolStripSeparator();
+            停止toolStripButton = new ToolStripButton();
             toolTip1 = new ToolTip(components);
             contextMenuStrip1 = new ContextMenuStrip(components);
             无操作ToolStripMenuItem = new ToolStripMenuItem();
@@ -79,7 +83,7 @@
             toolStrip1.BackColor = Color.FromArgb(255, 109, 60);
             toolStrip1.Font = new Font("Calibri", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
             toolStrip1.ImageScalingSize = new Size(20, 20);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { lblTitleName, toolStripSeparator1, 无操作toolStripButton, toolStripSeparator2, 放大toolStripButton, toolStripSeparator3, 缩小toolStripButton, toolStripSeparator4, 平移toolStripButton, toolStripSeparator5, 自适应toolStripButton, toolStripSeparator8, 图像旋转toolStripButton, toolStripSeparator10, 图像采集toolStripButton });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { lblTitleName, toolStripSeparator1, 无操作toolStripButton, toolStripSeparator2, 放大toolStripButton, toolStripSeparator3, 缩小toolStripButton, toolStripSeparator4, 平移toolStripButton, toolStripSeparator5, 自适应toolStripButton, toolStripSeparator8, 图像旋转toolStripButton, toolStripSeparator10, 图像采集toolStripButton, toolStripSeparator11, 运行toolStripButton, toolStripSeparator12, 停止toolStripButton });
             toolStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
             toolStrip1.Location = new Point(1, 1);
             toolStrip1.Name = "toolStrip1";
@@ -210,6 +214,38 @@
             图像采集toolStripButton.Size = new Size(36, 35);
             图像采集toolStripButton.Text = "图像采集";
             图像采集toolStripButton.Click += 图像采集toolStripButton_Click;
+            // 
+            // toolStripSeparator11
+            // 
+            toolStripSeparator11.Name = "toolStripSeparator11";
+            toolStripSeparator11.Size = new Size(6, 38);
+            // 
+            // 运行toolStripButton
+            // 
+            运行toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            运行toolStripButton.Image = (Image)resources.GetObject("运行toolStripButton.Image");
+            运行toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
+            运行toolStripButton.ImageTransparentColor = Color.Magenta;
+            运行toolStripButton.Name = "运行toolStripButton";
+            运行toolStripButton.Size = new Size(39, 35);
+            运行toolStripButton.Text = "连续运行";
+            运行toolStripButton.Click += 运行toolStripButton_Click;
+            // 
+            // toolStripSeparator12
+            // 
+            toolStripSeparator12.Name = "toolStripSeparator12";
+            toolStripSeparator12.Size = new Size(6, 38);
+            // 
+            // 停止toolStripButton
+            // 
+            停止toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            停止toolStripButton.Image = (Image)resources.GetObject("停止toolStripButton.Image");
+            停止toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
+            停止toolStripButton.ImageTransparentColor = Color.Magenta;
+            停止toolStripButton.Name = "停止toolStripButton";
+            停止toolStripButton.Size = new Size(37, 35);
+            停止toolStripButton.Text = "停止运行";
+            停止toolStripButton.Click += 停止toolStripButton_Click;
             // 
             // contextMenuStrip1
             // 
@@ -443,5 +479,9 @@
         private ToolStripSeparator toolStripSeparator10;
         private ToolStripButton 图像采集toolStripButton;
         private ToolStripMenuItem 保存窗体图片ToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator11;
+        private ToolStripButton 运行toolStripButton;
+        private ToolStripSeparator toolStripSeparator12;
+        private ToolStripButton 停止toolStripButton;
     }
 }

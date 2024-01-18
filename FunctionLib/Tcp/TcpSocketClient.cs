@@ -7,11 +7,12 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FunctionLib
+namespace FunctionLib.TCP
 {
     /// <summary>
     /// Tcp Client
     /// </summary>
+      [Serializable]
     public class TcpSocketClient : IDisposable
     {
 
@@ -37,26 +38,31 @@ namespace FunctionLib
         /// </summary>
         /// <param name="msg"></param>
         public delegate void OnStateInfohandle(string msg);
-        /// <summary>
-        /// 
-        /// </summary>
-        public Socket Socket
-        {
-            get;
-            private set;
-        }
-        /// <summary>
-        /// 是否在线
-        /// </summary>
-        public bool isAlive { get; set; }
+
+
+
+        public string IP { get; set; } = "127.0.0.1";
+
+
+        public int Port { get; set; } = 60000;
+
+
+       [NonSerialized]
+        public Socket Socket;
+        //{
+        //    get;
+        //    private set;
+        //}
+
         /// <summary>
         /// 接收数据状态
         /// </summary>
-        public bool State
-        {
-            get;
-            private set;
-        }
+        [NonSerialized]
+        public bool State;
+        //{
+        //    get;
+        //    private set;
+        //}
         /// <summary>
         /// 本地服务器
         /// </summary>
@@ -72,19 +78,27 @@ namespace FunctionLib
         {
             get; set;
         }
+
+        /// <summary>
+        /// 数据编码
+        /// </summary>
+        public EumEncoding encoding { get; set; } = EumEncoding.UTF_8;
         /// <summary>
         /// 响应数据
         /// </summary>
-        public event OnReceiveDataHanlder ReceiveData = null;
+        [NonSerialized]
+        public  OnReceiveDataHanlder ReceiveData = null;
 
         /// <summary>
         /// 响应数据
         /// </summary>
-        public event OnRemoteCloseHanlder RemoteClose = null;
+        [NonSerialized]
+        public  OnRemoteCloseHanlder RemoteClose = null;
         /// <summary>
         /// 连接信息
         /// </summary>
-        public event OnStateInfohandle StateInfo = null;
+        [NonSerialized]
+        public  OnStateInfohandle StateInfo = null;
         /// <summary>
         /// 远程服务器
         /// </summary>
@@ -93,6 +107,7 @@ namespace FunctionLib
             get;
             private set;
         }
+
         #region 连接服务端
         /// <summary>
         /// 连接服务端
@@ -109,6 +124,8 @@ namespace FunctionLib
                 //Logger.Info("IP地址格式不正确！" + ipString);
                 return false;
             }
+            IP = ipString;
+            Port = port;
             return Connect(new IPEndPoint(address, port));
         }
         /// <summary>
@@ -122,23 +139,24 @@ namespace FunctionLib
             {
                 this.Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 this.Socket.Connect(remote);
-
+                IP = ((IPEndPoint)remote).Address.ToString();
+                Port = ((IPEndPoint)remote).Port;
                 this.Remote = this.Socket.RemoteEndPoint;
                 this.Local = this.Socket.LocalEndPoint;
 
                 this.Socket.SendTimeout = 10 * 1000;//10秒
                 this.Socket.ReceiveTimeout = 10 * 1000;//10秒
-                StateInfo("连接服务成功！" + this.Socket.RemoteEndPoint.ToString());
+                StateInfo?.Invoke("连接服务成功！" + this.Socket.RemoteEndPoint.ToString());
                 //Logger.Info("连接服务成功！" + this.Socket.RemoteEndPoint.ToString());
-                isAlive = true;
+              
                 return true;
             }
             catch (Exception ex)
             {
                 this.Socket = null;
-                StateInfo("启动服务异常：" + ex.Message);
+                StateInfo?.Invoke("启动服务异常：" + ex.Message);
                 //Logger.Error("启动服务异常：" + ex.ToString());
-                isAlive = false;
+               
                 return false;
             }
         }
@@ -284,9 +302,11 @@ namespace FunctionLib
         {
             if (this.Socket != null)
             {
+                string key=   Socket.RemoteEndPoint.ToString();
                 if (this.Socket.Connected)
                     this.Socket.Shutdown(SocketShutdown.Both);
-                isAlive = false;
+
+                this.State = false;
                 this.Socket.Disconnect(true);
 
                 this.Socket.Close(3);
@@ -295,7 +315,7 @@ namespace FunctionLib
                 this.Socket = null;
 
                 if (this.RemoteClose != null)
-                    this.RemoteClose(string.Empty);
+                    this.RemoteClose(key);
             }
         }
 

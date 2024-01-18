@@ -38,6 +38,8 @@
   <ItemGroup>
     <None Remove="images\scale.png" />
     <None Remove="images\XY.png" />
+    <None Remove="images\停止 %281%29.png" />
+    <None Remove="images\停止.png" />
     <None Remove="images\减.png" />
     <None Remove="images\删除.png" />
     <None Remove="images\加.png" />
@@ -48,17 +50,23 @@
     <None Remove="images\指针 %281%29.png" />
     <None Remove="images\放大 %282%29.png" />
     <None Remove="images\旋转.png" />
+    <None Remove="images\旋转2.png" />
     <None Remove="images\旋转矩形.png" />
     <None Remove="images\时钟 %282%29.png" />
     <None Remove="images\椭圆 %281%29.png" />
     <None Remove="images\灰度.png" />
     <None Remove="images\点.png" />
     <None Remove="images\直线2.png" />
+    <None Remove="images\相机.png" />
+    <None Remove="images\相机2.png" />
     <None Remove="images\相机小.png" />
     <None Remove="images\矩形3.png" />
     <None Remove="images\确认.png" />
     <None Remove="images\缩小 %281%29.png" />
     <None Remove="images\自适应 %281%29.png" />
+    <None Remove="images\运行 %282%29.png" />
+    <None Remove="images\运行.png" />
+    <None Remove="images\运行2.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -100,6 +108,12 @@
     <Resource Include="images\XY.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="images\停止 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\停止.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="images\减.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -130,6 +144,9 @@
     <Resource Include="images\旋转.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="images\旋转2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="images\旋转矩形.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -148,7 +165,10 @@
     <Resource Include="images\直线2.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
-    <Resource Include="images\相机小.png">
+    <Resource Include="images\相机.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\相机2.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="images\矩形3.png">
@@ -161,6 +181,12 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="images\自适应 (1).png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\运行.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\运行2.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

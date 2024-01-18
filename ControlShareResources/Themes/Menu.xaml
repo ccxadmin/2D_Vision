@@ -37,6 +37,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="#dddddd"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
     <Style  x:Key="WD.SeparatorStyleKey" TargetType="{x:Type Separator}">
         <Setter Property="Height" Value="auto" />
@@ -317,6 +322,9 @@
                 <Setter Property="Width" Value="auto"/>
                 <Setter Property="MinWidth" Value="40" />
                 <Setter Property="Template" Value="{StaticResource WD.SubmenuItemTemplateKey}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="#dddddd"/>
             </Trigger>
         </Style.Triggers>
     </Style>

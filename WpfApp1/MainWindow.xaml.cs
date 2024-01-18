@@ -18,8 +18,8 @@ using HalconDotNet;
 using VisionShowLib.UserControls;
 using ROIGenerateLib;
 using System.Collections.ObjectModel;
-using LightSourceController.Views;
-using LightSourceController.Models;
+using CommunicationTools.Views;
+using CommunicationTools.Models;
 using FilesRAW.Common;
 using GlueDetectionLib.窗体.Views;
 using GlueDetectionLib.窗体;
@@ -95,6 +95,11 @@ namespace WpfApp1
                     break;
             }
           
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            f.viewModel.Release();
         }
     }
 }

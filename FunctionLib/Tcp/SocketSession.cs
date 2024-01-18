@@ -8,32 +8,16 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace FunctionLib
+namespace FunctionLib.TCP
 {
     /// <summary>
     /// Socket 会话
     /// </summary>
+    [Serializable]
     public class SocketSession : IDisposable
     {
 
-        /// <summary>
-        /// 接收数据委托
-        /// </summary>
-        /// <param name="remote"></param>
-        /// <param name="buffer"></param>
-        public delegate void OnReceiveDataHanlder(IPEndPoint remote, byte[] buffer, int count);
-
-        /// <summary>
-        /// 远程连接
-        /// </summary>
-        public delegate void OnRemoteConnectHanlder();
-
-        /// <summary>
-        /// 远程关闭
-        /// </summary>
-        /// <param name="key"></param>
-        public delegate void OnRemoteCloseHanlder(string key);
-
+    
         /// <summary>
         /// 标识
         /// </summary>
@@ -45,11 +29,12 @@ namespace FunctionLib
         /// <summary>
         /// 客户端
         /// </summary>
-        public Socket Client
-        {
-            get;
-            private set;
-        }
+        [NonSerialized]
+        public Socket Client;
+        //{
+        //    get;
+        //    private set;
+        //}
         /// <summary>
         /// 接收数据状态
         /// </summary>
@@ -62,18 +47,21 @@ namespace FunctionLib
         /// <summary>
         /// 接收数据编码格式
         /// </summary>
-        public Encoding ReceiveEncoding
-        {
-            get; set;
-        }
+        [NonSerialized]
+        public Encoding ReceiveEncoding;
+        //{
+        //    get; set;
+        //}
         /// <summary>
         /// 响应数据
         /// </summary>
-        public event OnReceiveDataHanlder ReceiveData = null;
+        [NonSerialized]
+        public  OnReceiveDataHanlder ReceiveData = null;
         /// <summary>
         /// 响应数据
         /// </summary>
-        public event OnRemoteCloseHanlder RemoteClose = null;
+        [NonSerialized]
+        public  OnRemoteCloseHanlder RemoteClose = null;
 
         public SocketSession(string key, Socket client)
         {

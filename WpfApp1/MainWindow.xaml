@@ -7,7 +7,7 @@
         xmlns:view="clr-namespace:VisionShowLib.UserControls;assembly=VisionShowLib"     
         xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources" 
         xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
-        mc:Ignorable="d" Loaded="Window_Loaded" Style="{x:Null}"
+        mc:Ignorable="d" Loaded="Window_Loaded" Style="{x:Null}"  Closing="Window_Closing"
         xmlns:convert="clr-namespace:ControlShareResources.Converter;assembly=ControlShareResources"
         Title="MainWindow" Height="600" Width="800">
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightSourceController.Models
+namespace CommunicationTools.Models
 {
     [Serializable]
     public class Data
@@ -58,5 +58,42 @@ namespace LightSourceController.Models
         B,
         C,
         D
+    }
+
+    /// <summary>
+    /// 工具运行结果基类
+    /// </summary>
+    [Serializable]
+    public class RunResult
+    {
+        [NonSerialized]
+        public int m_index = 0;
+
+        private bool m_runFlag = false;
+        /// <summary>
+        /// 运行状态
+        /// </summary>
+        public bool runFlag
+        {
+            get => this.m_runFlag;
+            set
+            {
+                m_runFlag = value;
+                m_index = 1;
+            }
+        }
+
+        /// <summary>
+        /// 运行时间
+        /// </summary>
+        public long runTime = 0;
+        /// <summary>
+        /// 工具运行错误信息
+        /// </summary>
+        public string errInfo = "";
+        /// <summary>
+        /// 附件信息（分支工具的选择结果，循环的次数等）
+        /// </summary>
+        public object options = null;
     }
 }
