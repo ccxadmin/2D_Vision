@@ -56,6 +56,8 @@ using FunctionLib.TCP;
 using System.Net;
 using System.Reflection;
 using System.Windows.Documents;
+using System.Windows.Media.Media3D;
+using System.Numerics;
 
 namespace MainFormLib.ViewModels
 {
@@ -161,13 +163,13 @@ namespace MainFormLib.ViewModels
         public CommandBase NumLimitMethdKeyDownCommand { get; set; }
         public CommandBase RdbtnCheckedChangedCommand { get; set; }
         public CommandBase AssistCircleKeyDownCommand { get; set; }
-
+        public CommandBase ScaleRuleCheckChangeCommand { get; set; }
         #endregion
 
         /*-----------------------------------------Construction---------------------------------------*/
         private VisionViewModel()
         {
-
+            HOperatorSet.GenEmptyObj(out GrabImg);
             HOperatorSet.GenEmptyObj(out imgBuf);
             //This = this;
             Model = new VisionModel();
@@ -327,9 +329,11 @@ namespace MainFormLib.ViewModels
             AssistCircleKeyDownCommand = new CommandBase();
             AssistCircleKeyDownCommand.DoExecute = new Action<object>((o) => AssistCircleKeyDown(o));
             AssistCircleKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
             Model.AssistCircleCommand = new Action(() => AssistCircleEvent());
 
+            ScaleRuleCheckChangeCommand = new CommandBase();
+            ScaleRuleCheckChangeCommand.DoExecute = new Action<object>((o) => ScaleRule_CheckedChanged());
+            ScaleRuleCheckChangeCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
             #endregion
 
         }
@@ -403,6 +407,8 @@ namespace MainFormLib.ViewModels
             string secondName = Enum.GetName(typeof(EumModelType), currModelType);
             LoadPositionFlow(secondName);
             Appentxt("模板手动切换完成");
+           //切换模板重新加载相机曝光增益参数
+            LoadCamParam();
             if (!PosBaseTool.ObjectValided(this.GrabImg))
                 return;
             ShowTool.ClearAllOverLays();
@@ -520,20 +526,51 @@ namespace MainFormLib.ViewModels
             }
 
         }
-
+        //运行
         void Run_Click()
         {
             ContinueRunFlag = true;
             Model.ContinueRunFlag = true;
+            Model.BtnOpenCamEnable = false;
+            Model.BtnCloseCamEnable = false;
+            Model.BtnOneShotEnable = false;
+            Model.BtnContinueGrabEnable = false;
+            Model.BtnStopGrabEnable = false;
+            Model.IsCamAlive = false;//假定为false控件使能用
+
             foreach (var item in Model.ToolsOfPositionList)
                 item.ContextMenuVisib = Visibility.Hidden;
             foreach (var item in Model.ToolsOfGlueList)
                 item.ContextMenuVisib = Visibility.Hidden;
         }
+        /// <summary>
+        /// 停止
+        /// </summary>
         void Stop_Click()
         {
             ContinueRunFlag = false;
             Model.ContinueRunFlag = false;
+            if (CurrCam != null)
+                Model.IsCamAlive = CurrCam.IsAlive;
+            else
+                Model.IsCamAlive = false;
+            if (Model.IsCamAlive)
+            {
+                Model.BtnOpenCamEnable = false;
+                Model.BtnCloseCamEnable = true;
+                Model.BtnOneShotEnable = true;
+                Model.BtnContinueGrabEnable = true;
+                Model.BtnStopGrabEnable = true;
+            }
+            else
+            {
+                Model.BtnOpenCamEnable = true;
+                Model.BtnCloseCamEnable = false;
+                Model.BtnOneShotEnable = false;
+                Model.BtnContinueGrabEnable = false;
+                Model.BtnStopGrabEnable = false;
+            }
+
             foreach (var item in Model.ToolsOfPositionList)
                 item.ContextMenuVisib = Visibility.Visible;
             foreach (var item in Model.ToolsOfGlueList)
@@ -1515,15 +1552,18 @@ namespace MainFormLib.ViewModels
             Model.BtnContinueGrabEnable = false;
             Model.BtnStopGrabEnable = true;
             camContinueGrabHandle?.Invoke(true);
+            ShowTool.SetEnable(false);
         }
         /// <summary>
         /// 相机参数保存
         /// </summary>
         private void btnSaveCamParma_Click()
         {
-
             //相机参数
-            string path = saveToUsePath + "\\定位检测";
+            string path = saveToUsePath + "\\定位检测\\" +
+                       Enum.GetName(typeof(EumModelType), currModelType);
+            if (Directory.Exists(path))
+                Directory.CreateDirectory(path);         
             GeneralUse.WriteValue("相机", "曝光", currCamExpouse.ToString(),
                    "config", path);
             GeneralUse.WriteValue("相机", "增益", currCamGain.ToString(),
@@ -1552,6 +1592,7 @@ namespace MainFormLib.ViewModels
             Model.BtnContinueGrabEnable = true;
             Model.BtnStopGrabEnable = false;        
             camContinueGrabHandle?.Invoke(false);
+            ShowTool.SetEnable(true);
         }
         /// <summary>
         /// 相机曝光值设置：slider bar
@@ -1791,13 +1832,27 @@ namespace MainFormLib.ViewModels
             AddAssistToolToCross();
 
         }
+        /// <summary>
+        /// 辅助工具
+        /// </summary>
+        /// <param name="o"></param>
         void AssistCircleKeyDown(object o)
         {
             KeyEventArgs args = (KeyEventArgs)o;
             if (args.Key == Key.Enter)
                   AddAssistToolToCross();
         }
+        /// <summary>
+        ///辅助工具
+        /// </summary>
         void AssistCircleEvent()
+        {
+            AddAssistToolToCross();
+        }
+        /// <summary>
+        /// 辅助工具
+        /// </summary>
+        void ScaleRule_CheckedChanged()
         {
             AddAssistToolToCross();
         }
@@ -2430,13 +2485,56 @@ namespace MainFormLib.ViewModels
             }
         }
         /// <summary>
+        /// 加载相机参数(切换模板时重新加载相机曝光增益参数)
+        /// </summary>
+        /// <param name="path"></param>
+        void LoadCamParam()
+        {          
+            //相机参数
+            string path = saveToUsePath + "\\定位检测\\" +
+                       Enum.GetName(typeof(EumModelType), currModelType);
+            if (Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            currCamExpouse = long.Parse(GeneralUse.ReadValue("相机", "曝光", "config", "1000", path));
+            currCamGain = int.Parse(GeneralUse.ReadValue("相机", "增益", "config", "0", path));
+            if (CurrCam != null)
+            {
+                if (currCamExpouse > Model.ExpouseMaxValue)
+                    currCamExpouse = Model.ExpouseMaxValue;
+                else if (currCamExpouse < Model.ExpouseMinValue)
+                    currCamExpouse = Model.ExpouseMinValue;
+                if (currCamExpouse < 1000) currCamExpouse = 1000;
+                //相机曝光设置 
+                Model.ExpouseSliderValue = currCamExpouse;
+                Model.ExpouseNumricValue = currCamExpouse;
+                bool expouseFlag = CurrCam.SetExposureTime(currCamExpouse);
+                if (!expouseFlag)
+                    Appentxt(string.Format("工位：{0}，相机曝光设置失败！", currCamStationName));
+
+                if (currCamGain > Model.GainMaxValue)
+                    currCamGain = Model.GainMaxValue;
+                else if (currCamGain < Model.GainMinValue)
+                    currCamGain = Model.GainMinValue;
+                //相机增益设置 
+                Model.GainSliderValue = currCamGain;
+                Model.GainNumricValue = currCamGain;
+                bool gainFlag = CurrCam.SetGain(currCamGain);
+                if (!gainFlag)
+                    Appentxt(string.Format("工位：{0}，相机增益设置失败！", currCamStationName));
+
+            }
+        }
+        /// <summary>
         /// 加载相机
         /// </summary>
         void LoadCamera()
         {
             //相机参数
-            string path = saveToUsePath + "\\定位检测";
-            currCamExpouse =long.Parse( GeneralUse.ReadValue("相机", "曝光", "config", "10000", path));
+            string path = saveToUsePath + "\\定位检测\\"+
+                       Enum.GetName(typeof(EumModelType), currModelType);
+            if (Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            currCamExpouse =long.Parse( GeneralUse.ReadValue("相机", "曝光", "config", "1000", path));
             currCamGain = int.Parse(GeneralUse.ReadValue("相机", "增益", "config", "0", path));
 
             //相机型号       
@@ -4071,13 +4169,14 @@ namespace MainFormLib.ViewModels
 
             int _width = ShowTool.ImageWidth;
             int _height = ShowTool.ImageHeight;
-
+            HObject xldOBJ = null;
+            HOperatorSet.GenEmptyObj(out xldOBJ);
+             //辅助工具
             switch (Model.AssistTool)
             {
                 case EumAssistTool.None:
-                    ShowTool.AddAssistToolToCross(null);
-                    break;
-                #region---圆------
+                  
+                    break;        
                 case EumAssistTool.Circle:
                     double ActualSizeOfRadium = (double)Model.AssistCircleRadius;
 
@@ -4100,25 +4199,17 @@ namespace MainFormLib.ViewModels
                     this.Transformation_POINT_INV(_Rx22, _Ry22, out _Px, out _Py);
                     HOperatorSet.DistancePp(_height / 2, _width / 2,
                            _Py, _Px, out _distanceX);
-
-                    HObject xldOBJ = null;
-                    HOperatorSet.GenEmptyObj(out xldOBJ);
-                    xldOBJ.Dispose();
+               
+                  
                     HOperatorSet.GenEllipseContourXld(out HObject circleXldOBJ, _height / 2, _width / 2, 0, _distanceX, _distanceY,
                          0, 6.28318, "positive", 1);
                     // HOperatorSet.GenCircleContourXld(out HObject  circleXldOBJ, _height / 2, _width / 2, _distance, 0, 6.28318, "positive", 1);
-                    //排布刻度线
-                    HObject tickMarks = Gen_TickMarks();
-                    xldOBJ = circleXldOBJ.ConcatObj(tickMarks);
-                    ShowTool.AddAssistToolToCross(xldOBJ);
-
-
+                    xldOBJ = circleXldOBJ.Clone();
+                    circleXldOBJ.Dispose();
                     HOperatorSet.GenEmptyObj(out autoFocusRegion);
                     autoFocusRegion.Dispose();                
                     HOperatorSet.GenEllipse(out autoFocusRegion, _height / 2, _width / 2, 0, _distanceX, _distanceY);
-                    break;
-                #endregion
-                #region----矩形-----
+                    break;                   
                 case EumAssistTool.Rectangle:
                     double ActualSizeOfWidth = Model.AssistRectWidth;
 
@@ -4155,23 +4246,27 @@ namespace MainFormLib.ViewModels
                     //this.Transformation_POINT_INV(R2_x, R2_y, out P2_x, out P2_y);
                     //this.Transformation_POINT_INV(R3_x, R3_y, out P3_x, out P3_y);
                     //this.Transformation_POINT_INV(R4_x, R4_y, out P4_x, out P4_y);
-                    HObject xldOBJ2 = null;
-                    HOperatorSet.GenEmptyObj(out xldOBJ2);
-                    xldOBJ2.Dispose();
+                             
                     HOperatorSet.GenContourPolygonXld(out HObject rectangleXldOBJ, P1_y.TupleConcat(P2_y, P3_y, P4_y, P1_y),
                         P1_x.TupleConcat(P2_x, P3_x, P4_x, P1_x));
-                    //排布刻度线
-                    HObject tickMarks2 = Gen_TickMarks();
-                    xldOBJ2 = rectangleXldOBJ.ConcatObj(tickMarks2);
-                    ShowTool.AddAssistToolToCross(xldOBJ2);
+                    xldOBJ = rectangleXldOBJ.Clone();
+                    rectangleXldOBJ.Dispose();
                     //生成自动对焦区域
                     HOperatorSet.GenEmptyObj(out autoFocusRegion);
                     autoFocusRegion.Dispose();
                     HOperatorSet.GenRegionPolygon(out autoFocusRegion, P1_y.TupleConcat(P2_y, P3_y, P4_y, P1_y),
                         P1_x.TupleConcat(P2_x, P3_x, P4_x, P1_x));
                     break;
-                    #endregion
+                  
             }
+            //排布刻度线
+            if (Model.ShowScaleRule)
+            {
+                HObject tickMarks = Gen_TickMarks();
+                xldOBJ = xldOBJ.ConcatObj(tickMarks);
+            }         
+
+            ShowTool.AddAssistToolToCross(xldOBJ);
         }
 
         /// <summary>
@@ -4796,12 +4891,14 @@ namespace MainFormLib.ViewModels
                         Model.BtnContinueGrabEnable = false;
                         Model.BtnStopGrabEnable = true;
                         camContinueGrabHandle?.Invoke(true);
+                        ShowTool.SetEnable(false);
                     }
                     else
                     {
                         Model.BtnOneShotEnable = true;
                         Model.BtnContinueGrabEnable = true;
                         Model.BtnStopGrabEnable = false;
+                        ShowTool.SetEnable(true);
                         Appentxt("重新开启连续采集失败，代码编号：1823");
                     }
                 });
@@ -4831,6 +4928,7 @@ namespace MainFormLib.ViewModels
                 Model.BtnOneShotEnable = true;
                 Model.BtnContinueGrabEnable = true;
                 Model.BtnStopGrabEnable = false;
+                ShowTool.SetEnable(true);
                 //});
             }
         }
@@ -4864,15 +4962,18 @@ namespace MainFormLib.ViewModels
         /// <summary>
         /// 资源释放
         /// </summary>
-        public void Release()
+        public async void Release()
         {
             ContinueRunFlag = false;
-            ShowTool.Dispose();        
+         
             if (CurrCam != null)
             {
-                CurrCam.setImgGetHandle -= GetImageDelegate;
-                CurrCam.CloseCam();
+                StopGrab();
+                CurrCam.setImgGetHandle -= GetImageDelegate;               
+                CloseCam();
+                Thread.Sleep(100);
             }
+            ShowTool.Dispose();
             string path = rootFolder + "\\CommDev";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -4880,7 +4981,8 @@ namespace MainFormLib.ViewModels
             CommDeviceController.DisposeConnect();
             CommDeviceController.ReleaseDev();
 
-            if (GrabImg != null) GrabImg.Dispose();
+            if (GrabImg != null)
+                GrabImg.Dispose();
             Disconnect();
             System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
@@ -4933,9 +5035,15 @@ namespace MainFormLib.ViewModels
         void 显示中心十字坐标Event(object sender, EventArgs e)
         {
            bool showCross = ShowTool.IsShowCenterCross;
-            if(!showCross)
+            Model.ShowCross = showCross;
+            if (!showCross)
             {
                 Model.AssistTool = EumAssistTool.None;
+                Model.ShowScaleRule = false;
+            }
+            else
+            {
+              
                 AddAssistToolToCross();
             }
             
@@ -4966,8 +5074,7 @@ namespace MainFormLib.ViewModels
         //图像旋转
         void ImageGetRotationEvent(object sender, EventArgs e)
         {
-
-            HOperatorSet.GenEmptyObj(out GrabImg);
+         
             GrabImg.Dispose();
             GrabImg = ShowTool.D_HImage;
 
@@ -5014,7 +5121,7 @@ namespace MainFormLib.ViewModels
 
             objs.Clear();
             infos.Clear();
-            HOperatorSet.GenEmptyObj(out GrabImg);
+         
             GrabImg.Dispose();
             GrabImg = ShowTool.D_HImage;
             //添加图像到缓存集合
@@ -5057,12 +5164,11 @@ namespace MainFormLib.ViewModels
             string ImageRotation = Enum.GetName(typeof(EumImageRotation), ShowTool.eumImageRotation);
             string[] buf = ImageRotation.Split('_');
             int rotationAngle = int.Parse(buf[1]);
-            ShowTool.ClearAllOverLays();
+            //ShowTool.ClearAllOverLays();
             try
             {
                 ShowTool.DispImage(ref GrabImg, -rotationAngle);
-                ShowTool.D_HImage = GrabImg;
-
+              
             }
             catch (HOperatorException er)
             {
@@ -5086,8 +5192,8 @@ namespace MainFormLib.ViewModels
             if (workstatus == EunmCamWorkStatus.Freestyle) //自由模式只采图不做检测
                 System.Threading.Thread.Sleep(10);
 
-            HOperatorSet.GenEmptyObj(out GrabImg);
-            GrabImg.Dispose();
+        
+            //GrabImg.Dispose();
             HOperatorSet.CopyObj(img, out GrabImg, 1, 1);
 
             HOperatorSet.CountChannels(GrabImg, out HTuple channels);

@@ -33,7 +33,18 @@ namespace MainFormLib.Views
                 AppenTxt,
                 ClearTxt,
                 camStationName);
-            DataContext = viewModel;        
+            DataContext = viewModel;
+
+            HOperatorSet.SetSystem("temporary_mem_cache", "false");
+            HOperatorSet.SetSystem("clip_region", "false");
+            HOperatorSet.SetLineWidth(viewModel.ShowTool.HWindowsHandle, 2);
+            var tool = viewModel.ShowTool;
+            tool.Dock = System.Windows.Forms.DockStyle.Fill;
+            tool.Padding = new System.Windows.Forms.Padding(2);
+
+            tool.SetBackgroundColor(EumControlBackColor.white);
+            tool.setDraw(EumDrawModel.margin);
+            host.Child = tool;
         }
         ~UCVision()
         {
@@ -64,16 +75,16 @@ namespace MainFormLib.Views
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
                     
-            HOperatorSet.SetSystem("temporary_mem_cache", "false");
-            HOperatorSet.SetSystem("clip_region", "false");
-            HOperatorSet.SetLineWidth(viewModel.ShowTool.HWindowsHandle, 2);
-            var tool = viewModel.ShowTool;  
-            tool.Dock = System.Windows.Forms.DockStyle.Fill;
-            tool.Padding = new System.Windows.Forms.Padding(2);
+            //HOperatorSet.SetSystem("temporary_mem_cache", "false");
+            //HOperatorSet.SetSystem("clip_region", "false");
+            //HOperatorSet.SetLineWidth(viewModel.ShowTool.HWindowsHandle, 2);
+            //var tool = viewModel.ShowTool;  
+            //tool.Dock = System.Windows.Forms.DockStyle.Fill;
+            //tool.Padding = new System.Windows.Forms.Padding(2);
 
-            tool.SetBackgroundColor(EumControlBackColor.white);
-            tool.setDraw(EumDrawModel.margin);
-            host.Child = tool;
+            //tool.SetBackgroundColor(EumControlBackColor.white);
+            //tool.setDraw(EumDrawModel.margin);
+            //host.Child = tool;
 
             viewModel.WindowsLoadedCommand.DoExecute?.Invoke(sender);
         }
@@ -139,5 +150,9 @@ namespace MainFormLib.Views
             viewModel.GainValueChangedCommand.DoExecute?.Invoke(sender);
         }
 
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

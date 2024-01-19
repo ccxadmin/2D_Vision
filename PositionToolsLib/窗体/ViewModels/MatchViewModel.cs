@@ -323,7 +323,7 @@ namespace PositionToolsLib.窗体.ViewModels
                 ShowTool.DispRegion(par.ModelROI, "blue");
                 ShowTool.AddregionBuffer(par.ModelROI, "blue");
                 if (modelTrans == null ||
-                       !GuidePositioning_HDevelopExport.ObjectValided(modelTrans))
+                       !BaseTool.ObjectValided(modelTrans))
                 {
 
                     //log.Error("制作模板", string.Format("训练失败，图像：{0}，发生错误：{1}，模板轮廓无效!",

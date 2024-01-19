@@ -65,6 +65,9 @@ namespace VisionShowLib.UserControls
         public EumImageRotation eumImageRotation;//图像旋转角度
         double startX, startY;//鼠标按下时的位置
         private Cursor scaleCursor = null;//鼠标图标对象
+
+        int i_width = 0;
+        int i_height= 0;
         #endregion
 
         #region Construction
@@ -116,12 +119,13 @@ namespace VisionShowLib.UserControls
 
             statusStrip1.BackColor = Color.FromArgb(255, 109, 60);
 
-
+            HOperatorSet.GenEmptyObj(out showImage);
 
         }
         public VisionShowTool(string titleName) : this()
         {
             TitleName = titleName;
+           
         }
         ~VisionShowTool()
         {
@@ -252,8 +256,8 @@ namespace VisionShowLib.UserControls
             {
                 if (ObjectValided(value))
                 {
-                    HOperatorSet.GenEmptyObj(out showImage);
-                    showImage.Dispose();
+                   
+                    //showImage.Dispose();
                     showImage = value;
 
                 }
@@ -485,7 +489,7 @@ namespace VisionShowLib.UserControls
         {
             ClearAllOverLays();
             if (!ObjectValided(D_HImage)) return;
-            if (xldbuf != null)
+            if (ObjectValided(xldbuf))
                 xldbuf.Dispose();
 
             HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF            
@@ -690,21 +694,31 @@ namespace VisionShowLib.UserControls
                     break;
             }
             HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF     
+            Monitor.Enter(viewController);
             viewController.addIconicVar(Rimage);  //设置合适的图像大小显示区域，并讲Img添加到ObjectList
             //viewController.changeGraphicSettings(GraphicsContext.GC_DRAWMODE, "margin");
             // viewController.setViewState(HWndCtrl.MODE_VIEW_NONE);//图像为无操作模式，即此时不可移动和缩放
             viewController.ResetROI();//清除ROI缓存,并初始化ROI操作模式
             //viewController.setDispLevel(HWndCtrl.MODE_EXCLUDE_ROI);  //1:显示ROIlist中的ROI；2：不显示ROIlist中的ROI         
             viewController.repaint();  //重绘ObjectList中的图像和ROIlist中的ROI,是否能显示ROI前提是MODE_INCLUDE_ROI；
-                                       //同步更新中心十字和辅助工具                  
+
+            Monitor.Exit(viewController);
+            //同步更新中心十字和辅助工具
+            HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF 
             if (IsShowCenterCross)
             {
-                crosscont1.Dispose();
-                crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
-      ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
-                crosscont2.Dispose();
-                crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
-  ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                if (i_width != ImageWidth ||
+                    i_height != ImageHeight)
+                {
+                    crosscont1.Dispose();
+                    crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
+          ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
+                    crosscont2.Dispose();
+                    crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
+      ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                    i_width = ImageWidth;
+                    i_height = ImageHeight;
+                }
 
                 UpdateRegions(crosscont1, "red");
                 UpdateRegions(crosscont2, "red");
@@ -727,27 +741,39 @@ namespace VisionShowLib.UserControls
             if (!ObjectValided(Rotimage))  //图像为空时.
                 return;
 
+         
             HObject Rimage = null;
             HOperatorSet.GenEmptyObj(out Rimage);
-            Rimage.Dispose();
             HOperatorSet.RotateImage(Rotimage, out Rimage, AngleSetting, "constant");
-
-            HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF     
-            viewController.addIconicVar(Rimage);  //设置合适的图像大小显示区域，并讲Img添加到ObjectList
+            HOperatorSet.CopyObj(Rimage, out Rotimage, 1, 1);
+            D_HImage = Rotimage;
+            Rimage.Dispose();
+            HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF  
+            Monitor.Enter(viewController);
+            viewController.addIconicVar(Rotimage);  //设置合适的图像大小显示区域，并讲Img添加到ObjectList
             //viewController.changeGraphicSettings(GraphicsContext.GC_DRAWMODE, "margin");
             // viewController.setViewState(HWndCtrl.MODE_VIEW_NONE);//图像为无操作模式，即此时不可移动和缩放
             viewController.ResetROI();//清除ROI缓存,并初始化ROI操作模式
             //viewController.setDispLevel(HWndCtrl.MODE_EXCLUDE_ROI);  //1:显示ROIlist中的ROI；2：不显示ROIlist中的ROI         
             viewController.repaint();  //重绘ObjectList中的图像和ROIlist中的ROI,是否能显示ROI前提是MODE_INCLUDE_ROI；
-                                       //同步更新中心十字和辅助工具                  
+            Monitor.Exit(viewController);
+            //同步更新中心十字和辅助工具
+            HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF
+
             if (IsShowCenterCross)
             {
-                crosscont1.Dispose();
-                crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
-      ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
-                crosscont2.Dispose();
-                crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
-  ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                if (i_width != ImageWidth ||
+                   i_height != ImageHeight)
+                {
+                    crosscont1.Dispose();
+                    crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
+          ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
+                    crosscont2.Dispose();
+                    crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
+      ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                    i_width = ImageWidth;
+                    i_height = ImageHeight;
+                }
 
                 UpdateRegions(crosscont1, "red");
                 UpdateRegions(crosscont2, "red");
@@ -756,12 +782,11 @@ namespace VisionShowLib.UserControls
 
             }
             HOperatorSet.SetSystem("flush_graphic", "true");//图像刷新on
+
             h_Disp.HalconWindow.SetColor("white");
             h_Disp.HalconWindow.DispLine(-100.0, -100.0, -101.0, -101.0);
 
-            if (ObjectValided(Rotimage))
-                Rotimage.Dispose();
-            HOperatorSet.CopyObj(Rimage, out Rotimage, 1, 1);
+         
         }
         /// <summary>
         /// 显示图像
@@ -772,22 +797,30 @@ namespace VisionShowLib.UserControls
             if (!ObjectValided(image))  //图像为空时.
                 return;
             HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF     
+            Monitor.Enter(viewController);
             viewController.addIconicVar(image);  //设置合适的图像大小显示区域，并讲Img添加到ObjectList
             //viewController.changeGraphicSettings(GraphicsContext.GC_DRAWMODE, "margin");
             // viewController.setViewState(HWndCtrl.MODE_VIEW_NONE);//图像为无操作模式，即此时不可移动和缩放
             viewController.ResetROI();//清除ROI缓存,并初始化ROI操作模式
             //viewController.setDispLevel(HWndCtrl.MODE_EXCLUDE_ROI);  //1:显示ROIlist中的ROI；2：不显示ROIlist中的ROI         
             viewController.repaint();  //重绘ObjectList中的图像和ROIlist中的ROI,是否能显示ROI前提是MODE_INCLUDE_ROI；
-                                       //同步更新中心十字和辅助工具                  
+            Monitor.Exit(viewController);
+            //同步更新中心十字和辅助工具
+            HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF 
             if (IsShowCenterCross)
             {
-                crosscont1.Dispose();
-                crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
-      ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
-                crosscont2.Dispose();
-                crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
-  ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
-
+                if (i_width != ImageWidth ||
+                    i_height != ImageHeight)
+                {
+                    crosscont1.Dispose();
+                    crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
+          ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
+                    crosscont2.Dispose();
+                    crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
+      ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                    i_width = ImageWidth;
+                    i_height= ImageHeight;
+                }
                 UpdateRegions(crosscont1, "red");
                 UpdateRegions(crosscont2, "red");
                 UpdateRegions(xldbuf, "red");
@@ -818,16 +851,22 @@ namespace VisionShowLib.UserControls
 
                 foreach (var s in messageList)
                     UpdataMessage(s.showMessage, s.showRow, s.showCol, s.showColor, s.showSize);
-
+                HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF 
                 if (IsShowCenterCross)
                 {
-                    crosscont1.Dispose();
-                    crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
-              ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
-                    crosscont2.Dispose();
-                    crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
-          ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                    if (i_width != ImageWidth ||
+                   i_height != ImageHeight)
+                    {
+                        crosscont1.Dispose();
+                        crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
+                  ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
+                        crosscont2.Dispose();
+                        crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
+              ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
 
+                        i_width = ImageWidth;
+                        i_height = ImageHeight;
+                    }
                     UpdateRegions(crosscont1, "red");
                     UpdateRegions(crosscont2, "red");
                     UpdateRegions(xldbuf, "red");
@@ -857,7 +896,7 @@ namespace VisionShowLib.UserControls
                     return;
                 viewController?.repaint();
 
-
+                HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF 
                 //设计模式不显示以下内容
                 if (currEumSystemPattern == EumSystemPattern.RunningModel)
                 {
@@ -867,17 +906,21 @@ namespace VisionShowLib.UserControls
                         UpdataMessage(s.showMessage, s.showRow, s.showCol, s.showColor, s.showSize);
                     if (IsShowCenterCross)
                     {
-
-                        crosscont2.Dispose();
-                        crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
-              ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
-                        UpdateRegions(crosscont2, "red");
-
-                        crosscont1.Dispose();
-                        crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
-                  ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
+                        if (i_width != ImageWidth ||
+                  i_height != ImageHeight)
+                        {             
+                            crosscont1.Dispose();
+                            crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
+                      ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
+                            crosscont2.Dispose();
+                            crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
+                  ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
+                         
+                            i_width = ImageWidth;
+                            i_height= ImageHeight;
+                        }
                         UpdateRegions(crosscont1, "red");
-
+                        UpdateRegions(crosscont2, "red");
                         UpdateRegions(xldbuf, "red");
 
                     }
@@ -1669,8 +1712,7 @@ namespace VisionShowLib.UserControls
                 string[] buf = ImageRotation.Split('_');
                 int angle = int.Parse(buf[1]);
                 DispImage(ref GrabImg, -angle);
-                D_HImage = GrabImg;
-
+       
                 LoadedImageNoticeHandle?.Invoke(D_HImage, new EventArgs());
             }
         }
@@ -1953,32 +1995,54 @@ namespace VisionShowLib.UserControls
         private void 运行toolStripButton_Click(object sender, EventArgs e)
         {
             BtnRunClick?.Invoke();
-            SetEnable(false);
+            图像旋转toolStripButton.Enabled = false;
+            图像采集toolStripButton.Enabled = false;
+            运行toolStripButton.Enabled = false;
+        
+            图像旋转toolStripButton.Image = Resource.旋转2;
+            图像采集toolStripButton.Image = Resource.相机2;
+            运行toolStripButton.Image = Resource.运行2;
         }
 
         private void 停止toolStripButton_Click(object sender, EventArgs e)
         {
             BtnStopClick?.Invoke();
-            SetEnable(true);
+            图像旋转toolStripButton.Enabled = true;
+            图像采集toolStripButton.Enabled = true;
+            运行toolStripButton.Enabled = true;
+
+            图像旋转toolStripButton.Image = Resource.旋转;
+            图像采集toolStripButton.Image = Resource.相机;
+            运行toolStripButton.Image = Resource.运行;
         }
 
-        void SetEnable(bool flag)
+        public  void SetEnable(bool flag)
         {
-            图像旋转toolStripButton.Enabled = flag;
-            图像采集toolStripButton.Enabled = flag;
-            运行toolStripButton.Enabled = flag;
-            if (flag)
+            if (this.InvokeRequired)
             {
-                图像旋转toolStripButton.Image = Resource.旋转;
-                图像采集toolStripButton.Image = Resource.相机;
-                运行toolStripButton.Image = Resource.运行;
-
+                this.Invoke(new Action<bool>(SetEnable), flag);
             }
             else
             {
-                图像旋转toolStripButton.Image = Resource.旋转2;
-                图像采集toolStripButton.Image = Resource.相机2;
-                运行toolStripButton.Image = Resource.运行2;
+
+                图像旋转toolStripButton.Enabled = flag;
+                图像采集toolStripButton.Enabled = flag;
+                运行toolStripButton.Enabled = flag;
+                停止toolStripButton.Enabled = flag;
+                if (flag)
+                {
+                    图像旋转toolStripButton.Image = Resource.旋转;
+                    图像采集toolStripButton.Image = Resource.相机;
+                    运行toolStripButton.Image = Resource.运行;
+                    停止toolStripButton.Image = Resource.停止;
+                }
+                else
+                {
+                    图像旋转toolStripButton.Image = Resource.旋转2;
+                    图像采集toolStripButton.Image = Resource.相机2;
+                    运行toolStripButton.Image = Resource.运行2;
+                    停止toolStripButton.Image = Resource.停止__1_;
+                }
             }
         }
 

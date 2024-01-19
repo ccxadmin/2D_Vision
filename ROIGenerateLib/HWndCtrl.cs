@@ -642,9 +642,9 @@ namespace ROIGenerateLib
 		{
 			int count = HObjList.Count;
 			HObjectEntry entry;
-            HSystem.SetSystem("flush_graphic", "false");
+            //HSystem.SetSystem("flush_graphic", "false");
             window.ClearWindow();
-            HSystem.SetSystem("flush_graphic", "true");
+            //HSystem.SetSystem("flush_graphic", "true");
             mGC.stateOfSettings.Clear();
 			for (int i=0; i < count; i++)
 			{

@@ -97,6 +97,7 @@ namespace PositionToolsLib.窗体.ViewModels
             Model.SelectMatrixIndex = index2;
 
             Model.SelectImageName = (par as FindLineParam).InputImageName;
+            Model.SelectMatrixName = (par as FindLineParam).MatrixName;
             Model.NumEdgeThd = (par as FindLineParam).EdgeThd;
             Model.NumCaliperCount = (par as FindLineParam).CaliperNum;
             Model.NumCaliperWidth = (par as FindLineParam).CaliperWidth;

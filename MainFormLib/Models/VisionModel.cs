@@ -533,7 +533,26 @@ namespace MainFormLib.Models
             }
         }
 
-      
+        private bool showCross;
+        public bool ShowCross
+        {
+            get { return showCross; }
+            set
+            {
+                showCross = value;
+                DoNotify();
+            }
+        }
+        private bool showScaleRule;
+        public bool ShowScaleRule
+        {
+            get { return showScaleRule; }
+            set
+            {
+                showScaleRule = value;
+                DoNotify();
+            }
+        }
 
     }
 
