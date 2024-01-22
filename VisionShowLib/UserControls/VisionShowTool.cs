@@ -1104,7 +1104,7 @@ namespace VisionShowLib.UserControls
         public void ClearAllOverLays()
         {
             HOperatorSet.SetSystem("flush_graphic", "false");   //图像刷新OFF            
-            HOperatorSet.ClearWindow(hWindowsHandle);
+            //HOperatorSet.ClearWindow(hWindowsHandle);
             HOperatorSet.SetSystem("flush_graphic", "true");//图像刷新on        
             messageList.Clear();
             RegionsList.Clear();

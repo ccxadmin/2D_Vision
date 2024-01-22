@@ -38,7 +38,7 @@ namespace PositionToolsLib.窗体.Views
             //tool.SetColorOfTopBottomTitle(System.Drawing.Color.FromArgb(255, 109, 60));
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
-
+            tool.SetEnable(false);
             tool.SetBackgroundColor(EumControlBackColor.white);
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;

@@ -59,7 +59,21 @@ namespace PositionToolsLib.工具
             sw.Restart();
 
             try
-            {
+            {//坐标点位1
+                if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
+                    dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
+                       0, 0));
+                else
+                    dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
+                        0, 0);
+                //坐标点位2
+                if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
+                    dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(
+                        0, 0, 0));
+                else
+                    dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(
+                       0, 0, 0);
+
 
                 (toolParam as FindLineParam).InputImg = dm.imageBufDic[(toolParam as FindLineParam).InputImageName];
                 if (!ObjectValided((toolParam as FindLineParam).InputImg))
@@ -137,20 +151,7 @@ namespace PositionToolsLib.工具
                     out HTuple hv_ResultRow, out HTuple hv_ResultColumn);
                 //至少两点或以上才可拟合直线
                 if (hv_ResultRow.TupleLength() <= 1)
-                {  //坐标点位1
-                    if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
-                        dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
-                            0, 0);
-                    //坐标点位2
-                    if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
-                        dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(
-                            0, 0, 0));
-                    else
-                        dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(
-                           0,0, 0);
+                {  
                     //在添加
                     if (!dm.LineDataDic.ContainsKey(toolName))
                         dm.LineDataDic.Add(toolName, new StuLineData(0, 0,
@@ -175,20 +176,7 @@ namespace PositionToolsLib.工具
                
                 if (hv_Row11.TupleLength() <= 0)
                 {
-                    //坐标点位1
-                    if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
-                        dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
-                            0, 0);
-                    //坐标点位2
-                    if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
-                        dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(
-                            0, 0, 0));
-                    else
-                        dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(
-                           0, 0, 0);
+                   
                     //在添加
                     if (!dm.LineDataDic.ContainsKey(toolName))
                         dm.LineDataDic.Add(toolName, new StuLineData(0, 0,

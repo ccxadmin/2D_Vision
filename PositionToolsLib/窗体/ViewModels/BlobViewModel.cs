@@ -110,7 +110,8 @@ namespace PositionToolsLib.窗体.ViewModels
         void GetItemList()
         {
             Model.ItemList.Clear();
-            foreach (var s in dataManage.enumerableTooDic)
+            List<string> Features = Enum.GetNames(typeof(EumParticleFeatures)).ToList<string>();
+            foreach (var s in Features)
                 Model.ItemList.Add(s);
         }
         /// <summary>
@@ -197,7 +198,7 @@ namespace PositionToolsLib.窗体.ViewModels
             List<string> name_list = Enum.GetNames(typeof(EumParticleFeatures)).ToList<string>();
             ParticleFeaturesData dat = new ParticleFeaturesData(false, "area", 0, 999);
             particleFeaturesDataList.Add(dat);
-            GetItemList();
+            //GetItemList();
             Model.DgDataOfBlobList.Add(dat);
             Model.DgDataSelectIndex = Model.DgDataOfBlobList.Count - 1;
           
@@ -328,8 +329,8 @@ namespace PositionToolsLib.窗体.ViewModels
                 ShowTool.DispConcatedObj((par as BlobParam).OutputImg, EumCommonColors.green);
                 ShowTool.AddConcatedObjBuffer((par as BlobParam).OutputImg, EumCommonColors.green);
 
-                ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
-                ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
+                ShowTool.DispMessage("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
+                ShowTool.AddTextBuffer("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
                 //更新结果表格数据
                 UpdateResultView((par as BlobParam).BlobFeaturesResult);
                 if ((par as BlobParam).BlobFeaturesResult.Count > 0)
@@ -345,8 +346,8 @@ namespace PositionToolsLib.窗体.ViewModels
             else
             {
                 ShowTool.DispImage(imgBuf);
-                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
-                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
+                ShowTool.DispMessage("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
             ShowTool.DispRegion((par as BlobParam).ResultInspectROI, "blue");

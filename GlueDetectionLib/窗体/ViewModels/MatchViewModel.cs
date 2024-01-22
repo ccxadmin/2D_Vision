@@ -448,8 +448,8 @@ namespace GlueDetectionLib.窗体.ViewModels
                 ShowTool.AddConcatedObjBuffer((par as MatchParam).OutputImg, EumCommonColors.green);
                 ShowTool.DispRegion((par as MatchParam).InspectROI, "blue");
                 ShowTool.AddregionBuffer((par as MatchParam).InspectROI, "blue");
-                ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
-                ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
+                ShowTool.DispMessage("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
+                ShowTool.AddTextBuffer("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
                 ShowTool.DispMessage(string.Format("位置X:{0:f3},Y:{1:f3}",
                     (par as MatchParam).MatchResultColumns.TupleSelect(0).D,
                     (par as MatchParam).MatchResultRows.TupleSelect(0).D), 10, 10, "green", 16);
@@ -474,8 +474,8 @@ namespace GlueDetectionLib.窗体.ViewModels
                 ShowTool.DispImage(imgBuf);
                 ShowTool.DispRegion((par as MatchParam).InspectROI, "blue");
                 ShowTool.AddregionBuffer((par as MatchParam).InspectROI, "blue");
-                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
-                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
+                ShowTool.DispMessage("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
 

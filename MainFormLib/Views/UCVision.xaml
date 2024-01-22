@@ -75,7 +75,7 @@ Height="700" Width="1000">
                            Margin="10,8,0,0"/>
                                 <ComboBox Name="cobxCamTypeList" Style="{DynamicResource MyCbbStyle}" Width="135"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,8,0,0"  Height="25"  IsEnabled="{Binding Model.IsCamAlive , Converter={StaticResource boolConverter}}"
+                              Margin="80,8,0,0"  Height="25"  IsEnabled="{Binding Model.CobxCamTypeEnable}"
                                 ItemsSource="{Binding Model.CamTypeList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"                          
   SelectedItem="{Binding Model.SelectCamTypeName,Mode=TwoWay}"
                     SelectedIndex="{Binding Model.SelectCamTypeIndex,Mode=TwoWay}"  >
@@ -98,7 +98,7 @@ Margin="230,5,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3"  IsEna
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="80,48,0,0"  Height="25"  x:Name="cobxCamIndexerList"
                                 ItemsSource="{Binding Model.CamIndexerList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"                          
-  SelectedItem="{Binding Model.SelectCamIndexerName,Mode=TwoWay}"  IsEnabled="{Binding Model.IsCamAlive , Converter={StaticResource boolConverter}}"
+  SelectedItem="{Binding Model.SelectCamIndexerName,Mode=TwoWay}"  IsEnabled="{Binding Model.CobxCamIndexerEnable }"
                     SelectedIndex="{Binding Model.SelectCamIndexerIndex,Mode=TwoWay}"  >
 
                                     <behaviors:Interaction.Triggers>
@@ -885,6 +885,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                         </Menu>
                                         <ListView Grid.Row="2"  Margin="1" 
                                              Style="{DynamicResource ListViewStyle}" 
+                                                  IsEnabled="{Binding Model.PosListViewEnable}"
                                                   x:Name="listViewToolsOfPosition"  
                                                   SelectedIndex="{Binding Model.ToolsOfPositionSelectIndex,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                  ItemsSource="{Binding Model.ToolsOfPositionList,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"   >
@@ -1156,7 +1157,8 @@ CommandParameter="Tcp接收"/>
 
                                 </Menu>
                                 <ListView  Grid.Row="2"
-                                        Style="{DynamicResource ListViewStyle}"  
+                                        Style="{DynamicResource ListViewStyle}" 
+                                             IsEnabled="{Binding Model.GlueListViewEnable}"
                                             x:Name="listViewToolsOfGlue"  
  SelectedIndex="{Binding Model.ToolsOfGlueSelectIndex,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
 ItemsSource="{Binding Model.ToolsOfGlueList,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" >
@@ -1244,6 +1246,16 @@ IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, 
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <ToolBarTray x:Name="tb" Grid.Row="0" Margin="1"  IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}" >
+                                <ToolBarTray.Style>
+                                    <Style TargetType="ToolBarTray">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled"  Value="False">
+                                                <Setter Property="Background" Value="#dddddd"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ToolBarTray.Style>
+
                                 <ToolBar Band="0" BandIndex="0" Background="Transparent" Height="40" >
                                     <attach:RichButton   Icon="../imgs/新建.png" Foreground="#ff6d3c"
                     Content="新建" Margin="2" Background="Transparent" 
@@ -1267,6 +1279,7 @@ IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, 
                                     </attach:RichButton>
 
                                 </ToolBar>
+                            
 
                             </ToolBarTray>
 

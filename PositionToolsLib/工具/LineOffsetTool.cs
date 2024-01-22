@@ -60,6 +60,24 @@ namespace PositionToolsLib.工具
 
             try
             {
+                //坐标点位1
+                if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
+                    dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
+                       0, 0));
+                else
+                    dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
+                        0, 0);
+                //坐标点位2
+                if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
+                    dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(0, 0, 0));
+                else
+                    dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(0, 0, 0);
+
+                (toolParam as LineOffsetParam).Row1 = 0;
+                (toolParam as LineOffsetParam).Col1 = 0;
+                (toolParam as LineOffsetParam).Row2 = 0;
+                (toolParam as LineOffsetParam).Col2 = 0;
+
 
                 (toolParam as LineOffsetParam).InputImg = dm.imageBufDic[(toolParam as LineOffsetParam).InputImageName];
                 if (!ObjectValided((toolParam as LineOffsetParam).InputImg))
@@ -171,27 +189,7 @@ namespace PositionToolsLib.工具
                     (toolParam as LineOffsetParam).Col2 = ColEnd.D;
                   
                 }
-                else
-                {
-                    //坐标点位1
-                    if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
-                        dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
-                            0, 0);
-                    //坐标点位2
-                    if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
-                        dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(0,0,0));
-                    else
-                        dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(0, 0, 0);
-
-                    (toolParam as LineOffsetParam).Row1 = 0;
-                    (toolParam as LineOffsetParam).Col1 = 0;
-                    (toolParam as LineOffsetParam).Row2 = 0;
-                    (toolParam as LineOffsetParam).Col2 = 0;
-                }
-     
+               
                 //+输入图像
 
                 HOperatorSet.ConcatObj((toolParam as LineOffsetParam).InputImg, emptyRegionBuf, out HObject objectsConcat2);

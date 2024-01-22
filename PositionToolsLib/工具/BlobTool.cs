@@ -21,7 +21,7 @@ namespace PositionToolsLib.工具
         public BlobTool()
         {
             toolParam = new BlobParam();
-            toolName = "Blob" + inum;
+            toolName = "Blob中心" + inum;
             inum++;
         }
 
@@ -31,7 +31,7 @@ namespace PositionToolsLib.工具
         }
 
         //工具日志:同类型工具日志信息放一起      
-        static private Log log = new Log("Blob");
+        static private Log log = new Log("Blob中心");
 
 
         /// <summary>
@@ -50,6 +50,10 @@ namespace PositionToolsLib.工具
 
             try
             {
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0, 0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0, 0, 0);
 
                 (toolParam as BlobParam).InputImg = dm.imageBufDic[(toolParam as BlobParam).InputImageName];
                 if (!ObjectValided((toolParam as BlobParam).InputImg))
@@ -230,17 +234,7 @@ namespace PositionToolsLib.工具
                         dm.PositionDataDic[toolName] = new StuCoordinateData(dat.column, dat.row, 0);
 
                 }
-               else
-                {
-                    
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0, 0, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0, 0, 0);
-
-                }
-
-
+              
                 grayImage.Dispose();
                 //+输入图像
                 HOperatorSet.ConcatObj((toolParam as BlobParam).InputImg, emptyRegionBuf, out HObject objectsConcat2);
@@ -285,7 +279,7 @@ namespace PositionToolsLib.工具
         internal void OnDeserializedMethod(StreamingContext context)
         {
 
-            int number = int.Parse(toolName.Replace("Blob", ""));
+            int number = int.Parse(toolName.Replace("Blob中心", ""));
             if (number > inum)
                 inum = number;
             //toolName = "Blob" + number;

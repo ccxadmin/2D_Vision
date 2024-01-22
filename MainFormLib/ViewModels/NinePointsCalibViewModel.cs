@@ -57,9 +57,10 @@ namespace MainFormLib.ViewModels
         int RobotPoint_Indexer = 0;
         int RotatePoint_Indexer = 0;
         //HTuple hv_HomMat2D;//标定矩阵
-
+        private static NinePointsCalibModel staticModel = null;
         private NinePointsCalibViewModel()
         {
+               
             HOperatorSet.GenEmptyObj(out imgBuf);
             //图像控件      
             ShowTool = new VisionShowTool();
@@ -155,23 +156,24 @@ namespace MainFormLib.ViewModels
             #endregion
         }
         public NinePointsCalibViewModel(string _rootFolder, string _calibName = "default")
-            :this()
+          :this()
         {
+          
             if (Directory.Exists(_rootFolder))
                 rootFolder = _rootFolder;
             currCalibName = _calibName;
-         
             This = this;
+            
             Model = new NinePointsCalibModel();
-           
             LoadData();
+         
         }
 
-        public NinePointsCalibViewModel(NinePointsCalibModel model):this()
-        {                 
+        public NinePointsCalibViewModel(NinePointsCalibModel model) : this()
+        {
             This = this;
             Model = model;
-         
+
         }
 
         /// <summary>
@@ -249,6 +251,7 @@ namespace MainFormLib.ViewModels
             }
             catch (Exception er)
             {
+
                 ShowTool.DispAlarmMessage("参数加载失败！" + er.Message, 500, 20, 30);
                 //Appentxt("参数保存失败！" + er.Message);
                 // MessageBox.Show("参数保存失败！" + er.Message);

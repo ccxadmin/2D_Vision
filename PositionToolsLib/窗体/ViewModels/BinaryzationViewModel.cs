@@ -142,15 +142,15 @@ namespace PositionToolsLib.窗体.ViewModels
             {
                 ShowTool.DispImage((par as BinaryzationParam).OutputImg);
                 ShowTool.D_HImage = (par as BinaryzationParam).OutputImg;
-                ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
-                ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
+                ShowTool.DispMessage("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
+                ShowTool.AddTextBuffer("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
 
             }
             else
             {
                 ShowTool.DispImage(imgBuf);
-                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
-                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
+                ShowTool.DispMessage("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
         }

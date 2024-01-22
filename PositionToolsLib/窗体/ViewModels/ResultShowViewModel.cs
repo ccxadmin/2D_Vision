@@ -16,8 +16,8 @@ namespace PositionToolsLib.窗体.ViewModels
     public class ResultShowViewModel : BaseViewModel
     {
         List<DgDataOfResultShow> resultShowDataList = new List<DgDataOfResultShow>();//表格数据集合
-        double rowCoor;
-        double colCoor;
+        double xCoor;
+        double yCoor;
         double angleCoor;
         public static ResultShowViewModel This { get; set; }
         public ResultShowModel Model { get; set; }
@@ -215,7 +215,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as ResultShowParam).InputXCoorName = Model.SelectXCoorName;
             (par as ResultShowParam).InputYCoorName = Model.SelectYCoorName;
             (par as ResultShowParam).InputAngleCoorName = Model.SelectAngCoorName;
-            StuCoordinateData data = new StuCoordinateData(rowCoor, colCoor, angleCoor);
+            StuCoordinateData data = new StuCoordinateData(xCoor, yCoor, angleCoor);
             (par as ResultShowParam).CoordinateData = data;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
             OnSaveManageHandle?.Invoke(dataManage);
@@ -251,8 +251,8 @@ namespace PositionToolsLib.窗体.ViewModels
             {
                 ShowTool.DispImage((par as ResultShowParam).OutputImg);
                 ShowTool.D_HImage = (par as ResultShowParam).OutputImg;
-                ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
-                ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
+                ShowTool.DispMessage("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
+                ShowTool.AddTextBuffer("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
 
                 ShowTool.DispRegion((par as ResultShowParam).ResultRegion, "green");
                 ShowTool.AddregionBuffer((par as ResultShowParam).ResultRegion, "green");
@@ -283,8 +283,8 @@ namespace PositionToolsLib.窗体.ViewModels
             else
             {
                 ShowTool.DispImage(imgBuf);
-                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
-                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
+                ShowTool.DispMessage("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
                 ShowTool.DispMessage("特征点坐标：0,0,0", 10, 10, "red", 16);
                 ShowTool.AddTextBuffer("特征点坐标：0,0,0", 10, 10, "red", 16);
@@ -295,7 +295,7 @@ namespace PositionToolsLib.窗体.ViewModels
         {
             if (Model.SelectXCoorName == "") return;
             StuCoordinateData data = dataManage.PositionDataDic[Model.SelectXCoorName];
-            rowCoor = data.x;
+             xCoor = data.x;
             BaseParam par = baseTool.GetParam();
             (par as ResultShowParam).InputXCoorName = Model.SelectXCoorName;
         }
@@ -304,7 +304,7 @@ namespace PositionToolsLib.窗体.ViewModels
         {
             if (Model.SelectYCoorName == "") return;
             StuCoordinateData data = dataManage.PositionDataDic[Model.SelectYCoorName];
-            colCoor = data.y;
+            yCoor = data.y;
             BaseParam par = baseTool.GetParam();
             (par as ResultShowParam).InputYCoorName = Model.SelectYCoorName;
         }

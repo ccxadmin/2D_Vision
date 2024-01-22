@@ -59,6 +59,13 @@ namespace PositionToolsLib.工具
 
             try
             {
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                       0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        0, 0);
+
 
                 (toolParam as CalParallelLineParam).InputImg = dm.imageBufDic[(toolParam as CalParallelLineParam).InputImageName];
                 if (!ObjectValided((toolParam as CalParallelLineParam).InputImg))
@@ -195,13 +202,7 @@ namespace PositionToolsLib.工具
                 }
                 else
                 {
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
-                            0, 0);
-
+                  
                     //在添加
                     if (!dm.LineDataDic.ContainsKey(toolName))
                         dm.LineDataDic.Add(toolName, new StuLineData(0, 0,

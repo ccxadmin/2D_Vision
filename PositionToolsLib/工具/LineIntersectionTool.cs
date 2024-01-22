@@ -59,6 +59,16 @@ namespace PositionToolsLib.工具
 
             try
             {
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                       0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        0, 0);
+
+                (toolParam as LineIntersectionParam).IntersectionRow = 0;
+                (toolParam as LineIntersectionParam).IntersectionColumn = 0;
+
 
                 (toolParam as LineIntersectionParam).InputImg = dm.imageBufDic[(toolParam as LineIntersectionParam).InputImageName];
                 if (!ObjectValided((toolParam as LineIntersectionParam).InputImg))
@@ -155,18 +165,7 @@ namespace PositionToolsLib.工具
                     (toolParam as LineIntersectionParam).IntersectionRow = row.D;
                     (toolParam as LineIntersectionParam).IntersectionColumn = column.D;
                 }
-                else
-                {
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
-                            0, 0);
-
-                    (toolParam as LineIntersectionParam).IntersectionRow = 0;
-                    (toolParam as LineIntersectionParam).IntersectionColumn = 0;
-                }
+              
 
                 //+输入图像
 

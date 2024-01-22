@@ -109,7 +109,8 @@ namespace MainFormLib.ViewModels
         /*-----------------------------------------其他工具---------------------------------------*/
         HObject GrabImg = null;
         HObject imgBuf = null;//图像缓存     
-        FormNinePointsCalib f_NinePointsCalib = null;
+       
+        private NinePointsCalibModel caliModel = null;//九点标定数据模型
         //public static VisionViewModel This { get; set; }
         public VisionModel Model { get; set; }
         public VisionShowTool ShowTool { get; set; }
@@ -383,12 +384,9 @@ namespace MainFormLib.ViewModels
         /// 九点标定窗体显示
         /// </summary>
         void NinePointsCalibForm_Click()
-        {
-
-            //f_NinePointsCalib.BringIntoView();
-            bool flag = f_NinePointsCalib.isClosedFlag;
-            if(flag)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder,currCalibName);
+        {   
+            FormNinePointsCalib f_NinePointsCalib 
+                       = new FormNinePointsCalib(this.caliModel);         
             f_NinePointsCalib.Show();
 
         }
@@ -401,8 +399,10 @@ namespace MainFormLib.ViewModels
             if (currModelType == (EumModelType)Model.ModelTypeSelectIndex)//如果无切换则不重载
                 return;
             currModelType = (EumModelType)Model.ModelTypeSelectIndex;
+
             if (currModelType == EumModelType.CaliBoardModel)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder,currCalibName);
+                LoadNinePointsCaliData(ref caliModel);
+
             Model.ModelType= currModelType;
             string secondName = Enum.GetName(typeof(EumModelType), currModelType);
             LoadPositionFlow(secondName);
@@ -505,7 +505,9 @@ namespace MainFormLib.ViewModels
                     if (MessageBox.Show("清空流程？", "提醒", MessageBoxButton.OKCancel, MessageBoxImage.Question)
                == MessageBoxResult.OK)
                     {
-                        toolindexofPosition = -1;
+                        toolindexofPosition = 0;
+                        projectOfPos.TcpRecvName = "";
+                        projectOfPos.TcpSendName = "";
                         projectOfPos.toolNamesList.Clear();
                         projectOfPos.toolsDic.Clear();
                         projectOfPos.dataManage?.ResetBuf();//重载后清除数据缓存
@@ -536,8 +538,11 @@ namespace MainFormLib.ViewModels
             Model.BtnOneShotEnable = false;
             Model.BtnContinueGrabEnable = false;
             Model.BtnStopGrabEnable = false;
+            Model.CobxCamTypeEnable = false;
+            Model.CobxCamIndexerEnable = false;
             Model.IsCamAlive = false;//假定为false控件使能用
-
+            Model.PosListViewEnable = false;
+            Model.GlueListViewEnable = false;
             foreach (var item in Model.ToolsOfPositionList)
                 item.ContextMenuVisib = Visibility.Hidden;
             foreach (var item in Model.ToolsOfGlueList)
@@ -550,6 +555,8 @@ namespace MainFormLib.ViewModels
         {
             ContinueRunFlag = false;
             Model.ContinueRunFlag = false;
+            Model.PosListViewEnable = true;
+            Model.GlueListViewEnable = true;
             if (CurrCam != null)
                 Model.IsCamAlive = CurrCam.IsAlive;
             else
@@ -561,6 +568,8 @@ namespace MainFormLib.ViewModels
                 Model.BtnOneShotEnable = true;
                 Model.BtnContinueGrabEnable = true;
                 Model.BtnStopGrabEnable = true;
+                Model.CobxCamTypeEnable = false;
+                Model.CobxCamIndexerEnable = false;
             }
             else
             {
@@ -569,6 +578,8 @@ namespace MainFormLib.ViewModels
                 Model.BtnOneShotEnable = false;
                 Model.BtnContinueGrabEnable = false;
                 Model.BtnStopGrabEnable = false;
+                Model.CobxCamTypeEnable = true;
+                Model.CobxCamIndexerEnable = true;
             }
 
             foreach (var item in Model.ToolsOfPositionList)
@@ -2463,26 +2474,36 @@ namespace MainFormLib.ViewModels
         /// </summary>
         void LoadRecipe()
         {
-            //文件夹名称
-            string firstName = "定位检测";
-            if (!Directory.Exists(saveToUsePath + "\\" + firstName))
-                Directory.CreateDirectory(saveToUsePath + "\\" + firstName);
-            string secondName = GeneralUse.ReadValue("定位检测", "模板类型", "config", "ProductModel_1",
-                          saveToUsePath + "\\" + firstName);
-            currModelType = (EumModelType)Enum.Parse(typeof(EumModelType), secondName);
-            Model.ModelType = currModelType;//当前模板类型
-            Model.ModelTypeSelectIndex = (int)currModelType;
-            if (currModelType == EumModelType.CaliBoardModel)
-                f_NinePointsCalib = new FormNinePointsCalib(rootFolder,currCalibName);
-            LoadPositionFlow(secondName);//加载定位检测流程
-            LoadGlueAoiFlow();//加载胶水检测流程
-            Appentxt(string.Format("当前加载配方：{0}，模板：{1}", currRecipeName, secondName));
-            if (PosBaseTool.ObjectValided(this.GrabImg))
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                ShowTool.ClearAllOverLays();
-                ShowTool.DispImage(this.GrabImg);
-                ShowTool.D_HImage = this.GrabImg;
-            }
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+
+                //文件夹名称
+                string firstName = "定位检测";
+                if (!Directory.Exists(saveToUsePath + "\\" + firstName))
+                    Directory.CreateDirectory(saveToUsePath + "\\" + firstName);
+                string secondName = GeneralUse.ReadValue("定位检测", "模板类型", "config", "ProductModel_1",
+                              saveToUsePath + "\\" + firstName);
+                currModelType = (EumModelType)Enum.Parse(typeof(EumModelType), secondName);
+
+
+                Model.ModelType = currModelType;//当前模板类型
+                Model.ModelTypeSelectIndex = (int)currModelType;
+
+                if (currModelType == EumModelType.CaliBoardModel)
+                    LoadNinePointsCaliData(ref caliModel);
+
+                LoadPositionFlow(secondName);//加载定位检测流程
+                LoadGlueAoiFlow();//加载胶水检测流程
+                Appentxt(string.Format("当前加载配方：{0}，模板：{1}", currRecipeName, secondName));
+                if (PosBaseTool.ObjectValided(this.GrabImg))
+                {
+                    ShowTool.ClearAllOverLays();
+                    ShowTool.DispImage(this.GrabImg);
+                    ShowTool.D_HImage = this.GrabImg;
+                }
+            });
         }
         /// <summary>
         /// 加载相机参数(切换模板时重新加载相机曝光增益参数)
@@ -2673,13 +2694,52 @@ namespace MainFormLib.ViewModels
             Model.BtnOneShotEnable = flag;
             Model.BtnContinueGrabEnable = flag;
             Model.BtnStopGrabEnable = flag;
+            Model.CobxCamTypeEnable=!flag;
+            Model.CobxCamIndexerEnable = !flag;
         }
 
-        void ManualOperateEnable(bool flag)
+        /// <summary>
+        /// 加载参数
+        /// </summary>
+        void LoadNinePointsCaliData( ref NinePointsCalibModel model)
         {
-            Model.BtnOneShotEnable = flag;
-            Model.BtnContinueGrabEnable = flag;
-            Model.BtnStopGrabEnable = flag;
+            string filePath = rootFolder + "\\标定矩阵\\九点标定\\" + currCalibName;
+            if (!Directory.Exists(rootFolder + "\\标定矩阵"))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵");
+            if (!Directory.Exists(rootFolder + "\\标定矩阵\\九点标定"))
+                Directory.CreateDirectory(rootFolder + "\\标定矩阵\\九点标定");
+            if (!Directory.Exists(filePath))
+                Directory.CreateDirectory(filePath);
+            try
+            {
+                if (model == null) model = new NinePointsCalibModel();
+                //九点标定关系参数保存
+                model.DgPixelPointDataList = GeneralUse.ReadSerializationFile<ObservableCollection<DgPixelPointData>>(filePath + "\\PixelPoint");
+                model.DgRobotPointDataList = GeneralUse.ReadSerializationFile<ObservableCollection<DgRobotPointData>>(filePath + "\\RobotPoint");
+                model.TxbSx = double.Parse(GeneralUse.ReadValue("九点标定", "X缩放", "config", "1", filePath));
+                model.TxbSy = double.Parse(GeneralUse.ReadValue("九点标定", "Y缩放", "config", "1", filePath));
+                model.TxbPhi = double.Parse(GeneralUse.ReadValue("九点标定", "旋转弧", "config", "1", filePath));
+                model.TxbTheta = double.Parse(GeneralUse.ReadValue("九点标定", "倾斜弧", "config", "1", filePath));
+                model.TxbTx = double.Parse(GeneralUse.ReadValue("九点标定", "X偏移量", "config", "1", filePath));
+                model.TxbTy = double.Parse(GeneralUse.ReadValue("九点标定", "Y偏移量", "config", "1", filePath));
+                if (File.Exists(filePath + "\\hv_HomMat2D.tup"))
+                {
+                    HOperatorSet.ReadTuple(filePath + "\\hv_HomMat2D.tup", out HTuple hv_HomMat2D);
+                    model.Hv_HomMat2D = hv_HomMat2D;
+                }
+
+                //旋转中心数据
+                model.TxbRotateCenterX = double.Parse(GeneralUse.ReadValue("九点标定", "旋转中心X", "config", "0", filePath));
+                model.TxbRotateCenterY = double.Parse(GeneralUse.ReadValue("九点标定", "旋转中心Y", "config", "0", filePath));
+                model.DgRotatePointDataList = GeneralUse.ReadSerializationFile<ObservableCollection<DgRotatePointData>>(filePath + "\\RotatePoint");
+            }
+            catch (Exception er)
+            {
+
+                //ShowTool.DispAlarmMessage("参数加载失败！" + er.Message, 500, 20, 30);
+                //Appentxt("参数保存失败！" + er.Message);
+                // MessageBox.Show("参数保存失败！" + er.Message);
+            }
         }
         /// <summary>
         /// 加载外部通讯工具
@@ -4338,7 +4398,15 @@ namespace MainFormLib.ViewModels
                 return;
             }
             Monitor.Enter(locker);
-            FlowHandle(strData);
+            try
+            {
+                FlowHandle(strData);
+            }
+            catch (Exception er)
+            {
+                Appentxt(er.Message);
+                Monitor.Exit(locker);
+            }
             Monitor.Exit(locker);
         }
         /// <summary>
@@ -4554,12 +4622,14 @@ namespace MainFormLib.ViewModels
                     return true;
                 }
                 Model.ModelType = eumModelType;
-                if (eumModelType == EumModelType.CaliBoardModel)
-                    f_NinePointsCalib = new FormNinePointsCalib(rootFolder, currCalibName);
+                if (currModelType == EumModelType.CaliBoardModel)
+                    LoadNinePointsCaliData(ref caliModel);
                 currModelType = eumModelType;
                 string secondName = Enum.GetName(typeof(EumModelType), currModelType);
                 bool loadFlag = LoadPositionFlow(secondName);
                 Model.ModelTypeSelectIndex = (int)eumModelType;
+                //切换模板重新加载相机曝光增益参数
+                LoadCamParam();
                 return loadFlag;
                 //if (!PosBaseTool.ObjectValided(this.GrabImg))
                 //    return;
@@ -5164,7 +5234,7 @@ namespace MainFormLib.ViewModels
             string ImageRotation = Enum.GetName(typeof(EumImageRotation), ShowTool.eumImageRotation);
             string[] buf = ImageRotation.Split('_');
             int rotationAngle = int.Parse(buf[1]);
-            //ShowTool.ClearAllOverLays();
+            ShowTool.ClearAllOverLays();
             try
             {
                 ShowTool.DispImage(ref GrabImg, -rotationAngle);
@@ -5230,7 +5300,7 @@ namespace MainFormLib.ViewModels
             else
             {
 
-                ManualOperateEnable(false);
+              
                 Appentxt(string.Format("相机当前工作状态：{0}",
                          Enum.GetName(typeof(EunmCamWorkStatus), workstatus)));
 
@@ -5238,14 +5308,22 @@ namespace MainFormLib.ViewModels
                 {
                     DgPixelPointIndexer++;
                     StuCoordinateData data = RunTestFlowOfPosition();
-                    NinePointsCalibViewModel.This.Model.DgPixelPointDataList.Add(
-                          new DgPixelPointData(DgPixelPointIndexer, data.x, data.y));
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // 在UI线程上执行更新操作
+                        // 更新绑定数据的代码
+
+                        this.caliModel.DgPixelPointDataList.Add(
+                              new DgPixelPointData(DgPixelPointIndexer,
+                              Math.Round( data.x,3),
+                            Math.Round(  data.y,3)));
+                    });
 
                     if (data.x == 0 && data.y == 0 && data.angle == 0)
                     {
-                      
-                        NinePointsCalibViewModel.This.Model.TxbPixelX = double.NaN;
-                        NinePointsCalibViewModel.This.Model.TxbPixelY = double.NaN;        
+
+                        //this.caliModel.TxbPixelX = double.NaN;
+                        //this.caliModel.TxbPixelY = double.NaN;        
                         NinePointStatusDic.Add(DgPixelPointIndexer, false);
                         //sendToRobCmdMsg(string.Format("{0},{1},{2}", "NP", i.ToString(), "NG"));//发送模板匹配NG
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "NP", 
@@ -5263,8 +5341,8 @@ namespace MainFormLib.ViewModels
                     }
                     else
                     {
-                        NinePointsCalibViewModel.This.Model.TxbPixelX = data.x;
-                        NinePointsCalibViewModel.This.Model.TxbPixelY = data.y;             
+                        //this.caliModel.TxbPixelX = data.x;
+                        //this.caliModel.TxbPixelY = data.y;             
                         NinePointStatusDic.Add(DgPixelPointIndexer, true);
                         // sendToRobCmdMsg(string.Format("{0},{1},{2}", "NP", i.ToString(), "OK"));//发送模板匹配OK
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "NP", 
@@ -5281,13 +5359,21 @@ namespace MainFormLib.ViewModels
                 {
                     DgRotatePointIndexer++;
                    StuCoordinateData data = RunTestFlowOfPosition();
-                    NinePointsCalibViewModel.This.Model.DgRotatePointDataList.Add(
-                         new DgRotatePointData (DgRotatePointIndexer, data.x, data.y));
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        // 在UI线程上执行更新操作
+                        // 更新绑定数据的代码
+
+                        this.caliModel.DgRotatePointDataList.Add(
+                             new DgRotatePointData(DgRotatePointIndexer, 
+                           Math.Round(  data.x,3),
+                            Math.Round( data.y,3)));
+                    });
                     if (data.x == 0 && data.y == 0 && data.angle == 0)
                     {
 
-                        NinePointsCalibViewModel.This.Model.TxbRotatePixelX = double.NaN;
-                        NinePointsCalibViewModel.This.Model.TxbRotatePixelY = double.NaN;                     
+                        //this.caliModel.TxbRotatePixelX = double.NaN;
+                        //this.caliModel.TxbRotatePixelY = double.NaN;                     
                         RotatoStatusDic.Add(DgRotatePointIndexer, false);
                         //sendToRobCmdMsg(string.Format("{0},{1},{2}", "C", k.ToString(), "NG"));//发送模板匹配NG
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "C",
@@ -5304,8 +5390,8 @@ namespace MainFormLib.ViewModels
                     }
                     else
                     {
-                        NinePointsCalibViewModel.This.Model.TxbRotatePixelX = data.x;
-                        NinePointsCalibViewModel.This.Model.TxbRotatePixelY = data.y;
+                        //this.caliModel.TxbRotatePixelX = data.x;
+                        //this.caliModel.TxbRotatePixelY = data.y;
                         RotatoStatusDic.Add(DgRotatePointIndexer, true);
                         //sendToRobCmdMsg(string.Format("{0},{1},{2}", "C", k.ToString(), "OK"));//发送模板匹配OK
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "C",
@@ -5534,20 +5620,38 @@ namespace MainFormLib.ViewModels
                             //检查当前是否相机正常连接
                             //清除历史标记点位
                             //发送准备好信号，等待9点标记
-                            DgPixelPointIndexer = 0;
-                            NinePointsCalibViewModel.This.Model.DgPixelPointDataList.Clear();
-                            DgRotatePointIndexer = 0;
-                            NinePointsCalibViewModel.This.Model.DgRobotPointDataList.Clear();
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                // 在UI线程上执行更新操作
+                                // 更新绑定数据的代码
 
+                                DgPixelPointIndexer = 0;
+                                this.caliModel.DgPixelPointDataList.Clear();
+                                DgRotatePointIndexer = 0;
+                                this.caliModel.DgRobotPointDataList.Clear();
+                            });
                             NinePointStatusDic.Clear();
                             if (this.projectOfPos.toolsDic.Count > 0 &&
                                     CurrCam.IsAlive)
                             {
                                 virtualConnect.WriteData("NP,S,OK");   //准备OK
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData("NP,S,OK");
+                                }
                                 Appentxt("9点标定准备好，开始标定");
                             }
                             else
+                            {
                                 virtualConnect.WriteData("NP,S,NG");  //未准备好
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData("NP,S,NG");
+                                }
+                            }
+                              
                             break;
                         case "E":
                             //校验9次模板匹配是否OK
@@ -5559,17 +5663,23 @@ namespace MainFormLib.ViewModels
                                 flag &= s.Value;
                             Task.Factory.StartNew(new Action(() =>
                             {
-                                NinePointsCalibModel model = NinePointsCalibViewModel.This.Model;
+                                NinePointsCalibModel model = this.caliModel;
                                 bool genFlag = NinePointsCalibTool.GenNineCaliMatrix(ref model,
                                       out string info);
                                 if (!genFlag) Appentxt(info);
-                                NinePointsCalibViewModel.This.Model = model;
-                                NinePointsCalibTool.SaveNineCaliData(NinePointsCalibViewModel.This.Model,
+                                this.caliModel = model;
+                                NinePointsCalibTool.SaveNineCaliData(this.caliModel,
                                     rootFolder, currCalibName);
 
                             })).ContinueWith(t =>
                             {
                                 virtualConnect.WriteData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
+                                }
+
                                 Appentxt("9点标定结束，标定结果" + (flag ? "OK" : "NG"));
                             });
                             break;
@@ -5591,16 +5701,27 @@ namespace MainFormLib.ViewModels
                                 //TCPInfoAddText(string.Format("当前已经标记过第{0}点位", key));
                                 virtualConnect.WriteData(string.Format("{0},{1},{2}", tempdataArray[0],
                                     tempdataArray[1], "NG"));
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData(string.Format("{0},{1},{2}", tempdataArray[0],
+                                    tempdataArray[1], "NG"));
+                                }
                             }
                             else
                             {
                                 DgRobotPointIndexer = int.Parse(tempdataArray[1]);
                                 double rx = double.Parse(tempdataArray[2]);
                                 double ry = double.Parse(tempdataArray[3]);
-                                NinePointsCalibViewModel.This.Model.DgRobotPointDataList.Add(
-                                    new DgRobotPointData(DgRobotPointIndexer, rx, ry));
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    // 在UI线程上执行更新操作
+                                    // 更新绑定数据的代码
 
-                                ManualOperateEnable(false);
+                                    this.caliModel.DgRobotPointDataList.Add(
+                                        new DgRobotPointData(DgRobotPointIndexer, rx, ry));
+                                });
+
                                 OneGrab(EunmCamWorkStatus.NinePointcLocation);
 
                             }
@@ -5624,18 +5745,38 @@ namespace MainFormLib.ViewModels
                             //检查当前是否相机正常连接
                             //清除历史标记点位
                             //发送准备好信号，等待旋转中心标定
-                            DgRotatePointIndexer = 0;
-                            NinePointsCalibViewModel.This.Model.DgRotatePointDataList.Clear();
-                            RotatoStatusDic.Clear();
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                // 在UI线程上执行更新操作
+                                // 更新绑定数据的代码
+
+                                DgRotatePointIndexer = 0;
+                                this.caliModel.DgRotatePointDataList.Clear();
+                                RotatoStatusDic.Clear();
+                            });
                             if (this.projectOfPos.toolsDic.Count > 0 &&
                                     CurrCam.IsAlive)
                             {
                                 virtualConnect.WriteData("C,S,OK");   //准备OK
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData("C,S,OK");
+                                }
+
                                 Appentxt("旋转中心标定准备好,开始标定");
                             }
 
                             else
+                            {
                                 virtualConnect.WriteData("C,S,NG");  //未准备好
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData("C,S,NG");
+                                }
+                            }
+                             
 
                             break;
                         case "E":
@@ -5649,16 +5790,22 @@ namespace MainFormLib.ViewModels
 
                             Task.Factory.StartNew(new Action(() =>
                             {
-                                NinePointsCalibModel model = NinePointsCalibViewModel.This.Model;
+                                NinePointsCalibModel model = this.caliModel;
                                 bool calFlag = NinePointsCalibTool.CalRotateCenter(ref model, out string info);
                                 if (!calFlag) Appentxt(info);
-                                NinePointsCalibViewModel.This.Model = model;
-                                NinePointsCalibTool.SaveRatateData(NinePointsCalibViewModel.This.Model,
+                                this.caliModel = model;
+                                NinePointsCalibTool.SaveRatateData(this.caliModel,
                                     rootFolder, currCalibName);
 
                             })).ContinueWith(t =>
                             {
                                 virtualConnect.WriteData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
+                                }
+
                                 Appentxt("旋转中心标定结束，标定结果" + (flag ? "OK" : "NG"));
                             });
                             break;
@@ -5675,13 +5822,17 @@ namespace MainFormLib.ViewModels
                                 //CPInfoAddText(string.Format("当前旋转已经标记过第{0}点位", key));
                                 virtualConnect.WriteData(string.Format("{0},{1},{2}", tempdataArray[0],
                                     tempdataArray[1], "NG"));
+                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                if (tool != null)
+                                {
+                                    tool.SendData(string.Format("{0},{1},{2}", tempdataArray[0],
+                                    tempdataArray[1], "NG"));
+                                }
                             }
                             else
                             {
 
-                                ManualOperateEnable(false);
                                 OneGrab(EunmCamWorkStatus.RotatoLocation);
-
                             }
                             break;
 
@@ -5696,13 +5847,18 @@ namespace MainFormLib.ViewModels
                                   CurrCam.IsAlive)
                     {
                         Appentxt("标定准备好,开始偏差校验");
-                        ManualOperateEnable(false);
+                   
                         OneGrab(EunmCamWorkStatus.DeviationLocation);
                     }
 
                     else
                     {
                         virtualConnect.WriteData("NG");  //未准备好
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData("NG");
+                        }
                         Appentxt("标定未准备好,校验失败");
                     }
 
@@ -5713,7 +5869,7 @@ namespace MainFormLib.ViewModels
                         SwitchModelType(EumModelType.ProductModel_1);
 
                     stopwatch.Restart();
-                    ManualOperateEnable(false);
+                 
                     Appentxt("开始自动检测,使用模板为产品1模板！");
                     OneGrab(EunmCamWorkStatus.NormalTest_T1);
                    
@@ -5724,7 +5880,7 @@ namespace MainFormLib.ViewModels
                         SwitchModelType(EumModelType.ProductModel_2);
 
                     stopwatch.Restart();
-                    ManualOperateEnable(false);
+                 
                     Appentxt("开始自动检测,使用模板为产品2模板！");
                     OneGrab(EunmCamWorkStatus.NormalTest_T2);
 
@@ -5736,7 +5892,7 @@ namespace MainFormLib.ViewModels
                         SwitchModelType(EumModelType.GluetapModel);
 
                     stopwatch.Restart();
-                    ManualOperateEnable(false);
+                
                     Appentxt("开始点胶阀示教检测");
                     OneGrab(EunmCamWorkStatus.NormalTest_G);
                   
@@ -5776,7 +5932,7 @@ namespace MainFormLib.ViewModels
                             Appentxt("开始自动对焦");
                             break;
                         case "AFT":
-                            ManualOperateEnable(false);
+                        
                             OneGrab(EunmCamWorkStatus.AutoFocus); //Z自动对焦         
                             Appentxt("自动对焦进行中");
                             break;
@@ -5791,7 +5947,7 @@ namespace MainFormLib.ViewModels
                 else if (strData.Equals("AOI"))//胶水外观检测请求
                 {
                     stopwatch.Restart();
-                    ManualOperateEnable(false);
+                 
                     Appentxt("开始胶水AOI外观检测");
                     OneGrab(EunmCamWorkStatus.AOI);
                    
@@ -5841,24 +5997,32 @@ namespace MainFormLib.ViewModels
         /// <param name="count"></param>
         private void PosTcpServer_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
         {
-
-            if (buffer == null || count <= 0 || buffer.Length < count)
-                return;
-            string buf = "";
-            string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            buf += "[Pos：" + remote.ToString() + "]";
-            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
-            buf += strData;
-            Appentxt(buf);
             if (!ContinueRunFlag)
             {
                 Appentxt("请开启连续运行");
                 return;
             }
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
             if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+            buf += "[Pos：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+
             Monitor.Enter(locker);
-            FlowHandle(strData);
+            try
+            {
+                FlowHandle(strData);
+            }
+            catch (Exception er)
+            {
+                Appentxt(er.Message);
+                Monitor.Exit(locker);
+            }
             Monitor.Exit(locker);
         }
         /// <summary>
@@ -5869,23 +6033,33 @@ namespace MainFormLib.ViewModels
         /// <param name="count"></param>
         private void PosTcpClient_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
         {
-            if (buffer == null || count <= 0 || buffer.Length < count)
-                return;
-            string buf = "";
-            string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            buf += "[Pos：" + remote.ToString() + "]";
-            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
-            buf += strData;
-            Appentxt(buf);
             if (!ContinueRunFlag)
             {
                 Appentxt("请开启连续运行");
                 return;
             }
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
+            if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+            buf += "[Pos：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+            
             if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
             Monitor.Enter(locker);
-            FlowHandle(strData);
+            try
+            {
+                FlowHandle(strData);
+            }
+            catch (Exception er)
+            {
+                Appentxt(er.Message);
+                Monitor.Exit(locker);
+            }
             Monitor.Exit(locker);
         }
         /// <summary>
@@ -5924,24 +6098,32 @@ namespace MainFormLib.ViewModels
         /// <param name="count"></param>
         private void GlueTcpServer_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
         {
-
-            if (buffer == null || count <= 0 || buffer.Length < count)
-                return;
-            string buf = "";
-            string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            buf += "[Glue：" + remote.ToString() + "]";
-            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
-            buf += strData;
-            Appentxt(buf);
             if (!ContinueRunFlag)
             {
                 Appentxt("请开启连续运行");
                 return;
             }
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
             if (!strData.Contains("AOI")) return;//只处理AOI流程
+            buf += "[Glue：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+
             Monitor.Enter(locker);
-            FlowHandle(strData);
+            try
+            {
+                FlowHandle(strData);
+            }
+            catch (Exception er)
+            {
+                Appentxt(er.Message);
+                Monitor.Exit(locker);
+            }
             Monitor.Exit(locker);
         }
         /// <summary>
@@ -5952,23 +6134,32 @@ namespace MainFormLib.ViewModels
         /// <param name="count"></param>
         private void GlueTcpClient_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
         {
-            if (buffer == null || count <= 0 || buffer.Length < count)
-                return;
-            string buf = "";
-            string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            buf += "[Glue：" + remote.ToString() + "]";
-            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
-            buf += strData;
-            Appentxt(buf);
             if (!ContinueRunFlag)
             {
                 Appentxt("请开启连续运行");
                 return;
             }
+            if (buffer == null || count <= 0 || buffer.Length < count)
+                return;
+            string buf = "";
+            string strData = string.Empty;
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
             if (!strData.Contains("AOI")) return;//只处理AOI流程
+            buf += "[Glue：" + remote.ToString() + "]";
+            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
+            buf += strData;
+            Appentxt(buf);
+
             Monitor.Enter(locker);
-            FlowHandle(strData);
+            try
+            {
+                FlowHandle(strData);
+            }
+            catch (Exception er)
+            {
+                Appentxt(er.Message);
+                Monitor.Exit(locker);
+            }
             Monitor.Exit(locker);
         }
         #endregion

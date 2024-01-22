@@ -11,6 +11,8 @@ namespace PositionToolsLib.窗体.Models
 {
     public class BlobModel : NotifyBase
     { 
+
+
         /// <summary>
       /// 窗体标题
       /// </summary>

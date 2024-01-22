@@ -202,7 +202,7 @@ VerticalAlignment="Top" Margin="160,40,0,0"
                                 </uc:MyNumUpDown>
                                 <Label Style="{DynamicResource LabelStyle}" Content="起始坐标Y："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,76,5,5"/>
-                                <uc:MyNumUpDown   MaxValue="500" MinValue="0" OffsetValue="10" DecimalPlaces="0"
+                                <uc:MyNumUpDown   MaxValue="5000" MinValue="0" OffsetValue="10" DecimalPlaces="0"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="100,76,5,5" 
                                 Width="130" Height="25"  ValueChangeAction="{Binding Model.NumStartPyCommand}"  
                                                     NumericValue="{Binding Model.NumStartPy,Mode=TwoWay}">

@@ -255,6 +255,11 @@ namespace PositionToolsLib.工具
             sw.Restart();
             try
             {
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0, 0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0, 0, 0);
+
                 //*先释放
                 if (hv_ModelID != null && hv_ModelID.Length > 0)
                     HOperatorSet.ClearShapeModel(hv_ModelID);
@@ -429,9 +434,9 @@ namespace PositionToolsLib.工具
                     dm.resultFlagDic[toolName] = true;
 
                 if (!dm.PositionDataDic.ContainsKey(toolName))
-                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(hv_Row.D, hv_Column.D, hv_Angle.TupleDeg().D));
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(hv_Column.D, hv_Row.D,  hv_Angle.TupleDeg().D));
                 else
-                    dm.PositionDataDic[toolName] = new StuCoordinateData(hv_Row.D, hv_Column.D, hv_Angle.TupleDeg().D);
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(hv_Column.D, hv_Row.D,  hv_Angle.TupleDeg().D);
 
             
                 (toolParam as MatchParam).MatchRunStatus = true;

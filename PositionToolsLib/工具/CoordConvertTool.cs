@@ -54,6 +54,13 @@ namespace PositionToolsLib.工具
             DataManage dm = GetManage();
             try
             {
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                       0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        0, 0);
+
                 bool transFlag = false;
 
                 double  x1 = 0, y1 = 0;
@@ -84,13 +91,7 @@ namespace PositionToolsLib.工具
                     else
                         dm.resultFlagDic[toolName] = false;
 
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
-                           0, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
-                            0, 0);
-
+                  
                     (toolParam as CoordConvertParam).ConvertedX = 0;
                     (toolParam as CoordConvertParam).ConvertedY = 0;
 

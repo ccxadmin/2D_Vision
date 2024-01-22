@@ -58,8 +58,15 @@ namespace PositionToolsLib.工具
             sw.Restart();
 
             try
-            {
-                          
+            { 
+                //坐标点位
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                        0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        0, 0);
+
                 (toolParam as LineCentreParam).InputImg = dm.imageBufDic[(toolParam as LineCentreParam).InputImageName];
                 if (!ObjectValided((toolParam as LineCentreParam).InputImg))
                 {

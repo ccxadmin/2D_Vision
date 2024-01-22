@@ -60,7 +60,8 @@ namespace PositionToolsLib.工具
             DataManage dm = GetManage();
             try
             {
-                
+                (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(0, 0, 0);
+
                 if (BaseTool.ObjectValided((toolParam as ResultShowParam).ResultRegion))
                       (toolParam as ResultShowParam).ResultRegion.Dispose();
                 (toolParam as ResultShowParam).ResultInfo.Clear();
@@ -83,17 +84,17 @@ namespace PositionToolsLib.工具
                 if(dm.resultFlagDic[(toolParam as ResultShowParam).InputXCoorName])
                 {
                     StuCoordinateData xDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputXCoorName];
-                    X = xDat.x;
+                    X =Math.Round( xDat.x,3);
                 }
                 if (dm.resultFlagDic[(toolParam as ResultShowParam).InputYCoorName])
                 {
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputYCoorName];
-                    Y = yDat.y;
+                    Y =Math.Round( yDat.y,3);
                 }
                 if (dm.resultFlagDic[(toolParam as ResultShowParam).InputAngleCoorName])
                 {
                     StuCoordinateData angleDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputAngleCoorName];
-                    angle = angleDat.angle;
+                    angle =Math.Round( angleDat.angle,3);
                 }
                  
                 (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(X, Y, angle);

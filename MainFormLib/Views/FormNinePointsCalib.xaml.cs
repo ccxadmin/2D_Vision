@@ -1,4 +1,5 @@
 ﻿using HalconDotNet;
+using MainFormLib.Models;
 using MainFormLib.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -25,10 +26,10 @@ namespace MainFormLib.Views
     {
         public bool isClosedFlag = false;
 
-        public FormNinePointsCalib(string path, string _calibName = "default")
+        public FormNinePointsCalib(NinePointsCalibModel calibmodel)
         {
             InitializeComponent();
-            var model = new NinePointsCalibViewModel(path, _calibName);
+            var model =new NinePointsCalibViewModel(calibmodel);
             DataContext = model;
             isClosedFlag = false;
         }

@@ -39,6 +39,7 @@ namespace PositionToolsLib.窗体.Views
             var tool = ClosingViewModel.This.ShowTool;        
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
+            tool.SetEnable(false);
             tool.SetBackgroundColor(EumControlBackColor.white);
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;

@@ -554,6 +554,50 @@ namespace MainFormLib.Models
             }
         }
 
+        private bool cobxCamTypeEnable;
+        public bool CobxCamTypeEnable
+        {
+            get { return cobxCamTypeEnable; }
+            set
+            {
+                cobxCamTypeEnable = value;
+                DoNotify();
+            }
+        }
+        private bool cobxCamIndexerEnable;
+        public bool CobxCamIndexerEnable
+        {
+            get { return cobxCamIndexerEnable; }
+            set
+            {
+                cobxCamIndexerEnable = value;
+                DoNotify();
+            }
+        }
+        private bool posListViewEnable=true;
+        public bool PosListViewEnable
+        {
+            get { return posListViewEnable; }
+            set
+            {
+                posListViewEnable = value;
+                DoNotify();
+            }
+        }
+
+
+        private bool glueListViewEnable=true;
+        public bool GlueListViewEnable
+        {
+            get { return glueListViewEnable; }
+            set
+            {
+                glueListViewEnable = value;
+                DoNotify();
+            }
+        }
+        
+
     }
 
 

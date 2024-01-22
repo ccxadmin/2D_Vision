@@ -59,7 +59,21 @@ namespace PositionToolsLib.工具
 
             try
             {
-                          
+                //坐标点位1
+                if (!dm.PositionDataDic.ContainsKey(toolName + "起点"))
+                    dm.PositionDataDic.Add(toolName + "起点", new StuCoordinateData(0,
+                           0,0));
+                else
+                    dm.PositionDataDic[toolName + "起点"] = new StuCoordinateData(0,
+                            0, 0);
+                //坐标点位2
+                if (!dm.PositionDataDic.ContainsKey(toolName + "终点"))
+                    dm.PositionDataDic.Add(toolName + "终点", new StuCoordinateData(0,
+                           0, 0));
+                else
+                    dm.PositionDataDic[toolName + "终点"] = new StuCoordinateData(0,
+                            0, 0);
+
                 (toolParam as FitLineParam).InputImg = dm.imageBufDic[(toolParam as FitLineParam).InputImageName];
                 if (!ObjectValided((toolParam as FitLineParam).InputImg))
                 {

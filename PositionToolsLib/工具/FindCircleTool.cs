@@ -61,6 +61,12 @@ namespace PositionToolsLib.工具
 
             try
             {
+                if (!dm.PositionDataDic.ContainsKey(toolName))
+                    dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
+                        0, 0));
+                else
+                    dm.PositionDataDic[toolName] = new StuCoordinateData(0,
+                        0, 0);
 
                 (toolParam as FindCircleParam).InputImg = dm.imageBufDic[(toolParam as FindCircleParam).InputImageName];
                 if (!ObjectValided((toolParam as FindCircleParam).InputImg))
@@ -201,15 +207,7 @@ namespace PositionToolsLib.工具
                             hv_ColCenter.D, hv_RowCenter.D, 0);
 
                 }
-                else
-                {
-                    if (!dm.PositionDataDic.ContainsKey(toolName))
-                        dm.PositionDataDic.Add(toolName, new StuCoordinateData(0,
-                            0, 0));
-                    else
-                        dm.PositionDataDic[toolName] = new StuCoordinateData(0,
-                            0, 0);
-                }
+              
 
                 grayImage.Dispose();
                 //+输入图像

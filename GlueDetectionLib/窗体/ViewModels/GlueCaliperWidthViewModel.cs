@@ -256,19 +256,19 @@ namespace GlueDetectionLib.窗体.ViewModels
                 {
                     if (dataManage.resultFlagDic[baseTool.GetToolName()])
                     {
-                        ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
-                        ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
+                        ShowTool.DispMessage("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
+                        ShowTool.AddTextBuffer("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
                     }
                     else
                     {
-                        ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
-                        ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
+                        ShowTool.DispMessage("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
+                        ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                     }
                 }
                 else
                 {
-                    ShowTool.DispMessage("OK", 10, width - 500, "green", 100);
-                    ShowTool.AddTextBuffer("OK", 10, width - 500, "green", 100);
+                    ShowTool.DispMessage("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
+                    ShowTool.AddTextBuffer("OK", 10, width - (width / 1000 + 1) * 200, "green", 100);
                 }
 
                 int num = (par as GlueCaliperWidthParam).DistanceList.Count;
@@ -287,8 +287,8 @@ namespace GlueDetectionLib.窗体.ViewModels
                 ShowTool.DispImage(imgBuf);
                 ShowTool.DispRegion((par as GlueCaliperWidthParam).ResultInspectRegions, "blue");
                 ShowTool.AddregionBuffer((par as GlueCaliperWidthParam).ResultInspectRegions, "blue");
-                ShowTool.DispMessage("NG", 10, width - 500, "red", 100);
-                ShowTool.AddTextBuffer("NG", 10, width - 500, "red", 100);
+                ShowTool.DispMessage("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
+                ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
         }
