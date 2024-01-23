@@ -596,8 +596,26 @@ namespace MainFormLib.Models
                 DoNotify();
             }
         }
-        
-
+        private bool posToolBarEnable = true;
+        public bool PosToolBarEnable
+        {
+            get { return posToolBarEnable; }
+            set
+            {
+                posToolBarEnable = value;
+                DoNotify();
+            }
+        }
+        private bool glueToolBarEnable = true;
+        public bool GlueToolBarEnable
+        {
+            get { return glueToolBarEnable; }
+            set
+            {
+                glueToolBarEnable = value;
+                DoNotify();
+            }
+        }
     }
 
 

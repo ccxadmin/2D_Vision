@@ -403,7 +403,7 @@ namespace PositionToolsLib.工具
                     //else
                     //    HOperatorSet.CopyObj(ModelTransConcated, out objectsConcat, 1, -1);
                     //+匹配特征点
-                HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row, hv_Column, 20, hv_Angle);
+                HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row, hv_Column, 50, hv_Angle);
                 HOperatorSet.ConcatObj(cross, ModelTransConcated, out objectsConcat);
 
                 if (!dm.resultBufDic.ContainsKey(toolName))

@@ -106,7 +106,7 @@ namespace PositionToolsLib.工具
                 double cx = (x1 + x2) / 2.0;
                 double cy = (y1 + y2) / 2.0;
 
-                HOperatorSet.GenCrossContourXld(out  HObject cross, cy, cx,20,0);
+                HOperatorSet.GenCrossContourXld(out  HObject cross, cy, cx,50,0);
               
 
                 (toolParam as LineCentreParam).CentreX = cx;

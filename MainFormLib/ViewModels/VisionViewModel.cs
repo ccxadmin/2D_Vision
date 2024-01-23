@@ -63,8 +63,7 @@ namespace MainFormLib.ViewModels
 {
     public class VisionViewModel
     {
-        Log log;
-        VirtualConnect virtualConnect = null;
+       
         public delegate void GetDataHandle(string data);
         public event GetDataHandle GetDataOfCaliHandle = null;
         public delegate void CamContinueGrabHandle(bool isGrabing);
@@ -109,7 +108,8 @@ namespace MainFormLib.ViewModels
         /*-----------------------------------------其他工具---------------------------------------*/
         HObject GrabImg = null;
         HObject imgBuf = null;//图像缓存     
-       
+        Log log;
+        VirtualConnect virtualConnect = null;
         private NinePointsCalibModel caliModel = null;//九点标定数据模型
         //public static VisionViewModel This { get; set; }
         public VisionModel Model { get; set; }
@@ -170,6 +170,9 @@ namespace MainFormLib.ViewModels
         /*-----------------------------------------Construction---------------------------------------*/
         private VisionViewModel()
         {
+            HOperatorSet.SetSystem("temporary_mem_cache", "false");
+            HOperatorSet.SetSystem("clip_region", "false");
+
             HOperatorSet.GenEmptyObj(out GrabImg);
             HOperatorSet.GenEmptyObj(out imgBuf);
             //This = this;
@@ -185,7 +188,7 @@ namespace MainFormLib.ViewModels
             ShowTool.SaveWindowImageHnadle += new EventHandler(OnSaveWindowImageHnadle);
             ShowTool.BtnRunClick = Run_Click;
             ShowTool.BtnStopClick = Stop_Click;
-      
+          
             #region Command
             WindowsLoadedCommand = new CommandBase();
             WindowsLoadedCommand.DoExecute = new Action<object>((o) => Windows_Load());
@@ -442,7 +445,7 @@ namespace MainFormLib.ViewModels
                         try
                         {
                             ResetNumOfPos();
-                            this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>(path);
+                            this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>(path);                       
                             projectOfPos.GetNum();
                             projectOfPos.toolNamesList = new List<string>();
                             if (projectOfPos.dataManage == null)
@@ -481,6 +484,7 @@ namespace MainFormLib.ViewModels
                     try
                     {
                         projectOfPos.Refresh();
+                    
                         GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
                             + firstName + "\\" + secondName + ".proj",
                             projectOfPos);
@@ -1501,6 +1505,7 @@ namespace MainFormLib.ViewModels
                 bool getFlag2 = CurrCam.GetGainRangeValue(out long minGain, out long maxGain);
                 if (!getFlag)
                     Appentxt("增益参数设置范围值获取失败！");
+                else
                 {
                     //相机增益范围值设置
                     Model.GainMaxValue = (int)maxGain;
@@ -1564,6 +1569,15 @@ namespace MainFormLib.ViewModels
             Model.BtnStopGrabEnable = true;
             camContinueGrabHandle?.Invoke(true);
             ShowTool.SetEnable(false);
+
+            Model.PosListViewEnable = false;
+            Model.GlueListViewEnable = false;
+            foreach (var item in Model.ToolsOfPositionList)
+                item.ContextMenuVisib = Visibility.Hidden;
+            foreach (var item in Model.ToolsOfGlueList)
+                item.ContextMenuVisib = Visibility.Hidden;
+            Model.PosToolBarEnable = false;
+            Model.GlueToolBarEnable = false;
         }
         /// <summary>
         /// 相机参数保存
@@ -1604,6 +1618,15 @@ namespace MainFormLib.ViewModels
             Model.BtnStopGrabEnable = false;        
             camContinueGrabHandle?.Invoke(false);
             ShowTool.SetEnable(true);
+
+            Model.PosListViewEnable = true;
+            Model.GlueListViewEnable = true;          
+            foreach (var item in Model.ToolsOfPositionList)
+                item.ContextMenuVisib = Visibility.Visible;
+            foreach (var item in Model.ToolsOfGlueList)
+                item.ContextMenuVisib = Visibility.Visible;
+            Model.PosToolBarEnable = true;
+            Model.GlueToolBarEnable = true;
         }
         /// <summary>
         /// 相机曝光值设置：slider bar
@@ -1891,8 +1914,7 @@ namespace MainFormLib.ViewModels
             {
                 PosBaseTool tool = projectOfPos.toolsDic[toolName];
                 tool.SetParam(par);
-                projectOfPos.toolsDic[toolName] = tool;
-               
+                projectOfPos.toolsDic[toolName] = tool;       
                 if (tool.GetType() == typeof(PosTcpRecvTool))
                 {
                     if (projectOfPos.TcpRecvName== ((PosTcpRecvTool)tool).CommDevName)return;
@@ -2212,6 +2234,7 @@ namespace MainFormLib.ViewModels
                 #endregion
                 this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>
                     (saveToUsePath + "\\" + "定位检测" + "\\" + secondName + ".proj");
+           
                 projectOfPos.GetNum();
                 projectOfPos.toolNamesList = new List<string>();
                 if (projectOfPos.dataManage == null)
@@ -2660,6 +2683,7 @@ namespace MainFormLib.ViewModels
                 bool getFlag2 = CurrCam.GetGainRangeValue(out long minGain, out long maxGain);
                 if (!getFlag)
                     Appentxt("增益参数设置范围值获取失败！");
+                else
                 {
                     //相机增益范围值设置
                     Model.GainMaxValue = (int)maxGain;
@@ -2688,14 +2712,20 @@ namespace MainFormLib.ViewModels
         }
         void EnableCam(bool flag)
         {
-            Model.IsCamAlive = flag;
-            Model.BtnOpenCamEnable = !flag;
-            Model.BtnCloseCamEnable = flag;
-            Model.BtnOneShotEnable = flag;
-            Model.BtnContinueGrabEnable = flag;
-            Model.BtnStopGrabEnable = flag;
-            Model.CobxCamTypeEnable=!flag;
-            Model.CobxCamIndexerEnable = !flag;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+
+                Model.IsCamAlive = flag;
+                Model.BtnOpenCamEnable = !flag;
+                Model.BtnCloseCamEnable = flag;
+                Model.BtnOneShotEnable = flag;
+                Model.BtnContinueGrabEnable = flag;
+                Model.BtnStopGrabEnable = flag;
+                Model.CobxCamTypeEnable = !flag;
+                Model.CobxCamIndexerEnable = !flag;
+            });
         }
 
         /// <summary>
@@ -4473,24 +4503,30 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public bool NewRecipe(string recipeName)
         {
-            if(Model.RecipeDgList.ToList().Exists(t=>t.Name== recipeName))
+
+            if (Model.RecipeDgList.ToList().Exists(t => t.Name == recipeName))
             {
                 Appentxt(string.Format("已存在配方：{0}不可重复添加", recipeName));
                 return false;
             }
-            Model.RecipeDgList.Add(new RecipeDg(recipeName, false));
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+                Model.RecipeDgList.Add(new RecipeDg(recipeName, false));
+            });
             string path = rootFolder + "\\Config\\配方.rep";
             foreach (var s in Model.RecipeDgList)
             {
                 if (!Directory.Exists(rootFolder + "\\配方\\" + s.Name))
                     Directory.CreateDirectory(rootFolder + "\\配方\\" + s.Name);
             }
-
             ObservableCollection<RecipeDgBuf> RecipeDgListBuf = new ObservableCollection<RecipeDgBuf>();
             foreach (var s in Model.RecipeDgList)
                 RecipeDgListBuf.Add(new RecipeDgBuf(s.Name, s.IsUse));
             GeneralUse.WriteSerializationFile<ObservableCollection<RecipeDgBuf>>
                    (path, RecipeDgListBuf);
+
             return true;
         }
         /// <summary>
@@ -4536,11 +4572,16 @@ namespace MainFormLib.ViewModels
             }
             int index = Model.RecipeDgList.ToList().FindIndex
                                       (t => t.Name == currRecipeName);
-            Model.RecipeDgList[index].IsUse = false;
-            index = Model.RecipeDgList.ToList().FindIndex
-                                      (t => t.Name == recipeName);
-            Model.RecipeDgList[index].IsUse = true;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+                Model.RecipeDgList[index].IsUse = false;
+                index = Model.RecipeDgList.ToList().FindIndex
+                                          (t => t.Name == recipeName);
+                Model.RecipeDgList[index].IsUse = true;
 
+            });
             currRecipeName = recipeName;
             saveToUsePath = rootFolder + "\\配方\\" + currRecipeName;
             LoadRecipe();
@@ -4607,38 +4648,38 @@ namespace MainFormLib.ViewModels
         /// <returns>模板切换是否成功标志</returns>
         public bool SwitchModelType(EumModelType eumModelType)
         {
-          
-            Application.Current.Dispatcher.Invoke(() =>
-            {            
-                // 在UI线程上执行更新操作
-                // 更新绑定数据的代码
 
-                Appentxt(string.Format("指令开启模板切换,模板名称:{0}",
-                                  Enum.GetName(typeof(EumModelType), eumModelType)));
-                if (currModelType == eumModelType)//如果无切换则不重载
-                {
-                    Appentxt(string.Format("当前切换模板类型:{0}与当前正使用的同名！",
-                           Enum.GetName(typeof(EumModelType), eumModelType)));
-                    return true;
-                }
-                Model.ModelType = eumModelType;
-                if (currModelType == EumModelType.CaliBoardModel)
-                    LoadNinePointsCaliData(ref caliModel);
-                currModelType = eumModelType;
-                string secondName = Enum.GetName(typeof(EumModelType), currModelType);
-                bool loadFlag = LoadPositionFlow(secondName);
-                Model.ModelTypeSelectIndex = (int)eumModelType;
-                //切换模板重新加载相机曝光增益参数
-                LoadCamParam();
-                return loadFlag;
-                //if (!PosBaseTool.ObjectValided(this.GrabImg))
-                //    return;
-                //ShowTool.ClearAllOverLays();
-                //ShowTool.DispImage(this.GrabImg);
+            return
+                 Application.Current.Dispatcher.Invoke(() =>
+             {
+                 // 在UI线程上执行更新操作
+                 // 更新绑定数据的代码
+                 Appentxt(string.Format("指令开启模板切换,模板名称:{0}",
+                                   Enum.GetName(typeof(EumModelType), eumModelType)));
+                 if (currModelType == eumModelType)//如果无切换则不重载
+                 {
+                     Appentxt(string.Format("当前切换模板类型:{0}与当前正使用的同名！",
+                            Enum.GetName(typeof(EumModelType), eumModelType)));
+                     return true;
+                 }
+                 Model.ModelType = eumModelType;
+                 if (currModelType == EumModelType.CaliBoardModel)
+                     LoadNinePointsCaliData(ref caliModel);
+                 currModelType = eumModelType;
+                 string secondName = Enum.GetName(typeof(EumModelType), currModelType);
+                 bool loadFlag = LoadPositionFlow(secondName);
+                 Model.ModelTypeSelectIndex = (int)eumModelType;
+                 //切换模板重新加载相机曝光增益参数
+                 LoadCamParam();
+                 return loadFlag;
+                 //if (!PosBaseTool.ObjectValided(this.GrabImg))
+                 //    return;
+                 //ShowTool.ClearAllOverLays();
+                 //ShowTool.DispImage(this.GrabImg);
 
-                //return true;
-            });
-            return true;
+                 //return true;
+             });
+
         }
         /// <summary>
         /// 标定前准备
@@ -4752,62 +4793,75 @@ namespace MainFormLib.ViewModels
             bool openFlag = false;
             if (CurrCam == null)
             {
-                Appentxt(string.Format("工位：{0}，相机初始化失败，无法打开！", currCamStationName));           
+                Appentxt(string.Format("工位：{0}，相机初始化失败，无法打开！", currCamStationName));
                 return false;
             }
             await Task.Run<bool>(() =>
             {
-                Model.BtnOpenCamEnable = false;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    // 在UI线程上执行更新操作
+                    // 更新绑定数据的代码
+                    Model.BtnOpenCamEnable = false;
+                });
+
                 string msg = string.Empty;
                 bool initFlag = false;
                 initFlag = CurrCam.OpenCam(camIndex, ref msg);
+
                 if (initFlag)
                 {
                     imageWidth = CurrCam.ImageWidth;
                     imageHeight = CurrCam.ImageHeight;
-                    //曝光值范围获取
-                    bool getFlag = CurrCam.GetExposureRangeValue(out long minExposure, out long maxExposure);
-                    if (!getFlag)
-                        Appentxt("曝光参数设置范围值获取失败！");
-                    else
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        //相机曝光范围值设置
-                        Model.ExpouseMaxValue = maxExposure;
-                        Model.ExpouseMinValue = minExposure;
-                        if (currCamExpouse > maxExposure)
-                            currCamExpouse = maxExposure;
-                        else if (currCamExpouse < minExposure)
-                            currCamExpouse = minExposure;
+                        // 在UI线程上执行更新操作
+                        // 更新绑定数据的代码
+                        //曝光值范围获取
+                        bool getFlag = CurrCam.GetExposureRangeValue(out long minExposure, out long maxExposure);
+                        if (!getFlag)
+                            Appentxt("曝光参数设置范围值获取失败！");
+                        else
+                        {
+                            //相机曝光范围值设置
+                            Model.ExpouseMaxValue = maxExposure;
+                            Model.ExpouseMinValue = minExposure;
+                            if (currCamExpouse > maxExposure)
+                                currCamExpouse = maxExposure;
+                            else if (currCamExpouse < minExposure)
+                                currCamExpouse = minExposure;
 
-                        //相机曝光设置 
-                        Model.ExpouseSliderValue = currCamExpouse;
-                        Model.ExpouseNumricValue = currCamExpouse;
-                        bool flag = CurrCam.SetExposureTime(currCamExpouse);
-                        if (!flag)
-                            Appentxt(string.Format("工位：{0}，相机曝光设置失败！", currCamStationName));
+                            //相机曝光设置 
+                            Model.ExpouseSliderValue = currCamExpouse;
+                            Model.ExpouseNumricValue = currCamExpouse;
+                            bool flag = CurrCam.SetExposureTime(currCamExpouse);
+                            if (!flag)
+                                Appentxt(string.Format("工位：{0}，相机曝光设置失败！", currCamStationName));
 
-                    }
+                        }
 
-                    //增益值范围获取
-                    bool getFlag2 = CurrCam.GetGainRangeValue(out long minGain, out long maxGain);
-                    if (!getFlag)
-                        Appentxt("增益参数设置范围值获取失败！");
-                    {
-                        //相机增益范围值设置
-                        Model.GainMaxValue = (int)maxGain;
-                        Model.GainMinValue = (int)minGain;
-                        if (currCamGain > maxGain)
-                            currCamGain = (int)maxGain;
-                        else if (currCamGain < minGain)
-                            currCamGain = (int)minGain;
-                        //相机增益设置 
-                        Model.GainSliderValue = currCamGain;
-                        Model.GainNumricValue = currCamGain;
-                        bool flag = CurrCam.SetGain(currCamGain);
-                        if (!flag)
-                            Appentxt(string.Format("工位：{0}，相机增益设置失败！", currCamStationName));
-                    }
+                        //增益值范围获取
+                        bool getFlag2 = CurrCam.GetGainRangeValue(out long minGain, out long maxGain);
+                        if (!getFlag)
+                            Appentxt("增益参数设置范围值获取失败！");
+                        else
+                        {
+                            //相机增益范围值设置
+                            Model.GainMaxValue = (int)maxGain;
+                            Model.GainMinValue = (int)minGain;
+                            if (currCamGain > maxGain)
+                                currCamGain = (int)maxGain;
+                            else if (currCamGain < minGain)
+                                currCamGain = (int)minGain;
+                            //相机增益设置 
+                            Model.GainSliderValue = currCamGain;
+                            Model.GainNumricValue = currCamGain;
+                            bool flag = CurrCam.SetGain(currCamGain);
+                            if (!flag)
+                                Appentxt(string.Format("工位：{0}，相机增益设置失败！", currCamStationName));
+                        }
 
+                    });
                     EnableCam(true);
                     workstatus = EunmCamWorkStatus.Freestyle;
                     return true;
@@ -4818,8 +4872,10 @@ namespace MainFormLib.ViewModels
                     Appentxt(string.Format("工位：{0}，相机打开失败：{1}", currCamStationName, msg));
                     return false;
                 }
+
+
             })
-                .ContinueWith(t => { openFlag= t.Result; });
+                .ContinueWith(t => { openFlag = t.Result; });
             return openFlag;
         }
         /// <summary>
@@ -4864,7 +4920,12 @@ namespace MainFormLib.ViewModels
             //}
             Appentxt(string.Format("外部指令开启曝光参数设定，设定值：{0}", dValue));
             currCamExpouse = dValue;
-            Model.ExpouseNumricValue = Model.ExpouseSliderValue=currCamExpouse;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+                Model.ExpouseNumricValue = Model.ExpouseSliderValue = currCamExpouse;
+            });
             bool flag = CurrCam.SetExposureTime(currCamExpouse);
             if (!flag)
             {
@@ -4887,7 +4948,7 @@ namespace MainFormLib.ViewModels
         /// </summary>
         /// <param name="dValue">设置增益参数</param>
         /// <returns>返回设置是否成功标志</returns>
-        public bool SetGain(long dValue)
+        public bool SetGain(int dValue)
         {
             if (CurrCam == null)
             {
@@ -4905,8 +4966,13 @@ namespace MainFormLib.ViewModels
             //    return false;
             //}
             Appentxt(string.Format("外部指令开启增益参数设定，设定值：{0}", dValue));
-            currCamGain = Model.GainSliderValue;
-            Model.GainNumricValue = currCamGain;
+            currCamGain = dValue;
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码                      
+                Model.GainNumricValue = Model.GainSliderValue= currCamGain;
+            });
             bool flag = CurrCam.SetGain(currCamGain);
             if (!flag)
             {
@@ -4955,22 +5021,46 @@ namespace MainFormLib.ViewModels
                     return flag;
                 }).ContinueWith(t =>
                 {
-                    if (t.Result)
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        Model.BtnOneShotEnable = false;
-                        Model.BtnContinueGrabEnable = false;
-                        Model.BtnStopGrabEnable = true;
-                        camContinueGrabHandle?.Invoke(true);
-                        ShowTool.SetEnable(false);
-                    }
-                    else
-                    {
-                        Model.BtnOneShotEnable = true;
-                        Model.BtnContinueGrabEnable = true;
-                        Model.BtnStopGrabEnable = false;
-                        ShowTool.SetEnable(true);
-                        Appentxt("重新开启连续采集失败，代码编号：1823");
-                    }
+                        // 在UI线程上执行更新操作
+                        // 更新绑定数据的代码
+                        if (t.Result)
+                        {
+                            Model.BtnOneShotEnable = false;
+                            Model.BtnContinueGrabEnable = false;
+                            Model.BtnStopGrabEnable = true;
+                            camContinueGrabHandle?.Invoke(true);
+                            ShowTool.SetEnable(false);
+
+                            Model.PosListViewEnable = false;
+                            Model.GlueListViewEnable = false;
+                            foreach (var item in Model.ToolsOfPositionList)
+                                item.ContextMenuVisib = Visibility.Hidden;
+                            foreach (var item in Model.ToolsOfGlueList)
+                                item.ContextMenuVisib = Visibility.Hidden;
+                            Model.PosToolBarEnable = false;
+                            Model.GlueToolBarEnable = false;
+                        }
+                        else
+                        {
+                            Model.BtnOneShotEnable = true;
+                            Model.BtnContinueGrabEnable = true;
+                            Model.BtnStopGrabEnable = false;
+                            camContinueGrabHandle?.Invoke(false);
+                            ShowTool.SetEnable(true);
+
+                            Model.PosListViewEnable = true;
+                            Model.GlueListViewEnable = true;
+                            foreach (var item in Model.ToolsOfPositionList)
+                                item.ContextMenuVisib = Visibility.Visible;
+                            foreach (var item in Model.ToolsOfGlueList)
+                                item.ContextMenuVisib = Visibility.Visible;
+                            Model.PosToolBarEnable = true;
+                            Model.GlueToolBarEnable = true;
+                            Appentxt("重新开启连续采集失败，代码编号：1823");
+                        }
+                    });
                 });
             }
         }
@@ -4995,10 +5085,27 @@ namespace MainFormLib.ViewModels
                 }
                 //}).ContinueWith(t =>
                 //{
-                Model.BtnOneShotEnable = true;
-                Model.BtnContinueGrabEnable = true;
-                Model.BtnStopGrabEnable = false;
-                ShowTool.SetEnable(true);
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    // 在UI线程上执行更新操作
+                    // 更新绑定数据的代码
+                    Model.BtnOneShotEnable = true;
+                    Model.BtnContinueGrabEnable = true;
+                    Model.BtnStopGrabEnable = false;
+                    camContinueGrabHandle?.Invoke(false);
+                    ShowTool.SetEnable(true);
+
+                    Model.PosListViewEnable = true;
+                    Model.GlueListViewEnable = true;
+                    foreach (var item in Model.ToolsOfPositionList)
+                        item.ContextMenuVisib = Visibility.Visible;
+                    foreach (var item in Model.ToolsOfGlueList)
+                        item.ContextMenuVisib = Visibility.Visible;
+                    Model.PosToolBarEnable = true;
+                    Model.GlueToolBarEnable = true;
+
+
+                });
                 //});
             }
         }
@@ -5028,6 +5135,83 @@ namespace MainFormLib.ViewModels
                     CurrCam.OneShot();
                 });
             }
+        }
+        /// <summary>
+        /// 系统运行
+        /// </summary>
+        /// <returns></returns>
+        public bool SystemRun()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+
+                ContinueRunFlag = true;
+                Model.ContinueRunFlag = true;
+                Model.BtnOpenCamEnable = false;
+                Model.BtnCloseCamEnable = false;
+                Model.BtnOneShotEnable = false;
+                Model.BtnContinueGrabEnable = false;
+                Model.BtnStopGrabEnable = false;
+                Model.CobxCamTypeEnable = false;
+                Model.CobxCamIndexerEnable = false;
+                Model.IsCamAlive = false;//假定为false控件使能用
+                Model.PosListViewEnable = false;
+                Model.GlueListViewEnable = false;
+                foreach (var item in Model.ToolsOfPositionList)
+                    item.ContextMenuVisib = Visibility.Hidden;
+                foreach (var item in Model.ToolsOfGlueList)
+                    item.ContextMenuVisib = Visibility.Hidden;
+            });
+            return true;
+        }
+        /// <summary>
+        /// 系统停止
+        /// </summary>
+        /// <returns></returns>
+        public bool SystemStop()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+
+                ContinueRunFlag = false;
+                Model.ContinueRunFlag = false;
+                Model.PosListViewEnable = true;
+                Model.GlueListViewEnable = true;
+                if (CurrCam != null)
+                    Model.IsCamAlive = CurrCam.IsAlive;
+                else
+                    Model.IsCamAlive = false;
+                if (Model.IsCamAlive)
+                {
+                    Model.BtnOpenCamEnable = false;
+                    Model.BtnCloseCamEnable = true;
+                    Model.BtnOneShotEnable = true;
+                    Model.BtnContinueGrabEnable = true;
+                    Model.BtnStopGrabEnable = true;
+                    Model.CobxCamTypeEnable = false;
+                    Model.CobxCamIndexerEnable = false;
+                }
+                else
+                {
+                    Model.BtnOpenCamEnable = true;
+                    Model.BtnCloseCamEnable = false;
+                    Model.BtnOneShotEnable = false;
+                    Model.BtnContinueGrabEnable = false;
+                    Model.BtnStopGrabEnable = false;
+                    Model.CobxCamTypeEnable = true;
+                    Model.CobxCamIndexerEnable = true;
+                }
+
+                foreach (var item in Model.ToolsOfPositionList)
+                    item.ContextMenuVisib = Visibility.Visible;
+                foreach (var item in Model.ToolsOfGlueList)
+                    item.ContextMenuVisib = Visibility.Visible;
+            });
+            return true;
         }
         /// <summary>
         /// 资源释放

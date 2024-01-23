@@ -31,7 +31,7 @@ namespace PositionToolsLib.窗体.ViewModels
         public CommandBase SaveButClickCommand { get; set; }
         //测试
         public CommandBase TestButClickCommand { get; set; }
-
+        public CommandBase DgMouseDoubleClickCommand { get; set; }
         public BlobViewModel(BaseTool tool) : base(tool)
         {
             dataManage = tool.GetManage();
@@ -74,6 +74,10 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
+            DgMouseDoubleClickCommand = new CommandBase();
+            DgMouseDoubleClickCommand.DoExecute = new Action<object>((o) => dataGridViewEx1_DoubleClick(o));
+            DgMouseDoubleClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
             #endregion
 
             ShowData();
@@ -99,6 +103,7 @@ namespace PositionToolsLib.窗体.ViewModels
         private void cobxImageList_SelectedIndexChanged(object value)
         {
             if (Model.SelectImageIndex == -1) return;
+            if(!dataManage.imageBufDic.ContainsKey(Model.SelectImageName)) return;
             if (!BlobTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
@@ -115,6 +120,25 @@ namespace PositionToolsLib.窗体.ViewModels
                 Model.ItemList.Add(s);
         }
         /// <summary>
+        /// 结果显示表格双击
+        /// </summary>
+        /// <param name="o"></param>
+        private void dataGridViewEx1_DoubleClick(object o)
+        {
+
+            int index = Model.DgResultOfBlobSelectIndex;
+            if (index < 0 || index > Model.DgResultOfBlobList.Count) return;
+            BaseParam par = baseTool.GetParam();
+            HObject regions = (par as BlobParam).ResultRegions;
+            if (!BaseTool.ObjectValided(regions)) return;
+
+            HOperatorSet.CountObj(regions,out HTuple nums);
+            if (index + 1 > nums) return;
+            HOperatorSet.SelectObj(regions,out HObject objectSelected,index+1);
+            ShowTool.DispRegion(objectSelected, "red");
+            //ShowTool.AddregionBuffer(objectSelected, "blue");     
+        }
+        /// <summary>
         /// 数据显示
         /// </summary>
         /// <param name="parDat"></param>
@@ -124,7 +148,7 @@ namespace PositionToolsLib.窗体.ViewModels
             //检测区域
             if (BaseTool.ObjectValided((par as BlobParam).InspectROI))
                 HOperatorSet.CopyObj((par as BlobParam).InspectROI, out inspectROI, 1, -1);
-        
+    
             foreach (var s in dataManage.imageBufDic)
                 Model.ImageList.Add(s.Key);
             string imageName = (par as BlobParam).InputImageName;
@@ -254,13 +278,13 @@ namespace PositionToolsLib.窗体.ViewModels
                 //HOperatorSet.DrawRegion(out inspectROI, ShowTool.HWindowsHandle);
                 HOperatorSet.DrawRectangle1(ShowTool.HWindowsHandle, out HTuple row1, out HTuple column1,
                        out HTuple row2, out HTuple column2);
+               
                 HOperatorSet.GenRectangle1(out inspectROI, row1, column1, row2, column2);
 
                 HOperatorSet.SetLineWidth(ShowTool.HWindowsHandle, 1);
                 //releaseMouse();
                 ShowTool.DispRegion(inspectROI, "blue");
                 ShowTool.AddregionBuffer(inspectROI, "blue");
-
                 ShowTool.AddRightMenu();
                 Model.BtnDrawRegionEnable = true;
             }
@@ -350,6 +374,7 @@ namespace PositionToolsLib.窗体.ViewModels
                 ShowTool.AddTextBuffer("NG", 10, width - (width / 1000 + 1) * 200, "red", 100);
                 ShowTool.DispAlarmMessage(rlt.errInfo, 100, 10, 12);
             }
+     
             ShowTool.DispRegion((par as BlobParam).ResultInspectROI, "blue");
             ShowTool.AddregionBuffer((par as BlobParam).ResultInspectROI, "blue");
         }

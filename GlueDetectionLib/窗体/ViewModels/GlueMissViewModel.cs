@@ -298,8 +298,9 @@ namespace GlueDetectionLib.窗体.ViewModels
         /// <param name="e"></param>
         private void cobxImageList_SelectedIndexChanged(object value)
         {
-
-            if (!GlueCaliperWidthTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
+            if (Model.SelectImageIndex == -1) return;
+            if (!dataManage.imageBufDic.ContainsKey(Model.SelectImageName)) return;
+            if (!BaseTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();
             ShowTool.DispImage(imgBuf);
@@ -707,8 +708,9 @@ namespace GlueDetectionLib.窗体.ViewModels
                 else if (drawRegionType == EumDrawRegionType.rectangle)
                 {
                     HOperatorSet.DrawRectangle1(ShowTool.HWindowsHandle, out HTuple row1, out HTuple column1,
-                        out HTuple row2, out HTuple column2);
-                    HOperatorSet.GenRectangle1(out temRegion, row1, column1, row2, column2);
+                        out HTuple row2, out HTuple column2);               
+                    HOperatorSet.GenRectangle1(out temRegion, row1, column1, row2, column2);            
+                  
                 }
                 else if (drawRegionType == EumDrawRegionType.rarectangle)
                 {

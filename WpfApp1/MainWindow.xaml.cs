@@ -81,17 +81,23 @@ namespace WpfApp1
             string txt = ((Button)sender).Content.ToString();
             switch(txt)
             {
-                case "切换模板":
-                    f.viewModel.SwitchModelType(EumModelType.ProductModel_2);
+                case "打开相机":
+                    f.viewModel.OpenCam();
                     break;
-                case "新建配方":
-                    f.viewModel.NewRecipe("00000");
+                case "关闭相机":
+                    f.viewModel.CloseCam();
                     break;
-                case "切换配方":
-                    f.viewModel.SwitchRecipe("00000");
+                case "单帧采集":
+                    f.viewModel.OneShot();
                     break;
-                case "导出配方":
-                    f.viewModel.ExportRecipe("e:","default");
+                case "连续采集":
+                    f.viewModel.ContinueGrab();
+                    break;
+                case "停止采集":
+                    f.viewModel.StopGrab();
+                    break;
+                case "切换标定":
+                    f.viewModel.SwithCalib("123");
                     break;
             }
           

@@ -137,7 +137,10 @@ namespace PositionToolsLib.工具
                 double pixleRatio = 1.0;
                 (toolParam as BlobParam).BlobFeaturesResult.Clear();
 
-                //粒子筛选
+                if(ObjectValided(emptyRegionBuf))
+                  (toolParam as BlobParam).ResultRegions = emptyRegionBuf.Clone();
+
+                //粒子特征计算
                 for (int i=1;i <= length; i++)
                 {
                     HOperatorSet.SelectObj(emptyRegionBuf,out HObject objectSelected,i);
@@ -204,7 +207,7 @@ namespace PositionToolsLib.工具
                 if ((toolParam as BlobParam).BlobFeaturesResult.Count > 0)
                 {
                     StuBlobFeaturesResult dat = (toolParam as BlobParam).BlobFeaturesResult[0];
-                    HOperatorSet.GenCrossContourXld(out HObject cross, dat.row, dat.column, 20, 0);
+                    HOperatorSet.GenCrossContourXld(out HObject cross, dat.row, dat.column, 50, 0);
                     if (ObjectValided(cross))
                         HOperatorSet.ConcatObj(emptyRegionBuf, cross, out emptyRegionBuf);
                 }
@@ -225,6 +228,7 @@ namespace PositionToolsLib.工具
                 else
                     dm.resultFlagDic[toolName] = number.I > 0;
 
+                //默认选取第一个粒子的坐标特征
                 if ((toolParam as BlobParam).BlobFeaturesResult.Count>0)
                 {
                     StuBlobFeaturesResult dat = (toolParam as BlobParam).BlobFeaturesResult[0];

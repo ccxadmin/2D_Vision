@@ -91,7 +91,7 @@ namespace PositionToolsLib.工具
         /// </summary>
         /// <returns></returns>
         public BaseParam GetParam()
-        {
+        {          
             return toolParam;
         }
         /// <summary>

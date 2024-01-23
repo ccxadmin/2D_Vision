@@ -142,12 +142,14 @@ SelectedItem="{Binding Model.SelectMatrixName,Mode=TwoWay}"
 
                                                 <DataGridComboBoxColumn.EditingElementStyle>
                                                     <Style TargetType="ComboBox">
+                                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
                                                         <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
                                                         <Setter Property="SelectedItem" Value="{Binding Item,Mode=TwoWay}" />
                                                     </Style>
                                                 </DataGridComboBoxColumn.EditingElementStyle>
                                                 <DataGridComboBoxColumn.ElementStyle>
                                                     <Style TargetType="ComboBox">
+                                                        <Setter Property="VerticalContentAlignment" Value="Center"/>
                                                         <!--<Setter Property="ItemsSource" Value="{Binding Source={StaticResource DgCombox}}" />-->
                                                         <Setter Property="SelectedItem" Value="{Binding Item,Mode=TwoWay}" />
                                                     </Style>
@@ -184,16 +186,23 @@ Margin="190,430,10,10" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3"
                                   VerticalScrollBarVisibility="Auto">
                         <Grid Margin="2">
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
-                            <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" 
-             VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"   ItemsSource="{Binding Model.DgResultOfBlobList,Mode=TwoWay}" Background="#ffffff"  >
+                            <DataGrid  Margin="3"  IsReadOnly="True" HorizontalAlignment="Stretch" Width="auto" 
+             VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff" SelectionUnit="FullRow"
+             Style="{DynamicResource datagrid}"   x:Name="dg"
+                                     SelectedIndex="{Binding Model.DgResultOfBlobSelectIndex,Mode=TwoWay}"  
+                                       ItemsSource="{Binding Model.DgResultOfBlobList,Mode=TwoWay}" Background="#ffffff"  >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}"/>
-                                    <DataGridTextColumn Header="X坐标"  Binding="{Binding X,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="Y坐标"  Binding="{Binding Y,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
-                                    <DataGridTextColumn Header="面积"  Binding="{Binding Area,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="X坐标"  Binding="{Binding X,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="Y坐标"  Binding="{Binding Y,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="面积"  Binding="{Binding Area,Mode=TwoWay}" Width="100" ElementStyle="{StaticResource datagridtextblock}" />
                                 </DataGrid.Columns>
 
+                                <behaviors:Interaction.Triggers>
+                                    <behaviors:EventTrigger EventName="MouseDoubleClick">
+                                        <behaviors:InvokeCommandAction Command="{Binding DgMouseDoubleClickCommand}" CommandParameter="{Binding ElementName=dg,Path=SelectedIndex}"/>
+                                    </behaviors:EventTrigger>
+                                </behaviors:Interaction.Triggers>
                             </DataGrid>
 
                         </Grid>

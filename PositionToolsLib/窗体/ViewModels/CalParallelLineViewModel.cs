@@ -117,6 +117,7 @@ namespace PositionToolsLib.窗体.ViewModels
         private void cobxImageList_SelectedIndexChanged(object value)
         {
             if (Model.SelectImageIndex == -1) return;
+            if (!dataManage.imageBufDic.ContainsKey(Model.SelectImageName)) return;
             if (!CalParallelLineTool.ObjectValided(dataManage.imageBufDic[Model.SelectImageName])) return;
             imgBuf = dataManage.imageBufDic[Model.SelectImageName].Clone();
             ShowTool.ClearAllOverLays();

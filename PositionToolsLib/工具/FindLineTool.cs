@@ -199,7 +199,7 @@ namespace PositionToolsLib.工具
 
                 if (hv_Row11.TupleLength() > 0)
                 {
-                    HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row11.D, hv_Column11.D, 20, 0);
+                    HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row11.D, hv_Column11.D, 50, 0);
                     if (ObjectValided(cross))
                         HOperatorSet.ConcatObj(emptyRegionBuf, cross, out emptyRegionBuf);
                 }

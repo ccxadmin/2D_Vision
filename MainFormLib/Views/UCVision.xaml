@@ -210,7 +210,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  Width="70"
                         </GroupBox>
                         <GroupBox Style="{DynamicResource GroupBoxStyle}"  Width="152"
                                 Margin="180,3,3,3"     IsEnabled="{Binding Model.IsCamAlive}"
-                                  Grid.Row="2" HorizontalAlignment="Left" Header="图像采集" >
+                                  Grid.Row="2" HorizontalAlignment="Left" Header="自动对焦" >
                             <Grid>
                                 <Label Style="{DynamicResource   LabelStyle}" Content="偏差阈值:"
                           HorizontalAlignment="Left" VerticalAlignment="Top"  
@@ -595,7 +595,8 @@ CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"  IsEnable
                                             <RowDefinition Height="*"/>
                                         </Grid.RowDefinitions>
 
-                                        <ToolBarTray Height="35"  Grid.Row="0"  Margin="1" >
+                                        <ToolBarTray Height="35"  Grid.Row="0"  Margin="1"
+                                                     IsEnabled="{Binding Model.PosToolBarEnable}">
                                             <ToolBarTray.Style>
                                                 <Style TargetType="ToolBarTray">
                                                     <Style.Triggers>
@@ -988,7 +989,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                     <RowDefinition Height="auto"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <ToolBarTray Height="35" Grid.Row="0" Margin="1" >
+                                <ToolBarTray Height="35" Grid.Row="0" Margin="1"  IsEnabled="{Binding Model.GlueToolBarEnable}">
                                     <ToolBar Height="35" Band="0" BandIndex="0" Background="Transparent" Padding="0">
                                         <Button Margin="2" Background="Transparent"   ToolTip="打开流程"
                                                  IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"

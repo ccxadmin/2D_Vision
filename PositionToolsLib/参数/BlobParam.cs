@@ -163,6 +163,21 @@ namespace PositionToolsLib.参数
                 this.blobFeaturesResult = value;
             }
         }
+
+        HObject resultRegions = null;
+        /// <summary>
+        /// 结果区域
+        /// </summary>
+        [Description("结果区域"), DefaultValue(null)]
+        public HObject ResultRegions
+        {
+            get => this.resultRegions;
+            set
+            {
+                this.resultRegions = value;
+            }
+        }
+
         //Run status value define----1
         bool blobRunStatus = false;
         /// <summary>

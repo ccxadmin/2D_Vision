@@ -26,7 +26,7 @@ namespace MainFormLib.Views
     {
         static UCVision uCVision = null;
         public VisionViewModel viewModel { get; set; } = null;
-        public UCVision(string camStationName = "camStationName_1")
+        private UCVision(string camStationName = "camStationName_1")
         {
             InitializeComponent();          
             viewModel = new VisionViewModel(

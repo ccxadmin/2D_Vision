@@ -208,7 +208,20 @@ namespace PositionToolsLib.窗体.Models
 
             }
         }
-        
+
+        private int dgResultOfBlobSelectIndex;
+        public int DgResultOfBlobSelectIndex
+        {
+            get { return this.dgResultOfBlobSelectIndex; }
+            set
+            {
+                dgResultOfBlobSelectIndex = value;
+                DoNotify();
+            }
+        }
+
+
+
 
     }
 

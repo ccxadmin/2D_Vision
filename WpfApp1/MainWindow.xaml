@@ -40,10 +40,12 @@
                 <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
         VerticalScrollBarVisibility="Auto">-->
                 <DockPanel x:Name="panel2">
-                    <Button Content="切换模板" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="新建配方" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="切换配方" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="导出配方" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="打开相机" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="关闭相机" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="单帧采集" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="连续采集" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="停止采集" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="切换标定" Width="120" Height=" 30" Click="Button_Click"/>
                 </DockPanel>
                 <!--</ScrollViewer>-->
             </TabItem>
