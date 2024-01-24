@@ -65,14 +65,12 @@ namespace MainFormLib.ViewModels
     {
        
         public delegate void GetDataHandle(string data);
-        public event GetDataHandle GetDataOfCaliHandle = null;
+        public event GetDataHandle GetDataOfVisionHandle = null;//虚拟断开数据传输事件
         public delegate void CamContinueGrabHandle(bool isGrabing);
         public CamContinueGrabHandle camContinueGrabHandle;//相机是否连续采集状态
         public delegate void ImageSizeChangeHandle(int width, int height);
         public event ImageSizeChangeHandle imageSizeChangeHandle; //图像旋转后尺寸变化通知事件
-        public EventHandler CamConnectStatusHandle;//相机链接状态时间
-        public Action<string> AppenTxtAction = null;
-        public Action ClearTxtAction = null;
+        public EventHandler CamConnectStatusHandle;//相机链接状态时间     
         public OutPointGray DoubleClickGetMousePosHandle;//双击获取像素坐标  
         public EventHandler AutoFocusDataHandle;//自动对焦事件
         /*-----------------------------------------文件配置---------------------------------------*/
@@ -106,6 +104,8 @@ namespace MainFormLib.ViewModels
         List<GlueRecheckDat> datas = new List<GlueRecheckDat>();//发送给运控的数据
         StuCoordinateData positionSharpData = new StuCoordinateData(0, 0, 0);
         /*-----------------------------------------其他工具---------------------------------------*/
+        public Action<string> AppenTxtAction = null;
+        public Action ClearTxtAction = null;
         HObject GrabImg = null;
         HObject imgBuf = null;//图像缓存     
         Log log;
@@ -457,8 +457,10 @@ namespace MainFormLib.ViewModels
                                 projectOfPos.toolNamesList.Add(s.Value.GetToolName());
                                 tem.Add(s.Value.GetToolName(), s.Value);
                                 s.Value.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
-                                if (s.Value.GetType() == typeof(ImageCorrectTool))
+                                if (s.Value.GetType() == typeof(ImageCorrectTool)||
+                                     s.Value.GetType() == typeof(DistancePPTool))
                                     continue;
+                                //切换配方会改变标定矩阵关系，影响坐标及角度换算工具的运行结果
                                 s.Value.SetMatrix(hv_HomMat2D);
                                 s.Value.SetCalibFilePath(NineCalibFile);
                               
@@ -786,6 +788,7 @@ namespace MainFormLib.ViewModels
 
                     break;
                 case "点点距离":
+                    tool = new PositionToolsLib.工具.DistancePPTool();
                     break;
                 case "点线距离":
                     break;
@@ -808,7 +811,8 @@ namespace MainFormLib.ViewModels
                     break;
             }
             tool.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
-            if (tool.GetType() != typeof(ImageCorrectTool))
+            if (tool.GetType() != typeof(ImageCorrectTool)&&
+                tool.GetType() != typeof(DistancePPTool))
             {
                 tool.SetMatrix(hv_HomMat2D);
                 tool.SetCalibFilePath(NineCalibFile);
@@ -819,7 +823,7 @@ namespace MainFormLib.ViewModels
                 ListViewToolsData(toolindexofPosition,
                 tool.GetToolName(),
                 "--", tool.remark));
-
+            projectOfPos.GetNum();
         }
         /// <summary>
         /// 胶水检测菜单栏按钮事件（新增胶水检测工具）
@@ -910,7 +914,7 @@ namespace MainFormLib.ViewModels
                 ListViewToolsData(toolindexofGlueAOI,
                 tool.GetToolName(),
                 "--", tool.remark));
-
+            projectOfGlue.GetNum();
         }
         /// <summary>
         /// 定位检测工具流程鼠标单击事件
@@ -1101,7 +1105,10 @@ namespace MainFormLib.ViewModels
             }
             else if (toolName.Contains("点点距离"))
             {
-
+                FormDistancePP f = new PositionToolsLib.窗体.Views.FormDistancePP(tool);
+                DistancePPViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
+                DistancePPViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
             }
             else if (toolName.Contains("点线距离"))
             {
@@ -2246,7 +2253,8 @@ namespace MainFormLib.ViewModels
                     projectOfPos.toolNamesList.Add(s.Value.GetToolName());
                     tem.Add(s.Value.GetToolName(), s.Value);
                     s.Value.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
-                    if (s.Value.GetType() == typeof(ImageCorrectTool))
+                    if (s.Value.GetType() == typeof(ImageCorrectTool)||
+                        s.Value.GetType() == typeof(DistancePPTool))
                         continue;
                     s.Value.SetMatrix(hv_HomMat2D);
                     s.Value.SetCalibFilePath(NineCalibFile);
@@ -2806,7 +2814,8 @@ namespace MainFormLib.ViewModels
             if(hv_HomMat2D!=null&& hv_HomMat2D.Length>0)
                 foreach (var s in projectOfPos.toolsDic)
                 {
-                    if (s.Value.GetType() == typeof(ImageCorrectTool))
+                    if (s.Value.GetType() == typeof(ImageCorrectTool)||
+                        s.Value.GetType() == typeof(DistancePPTool))
                         continue;
                     s.Value.SetMatrix(hv_HomMat2D);//给每个工具传递当前坐标变换矩阵
                     s.Value.SetCalibFilePath(NineCalibFile);
@@ -3686,6 +3695,7 @@ namespace MainFormLib.ViewModels
             PositionToolsLib.工具.ColorConvertTool.inum = 0;
             PositionToolsLib.工具.CoordConvertTool.inum = 0;
             PositionToolsLib.工具.DilationTool.inum = 0;
+            PositionToolsLib.工具.DistancePPTool.inum = 0;
             PositionToolsLib.工具.ErosionTool.inum = 0;
             PositionToolsLib.工具.FindCircleTool.inum = 0;
             PositionToolsLib.工具.FindLineTool.inum = 0;
@@ -4445,7 +4455,7 @@ namespace MainFormLib.ViewModels
         /// <param name="data"></param>
         void SendDataEvent(string data)
         {
-            GetDataOfCaliHandle?.Invoke(data);
+            GetDataOfVisionHandle?.Invoke(data);
         }
         /// <summary>
         /// 外部数据写入DLL库
@@ -4465,7 +4475,7 @@ namespace MainFormLib.ViewModels
         /// 断开连接
         /// </summary>
         /// <returns></returns>
-        public bool Disconnect()
+        bool Disconnect()
         {
             if (virtualConnect == null) return false;
             else if (!virtualConnect.IsRunning) return true;
@@ -5216,7 +5226,7 @@ namespace MainFormLib.ViewModels
         /// <summary>
         /// 资源释放
         /// </summary>
-        public async void Release()
+        public  void Release()
         {
             ContinueRunFlag = false;
          

@@ -396,6 +396,19 @@ namespace GlueDetectionLib.参数
             }
         }
 
+        private HObject resultContour = null;
+        /// <summary>
+        /// 结果轮廓
+        /// </summary>     
+        [Description("结果轮廓"), DefaultValue(null)]
+        public HObject ResultContour
+        {
+            get => this.resultContour;
+            set
+            {
+                this.resultContour = value;
+            }
+        }
 
         HTuple affinneTranMatix = null;
         /// <summary>

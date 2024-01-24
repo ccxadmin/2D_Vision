@@ -136,7 +136,7 @@ namespace PositionToolsLib.窗体.ViewModels
             dialog.FileName = "Calib Matrix"; // Default file name
             dialog.DefaultExt = ".tup"; // Default file extension
             dialog.Filter = "Calib Matrix (.tup)|*.tup"; // Filter files by extension
-
+            dialog.InitialDirectory = Environment.CurrentDirectory;
             // Show open file dialog box
             bool? result = dialog.ShowDialog();
 

@@ -157,6 +157,19 @@ namespace MainFormLib.Models
             }
         }
 
+        private double txbBoardThick = 0.001;
+        public double TxbBoardThick
+        {
+            get { return this.txbBoardThick; }
+            set
+            {
+                txbBoardThick = value;
+                DoNotify();
+
+            }
+        }
+       
+
         private string txbBoardFilePath;
         public string TxbBoardFilePath
         {

@@ -372,6 +372,7 @@ namespace GlueDetectionLib.工具
                     //+匹配特征点
                 HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row, hv_Column, 20, hv_Angle);
                 HOperatorSet.ConcatObj(cross, ModelTransConcated, out objectsConcat);
+                (toolParam as MatchParam).ResultContour = objectsConcat.Clone();
 
                 if (!dm.resultBufDic.ContainsKey(toolName))
                     dm.resultBufDic.Add(toolName, objectsConcat.Clone());
@@ -385,9 +386,9 @@ namespace GlueDetectionLib.工具
                     dm.resultInfoDic[toolName] = info;
              
                 //+输入图像
-                HOperatorSet.ConcatObj((toolParam as MatchParam).InputImg, objectsConcat, out HObject objectsConcat2);
+                //HOperatorSet.ConcatObj((toolParam as MatchParam).InputImg, objectsConcat, out HObject objectsConcat2);
 
-                (toolParam as MatchParam).OutputImg = objectsConcat2;
+                (toolParam as MatchParam).OutputImg = (toolParam as MatchParam).InputImg;
                 (toolParam as MatchParam).MatchResultNumber = hv_Score.TupleLength();
                 (toolParam as MatchParam).MatchResultScales = hv_Scale;
                 (toolParam as MatchParam).MatchResultScores = hv_Score;

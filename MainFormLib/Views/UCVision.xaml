@@ -327,7 +327,7 @@ PassEventArgsToCommand="True"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <GroupBox Grid.Row="0" Header="硬件信息"  Height="250"  Style="{DynamicResource GroupBoxStyle}">
+                        <GroupBox Grid.Row="0" Header="硬件信息"  Height="230"  Style="{DynamicResource GroupBoxStyle}">
                             <Grid>
                                 <Label Style="{DynamicResource LabelStyle}" Content="相机类型："
                                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,8"/>
@@ -337,19 +337,19 @@ PassEventArgsToCommand="True"/>
                                             HorizontalAlignment="Left" VerticalAlignment="Top" Height="30"
                                             Width="80" Margin="225,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" />
                                 <Label Style="{DynamicResource LabelStyle}" Content="相机类型："
-             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,50,0,0"/>
+             HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,44,0,0"/>
                                 <TextBox Style="{DynamicResource baseInput}" HorizontalAlignment="Left"
                                              VerticalAlignment="Top" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                             Height="30" Width="220" Margin="85,46,0,0"/>
+                                             Height="30" Width="220" Margin="85,40,0,0"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="配置文件："
-HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0"/>
+HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,75,0,0"/>
                                 <Button  HorizontalAlignment="Left" Width="25" Background="Transparent"
-                                            VerticalAlignment="Top" Margin="85,90,0,0" BorderThickness="0"
+                                            VerticalAlignment="Top" Margin="85,75,0,0" BorderThickness="0"
                                              ToolTip="打开文件">
                                     <Image Source="../images/打开 (2).png"/>
                                 </Button>
                                 <TextBox Style="{DynamicResource baseInput}" HorizontalAlignment="Left"
-                                             VerticalAlignment="Top" Margin="85,117,0,0" TextWrapping="Wrap"
+                                             VerticalAlignment="Top" Margin="85,100,0,0" TextWrapping="Wrap"
                                              Width="220" Height="100" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                              ScrollViewer.VerticalScrollBarVisibility="auto" HorizontalContentAlignment="Left"
                                              VerticalContentAlignment="Top"/>
@@ -362,43 +362,78 @@ HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,90,0,0"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="曝光(us)："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
                            Margin="10,8,0,0"/>
-                                <uc:MyNumUpDown  Width="135"
+                                <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,5,0,0"  Height="30" 
-                                 >
+                              Margin="80,8,0,0"  Height="25" 
+                                       
+                                 Thumb.DragCompleted ="expouseSlider_DragCompleted" >
+
+                                </Slider>
+                                <uc:MyNumUpDown  Height="25" 
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="210,8,0,0" Width="100"  
+                   OffsetValue="1000" DecimalPlaces="0"   
+                                   ValueChangeAction="{Binding Model.ExpouseNumericCommand}"         >
+
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding ExpouseNumericKeyDownCommand}"                                                                    
+                                        PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
 
                                 </uc:MyNumUpDown>
-                                <TextBox  Height="30" Style="{DynamicResource baseInput}"
-                                              attach:TexboxAttach.TextBoxCornerRadius="3"
-                            HorizontalAlignment="Left" VerticalAlignment="Top"
-Margin="230,5,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3" />
 
                                 <Label Style="{DynamicResource LabelStyle}" Content="增益(db)："
                           HorizontalAlignment="Left" VerticalAlignment="Top" 
-                           Margin="10,48,0,0"/>
-                                <uc:MyNumUpDown  Width="135"
+                           Margin="10,45,0,0"/>
+                                <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,45,0,0"  Height="30" >
+                              Margin="80,47,0,0"  Height="25" 
+                                         
+                                     Thumb.DragCompleted ="gainSlider_DragCompleted"     >
+
+
+                                </Slider>
+                                <uc:MyNumUpDown  Height="25" 
+                            HorizontalAlignment="Left" VerticalAlignment="Top"
+Margin="210,45,0,0" Width="100"  
+                             
+                      OffsetValue="1" DecimalPlaces="0"                           
+                         ValueChangeAction="{Binding Model.GainNumericCommand}"       >
+
+                                    <behaviors:Interaction.Triggers>
+                                        <behaviors:EventTrigger EventName="KeyDown">
+                                            <behaviors:InvokeCommandAction Command="{Binding GainNumericKeyDownCommand}"                                                                    
+      PassEventArgsToCommand="True"/>
+                                        </behaviors:EventTrigger>
+
+                                    </behaviors:Interaction.Triggers>
 
 
                                 </uc:MyNumUpDown>
-                                <TextBox Style="{DynamicResource  baseInput}" Height="30" 
-                            HorizontalAlignment="Left" VerticalAlignment="Top"
-                                             attach:TexboxAttach.TextBoxCornerRadius="3"
-Margin="230,45,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3" />
-
+                                
                             </Grid>
                         </GroupBox>
-                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="2" Height="90"   Header="采集操作" >
+                        <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="2" Height="110"   Header="采集操作" >
 
                             <Grid>
+                                <Button Style="{DynamicResource  PrimaryButton}" Content="OpenCam"
+HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
+ Margin="30,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
+                                
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="Grab"
                           HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
-                           Margin="20,15,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100"/>
+                           Margin="180,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
 
+                                <Button Style="{DynamicResource  PrimaryButton}" Content="CloseCam"
+HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
+ Margin="30,45,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
+                                
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="SnapShot"
 HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
- Margin="200,15,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100"/>
+ Margin="180,45,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
                             </Grid>
                         </GroupBox>
                         <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="3"   Header="测试信息" >
@@ -457,7 +492,6 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
                                 </RichTextBox.ContextMenu>
                             </RichTextBox>
                         </GroupBox>
-
 
                     </Grid>
                     <!--</ScrollViewer>-->
@@ -552,7 +586,7 @@ PassEventArgsToCommand="True"/>
                                                    Command="{Binding RdbtnCheckedChangedCommand}"
 CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"  IsEnabled="{Binding Model.ShowCross}"
               Margin="187,45,0,0"   IsChecked="{Binding Model.AssistTool ,  Mode=TwoWay, Converter={StaticResource checkConverter}, ConverterParameter={x:Static ccm:EumAssistTool.None }}" />
-                                      
+
                                     </Grid>
 
                                 </Expander.Content>
@@ -1280,7 +1314,7 @@ IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, 
                                     </attach:RichButton>
 
                                 </ToolBar>
-                            
+
 
                             </ToolBarTray>
 

@@ -2046,6 +2046,16 @@ namespace VisionShowLib.UserControls
             }
         }
 
+        public void IgnoreLoadImage()
+        {
+            if (this.InvokeRequired)
+                this.Invoke(new Action(IgnoreLoadImage));
+            else
+            {
+                加载图片ToolStripMenuItem.Enabled = false;
+            }
+        }
+
     }
 
     #region Data

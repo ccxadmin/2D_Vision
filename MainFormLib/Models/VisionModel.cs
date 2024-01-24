@@ -23,6 +23,7 @@ using System.Windows;
 using HalconDotNet;
 using GlueDetectionLib;
 using FunctionLib.Cam;
+using PositionToolsLib.工具;
 
 namespace MainFormLib.Models
 {
@@ -947,7 +948,7 @@ namespace MainFormLib.Models
         }
         public void GetNum()
         {
-            nums = new int[21];
+            nums = new int[22];
             nums[0] = PositionToolsLib.工具.AngleConvertTool.inum;    
             nums[1] = PositionToolsLib.工具.BinaryzationTool.inum ;
             nums[2] = PositionToolsLib.工具.BlobTool.inum ;
@@ -956,19 +957,20 @@ namespace MainFormLib.Models
             nums[5] = PositionToolsLib.工具.ColorConvertTool.inum ;
             nums[6] = PositionToolsLib.工具.CoordConvertTool.inum;
             nums[7] = PositionToolsLib.工具.DilationTool.inum ;
-            nums[8] = PositionToolsLib.工具.ErosionTool.inum ;
-            nums[9] = PositionToolsLib.工具.FindCircleTool.inum ;
-            nums[10] = PositionToolsLib.工具.FindLineTool.inum ;
-            nums[11] = PositionToolsLib.工具.FitLineTool.inum ;
-            nums[12] = PositionToolsLib.工具.ImageCorrectTool.inum;
-            nums[13] = PositionToolsLib.工具.LineCentreTool.inum ;
-            nums[14] = PositionToolsLib.工具.LineIntersectionTool.inum ;
-            nums[15] = PositionToolsLib.工具.LineOffsetTool.inum;
-            nums[16] = PositionToolsLib.工具.MatchTool.inum ;
-            nums[17] = PositionToolsLib.工具.OpeningTool.inum ;
-            nums[18] = PositionToolsLib.工具.ResultShowTool.inum ;
-            nums[19] = PositionToolsLib.工具.TcpRecvTool.inum;
-            nums[20] = PositionToolsLib.工具.TcpSendTool.inum;
+            nums[8] = PositionToolsLib.工具.DistancePPTool.inum;
+            nums[9] = PositionToolsLib.工具.ErosionTool.inum ;
+            nums[10] = PositionToolsLib.工具.FindCircleTool.inum ;
+            nums[11] = PositionToolsLib.工具.FindLineTool.inum ;
+            nums[12] = PositionToolsLib.工具.FitLineTool.inum ;
+            nums[13] = PositionToolsLib.工具.ImageCorrectTool.inum;
+            nums[14] = PositionToolsLib.工具.LineCentreTool.inum ;
+            nums[15] = PositionToolsLib.工具.LineIntersectionTool.inum ;
+            nums[16] = PositionToolsLib.工具.LineOffsetTool.inum;
+            nums[17] = PositionToolsLib.工具.MatchTool.inum ;
+            nums[18] = PositionToolsLib.工具.OpeningTool.inum ;
+            nums[19] = PositionToolsLib.工具.ResultShowTool.inum ;
+            nums[20] = PositionToolsLib.工具.TcpRecvTool.inum;
+            nums[21] = PositionToolsLib.工具.TcpSendTool.inum;
         }
         public void SetNum()
         {
@@ -981,19 +983,20 @@ namespace MainFormLib.Models
             PositionToolsLib.工具.ColorConvertTool.inum = nums[5];
             PositionToolsLib.工具.CoordConvertTool.inum = nums[6];
             PositionToolsLib.工具.DilationTool.inum = nums[7];
-            PositionToolsLib.工具.ErosionTool.inum = nums[8];
-            PositionToolsLib.工具.FindCircleTool.inum = nums[9];
-            PositionToolsLib.工具.FindLineTool.inum = nums[10];
-            PositionToolsLib.工具.FitLineTool.inum = nums[11];
-            PositionToolsLib.工具.ImageCorrectTool.inum = nums[12];
-            PositionToolsLib.工具.LineCentreTool.inum = nums[13];
-            PositionToolsLib.工具.LineIntersectionTool.inum = nums[14];
-            PositionToolsLib.工具.LineOffsetTool.inum = nums[15];
-            PositionToolsLib.工具.MatchTool.inum = nums[16];
-            PositionToolsLib.工具.OpeningTool.inum = nums[17];
-            PositionToolsLib.工具.ResultShowTool.inum = nums[18];
-            PositionToolsLib.工具.TcpRecvTool.inum = nums[19];
-            PositionToolsLib.工具.TcpSendTool.inum = nums[20];
+            PositionToolsLib.工具.DistancePPTool.inum = nums[8];
+            PositionToolsLib.工具.ErosionTool.inum = nums[9];
+            PositionToolsLib.工具.FindCircleTool.inum = nums[10];
+            PositionToolsLib.工具.FindLineTool.inum = nums[11];
+            PositionToolsLib.工具.FitLineTool.inum = nums[12];
+            PositionToolsLib.工具.ImageCorrectTool.inum = nums[13];
+            PositionToolsLib.工具.LineCentreTool.inum = nums[14];
+            PositionToolsLib.工具.LineIntersectionTool.inum = nums[15];
+            PositionToolsLib.工具.LineOffsetTool.inum = nums[16];
+            PositionToolsLib.工具.MatchTool.inum = nums[17];
+            PositionToolsLib.工具.OpeningTool.inum = nums[18];
+            PositionToolsLib.工具.ResultShowTool.inum = nums[19];
+            PositionToolsLib.工具.TcpRecvTool.inum = nums[20];
+            PositionToolsLib.工具.TcpSendTool.inum = nums[21];
         }
     }
 

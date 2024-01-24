@@ -300,8 +300,8 @@ namespace PositionToolsLib.窗体.ViewModels
         private void btnTranModel_Click()
         {
             MatchParam par = baseTool.GetParam() as MatchParam;
-            par.InputImg = dataManage.imageBufDic[par.InputImageName].Clone();
-            //par.InputImg = imgBuf;
+            //par.InputImg = dataManage.imageBufDic[par.InputImageName].Clone();
+            par.InputImg = imgBuf;
             if (BaseTool.ObjectValided(modelSearchRegion))
                 par.InspectROI = modelSearchRegion;
             par.ModelROI = modelRegion;
@@ -447,6 +447,10 @@ namespace PositionToolsLib.窗体.ViewModels
             {
                 ShowTool.DispConcatedObj((par as MatchParam).OutputImg, EumCommonColors.green);
                 ShowTool.AddConcatedObjBuffer((par as MatchParam).OutputImg, EumCommonColors.green);
+
+                ShowTool.DispRegion((par as MatchParam).ResultContour, "green");
+                ShowTool.AddregionBuffer((par as MatchParam).ResultContour, "green");
+
                 ShowTool.DispRegion((par as MatchParam).InspectROI, "blue");
                 ShowTool.AddregionBuffer((par as MatchParam).InspectROI, "blue");
                 ShowTool.DispMessage("OK", 10, width-(width/1000+1)*200 , "green", 100);

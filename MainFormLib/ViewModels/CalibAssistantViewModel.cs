@@ -38,6 +38,7 @@ namespace MainFormLib.ViewModels
         CamParams camParams = new CamParams();//相机参数
         CalTab calTab = new CalTab();//标定板参数
         HTuple hv_CamParam;//相机内参
+        HTuple hv_WorldPose;//相机位姿
         double RMS = 0;//标定误差系数
         HTuple hv_CalibDataID = null;
         List<int> DoneStepList = new List<int>();
@@ -104,8 +105,8 @@ namespace MainFormLib.ViewModels
             //TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             //TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            LoadImageCorrectParam();
-            showImageCorrectData();
+            LoadCalibAssistantParam();
+            showCalibAssistantData();
         }
         /// <summary>
         /// 设置当前标定助手文件夹名称
@@ -125,14 +126,14 @@ namespace MainFormLib.ViewModels
             if (Directory.Exists(_rootFolder))
                 rootFolder = _rootFolder;
             currCalibName = _calibName;
-            LoadImageCorrectParam();
-            showImageCorrectData();
+            LoadCalibAssistantParam();
+            showCalibAssistantData();
         }
         /// <summary>
         /// 加载参数
         /// </summary>
         /// <returns></returns>
-        bool LoadImageCorrectParam()
+        bool LoadCalibAssistantParam()
         {
             try
             {
@@ -144,6 +145,7 @@ namespace MainFormLib.ViewModels
                 if (!Directory.Exists(filePath))
                     Directory.CreateDirectory(filePath);
                 hv_CamParam = CalibAssistantTool.ReadCalibData(filePath);
+                hv_WorldPose = CalibAssistantTool.ReadCalibPose(filePath);
                 //if (hv_CamParam == null || hv_CamParam.Length <= 0)
                 //    Appentxt("相机内参加载失败！");
                 camParams = GeneralUse.ReadSerializationFile<CamParams>(filePath + "\\相机参数");
@@ -175,7 +177,7 @@ namespace MainFormLib.ViewModels
         /// <summary>
         /// 数据显示
         /// </summary>
-        void showImageCorrectData()
+        void showCalibAssistantData()
         {
             //相机参数
            Model.TxbF = camParams.F;
@@ -193,7 +195,7 @@ namespace MainFormLib.ViewModels
            Model.TxbBoardMarkDis = calTab.MarkDist;
            Model.TxbBoardMarkDisRotia = calTab.DiameterRatio;
             Model.TxbBoardFilePath = calTab.CalPlateDescr;
-
+            Model.TxbBoardThick = calTab.Thickness;
             //RMS
            Model.TxbCalibRMS = RMS;
      
@@ -228,6 +230,7 @@ namespace MainFormLib.ViewModels
             calTab.YNum = Model.TxbBoardYNum;
             calTab.MarkDist = Model.TxbBoardMarkDis;
             calTab.DiameterRatio = Model.TxbBoardMarkDisRotia;
+            calTab.Thickness= Model.TxbBoardThick ;
             calTab.CalPlatePSFile = filePath + "\\标定板PS文件.ps";
             calTab.CalPlateDescr = filePath + "\\标定板描述文件.descr";
             bool flag = CalibAssistantTool.gen_caltab_file(calTab);
@@ -408,7 +411,15 @@ namespace MainFormLib.ViewModels
             {
                 totalStep = 0;
                 DoneStepList.Clear();
-                hv_CamParam = CalibAssistantTool.CamCalibrate(hv_CalibDataID, out HTuple hv_Error);
+                hv_CamParam = CalibAssistantTool.CamCalibrate(hv_CalibDataID,
+                    Model.TxbBoardThick,
+                    out HTuple hv_Error,
+                    out  hv_WorldPose);
+                //绘制第一点的坐标系
+                CalibAssistantTool.disp_3d_coord_system(ShowTool.HWindowsHandle,
+                    hv_CamParam,
+                    hv_WorldPose,0.1);
+
                 Model.TxbCalibRMS = hv_Error.D;
                 RMS = hv_Error.D;
                 MessageBox.Show("标定成功，流程结束！");
@@ -470,6 +481,8 @@ namespace MainFormLib.ViewModels
 
                 if (hv_CamParam != null && hv_CamParam.Length > 0)
                     CalibAssistantTool.SaveCalibData(hv_CamParam, filePath);
+                if ( hv_WorldPose != null &&  hv_WorldPose.Length > 0)
+                    CalibAssistantTool.SaveCalibPose(hv_WorldPose, filePath);
 
                 camParams.F = Model.TxbF;
                 camParams.Sx = Model.TxbSx;

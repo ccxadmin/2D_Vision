@@ -24,17 +24,17 @@ namespace PositionToolsLib.参数
             }
         }
       
-       new string calibFilePath;
+        string camParamFilePath;
         /// <summary>
-        ///  坐标转换矩阵存放路径
+        ///  相机内参存放路径
         /// </summary>    
-        [Description("坐标转换矩阵存放路径"), DefaultValue("")]
-        public string CalibFilePath
+        [Description("相机内参存放路径"), DefaultValue("")]
+        public string CamParamFilePath
         {
-            get => this.calibFilePath;
+            get => this.camParamFilePath;
             set
             {
-                this.calibFilePath = value;
+                this.camParamFilePath = value;
             }
         }
 

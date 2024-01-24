@@ -64,7 +64,6 @@ namespace PositionToolsLib.工具
         [NonSerialized]
          HTuple hv_ModelID = null;
         //模板轮廓
-        [NonSerialized]
         HObject ModelContours = null;
         /// <summary>
         /// 模板训练
@@ -375,6 +374,7 @@ namespace PositionToolsLib.工具
                     ho_ModelTrans.Dispose();
                     HOperatorSet.GetShapeModelContours(out ModelContours, hv_ModelID, 1);
                     HOperatorSet.AffineTransContourXld(ModelContours, out ho_ModelTrans, hv_HomMat2DScale);
+
                     HOperatorSet.ConcatObj(ModelTransConcated, ho_ModelTrans, out ModelTransConcated);
 
                 }
@@ -405,6 +405,8 @@ namespace PositionToolsLib.工具
                     //+匹配特征点
                 HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row, hv_Column, 50, hv_Angle);
                 HOperatorSet.ConcatObj(cross, ModelTransConcated, out objectsConcat);
+                (toolParam as MatchParam).ResultContour = objectsConcat.Clone();
+
 
                 if (!dm.resultBufDic.ContainsKey(toolName))
                     dm.resultBufDic.Add(toolName, objectsConcat.Clone());
@@ -418,9 +420,9 @@ namespace PositionToolsLib.工具
                     dm.resultInfoDic[toolName] = info;
                 grayImage.Dispose();
                 //+输入图像
-                HOperatorSet.ConcatObj((toolParam as MatchParam).InputImg, objectsConcat, out HObject objectsConcat2);
+                //HOperatorSet.ConcatObj((toolParam as MatchParam).InputImg, objectsConcat, out HObject objectsConcat2);
 
-                (toolParam as MatchParam).OutputImg = objectsConcat2;
+                (toolParam as MatchParam).OutputImg = (toolParam as MatchParam).InputImg;
                 (toolParam as MatchParam).MatchResultNumber = hv_Score.TupleLength();
                 (toolParam as MatchParam).MatchResultScales = hv_Scale;
                 (toolParam as MatchParam).MatchResultScores = hv_Score;

@@ -71,8 +71,8 @@ namespace PositionToolsLib.窗体.ViewModels
             string imageName = (par as ImageCorrectParam).InputImageName;
             int index = Model.ImageList.IndexOf(imageName);
             Model.SelectImageIndex = index;
-
-            Model.CalibFilePath=(par as ImageCorrectParam).CalibFilePath ;
+            Model.SelectImageName = (par as ImageCorrectParam).InputImageName;
+            Model.CalibFilePath=(par as ImageCorrectParam).CamParamFilePath ;
         }
         /// <summary>
         ///输入图像选择
@@ -102,7 +102,7 @@ namespace PositionToolsLib.窗体.ViewModels
             dialog.FileName = "Calib Matrix"; // Default file name
             dialog.DefaultExt = ".dat"; // Default file extension
             dialog.Filter = "Calib Matrix (.dat)|*.dat"; // Filter files by extension
-
+            dialog.InitialDirectory = Environment.CurrentDirectory;
             // Show open file dialog box
             bool? result = dialog.ShowDialog();
 
@@ -127,7 +127,7 @@ namespace PositionToolsLib.窗体.ViewModels
         void btnSaveParam_Click()
         {
             BaseParam par = baseTool.GetParam();
-            (par as ImageCorrectParam).CalibFilePath = Model.CalibFilePath;
+            (par as ImageCorrectParam).CamParamFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
 
         }

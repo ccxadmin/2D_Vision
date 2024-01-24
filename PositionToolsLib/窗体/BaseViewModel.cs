@@ -18,7 +18,8 @@ namespace PositionToolsLib.窗体
         {
            
             baseTool = tool;
-            ShowTool = new VisionShowTool();        
+            ShowTool = new VisionShowTool();
+            ShowTool.IgnoreLoadImage();
 
         }
         //图像显示工具

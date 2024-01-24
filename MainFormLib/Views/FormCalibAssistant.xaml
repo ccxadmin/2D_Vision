@@ -141,12 +141,19 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
                       HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
                      Margin="230,50,0,0" Text="{Binding Model.TxbBoardMarkDisRotia,Mode=TwoWay}"/>
 
-                        <Label Style="{DynamicResource LabelStyle}" Content="标定板描述文件："
+                        <Label Style="{DynamicResource LabelStyle}" Content="厚度："
+HorizontalAlignment="Left" VerticalAlignment="Top" 
+ Margin="175,90,0,0"/>
+                        <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
+                      HorizontalAlignment="Left" VerticalAlignment="Top" Width="80" 
+                     Margin="230,90,0,0" Text="{Binding Model.TxbBoardThick,Mode=TwoWay}"/>
+
+                        <Label Style="{DynamicResource LabelStyle}" Content="描述文件："
 HorizontalAlignment="Left" VerticalAlignment="Top" 
  Margin="10,90,0,0"/>
                         <Button Style="{DynamicResource PrimaryButton}" attach:ButtonAttach.ButtonCornerRadius="3"
                                 HorizontalAlignment="Left" VerticalAlignment="Top" Content="文件生成"
-                                Margin="210,90,0,0" Width="100" Height="25" Command="{Binding GenBoardFileBtnClickCommand}"/>
+                                Margin="80,90,0,0" Width="65" Height="25" Command="{Binding GenBoardFileBtnClickCommand}"/>
 
                         <TextBox Style="{DynamicResource baseInput}" attach:TexboxAttach.TextBoxCornerRadius="3"
  HorizontalAlignment="Left" VerticalAlignment="Top" Width="300"  TextWrapping="Wrap" 
@@ -190,14 +197,14 @@ ItemsSource="{Binding Model.DgImageCorrectInfoList,Mode=TwoWay}"
                                 </Style.Triggers>
                             </Style>
                         </DataGrid.CellStyle>
-                        
+
                         <DataGrid.Columns>
                             <DataGridCheckBoxColumn Header="启用" Binding="{Binding IsUse,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridcheckbox}"/>
                             <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="60" ElementStyle="{StaticResource datagridtextblock}"/>
                             <DataGridTextColumn Header="名称"  Binding="{Binding Name,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
                             <DataGridTextColumn  x:Name="iinfo"  Header="图像信息"  Binding="{Binding ImageInfo,Mode=TwoWay}" 
-                                                Width="120" ElementStyle="{StaticResource datagridtextblock}" >                                                                       
-                                                
+                                                Width="120" ElementStyle="{StaticResource datagridtextblock}" >
+
                                 <!--<DataGridTextColumn.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Style.Triggers>
@@ -221,7 +228,7 @@ ItemsSource="{Binding Model.DgImageCorrectInfoList,Mode=TwoWay}"
                             </DataGridTextColumn>
 
                         </DataGrid.Columns>
-                    
+
                         <behaviors:Interaction.Triggers>
                             <behaviors:EventTrigger EventName="MouseDoubleClick">
                                 <behaviors:InvokeCommandAction Command="{Binding DgMouseDoubleClickCommand}" CommandParameter="{Binding ElementName=dgCalibImageInfo,Path=SelectedIndex}"/>
