@@ -137,8 +137,9 @@ Margin="60,250,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"  ItemsSource="{Binding Model.LineOffsetDataList,Mode=TwoWay}" Background="#ffffff"  >
-                                <DataGrid.Columns>
+             Style="{DynamicResource datagrid}"  SelectionUnit="FullRow" IsReadOnly="true"
+                                       ItemsSource="{Binding Model.LineOffsetDataList,Mode=TwoWay}" Background="#ffffff"  >
+                                <DataGrid.Columns>   
                                     <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>
                                     <DataGridTextColumn Header="起点X坐标"  Binding="{Binding X1,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />
                                     <DataGridTextColumn Header="起点Y坐标"  Binding="{Binding Y1,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />

@@ -1,15 +1,15 @@
-﻿<Page x:Class="PositionToolsLib.窗体.Views.LinePage"
+﻿<Page x:Class="PositionToolsLib.窗体.Pages.LinePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
+      xmlns:local="clr-namespace:PositionToolsLib.窗体.Pages"
        xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
 xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
 xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources"
   
 Style="{x:Null}" FocusVisualStyle="{x:Null}"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"  Loaded="Page_Loaded"
       d:DesignHeight="300" d:DesignWidth="325"
       Title="LinePage" Background="#ffffff">
 
@@ -25,7 +25,9 @@ Style="{x:Null}" FocusVisualStyle="{x:Null}"
         <Label Style="{DynamicResource LabelStyle}" Content="边缘阈值："
 HorizontalAlignment="Left" VerticalAlignment="Top" 
  Margin="5,10,0,0"/>
-        <uc:MyNumUpDown 
+        <uc:MyNumUpDown  MaxValue="255" MinValue="0"
+                         DecimalPlaces="0" OffsetValue="1"
+                         DefaultValue="20" x:Name="numThd"
     HorizontalAlignment="Left" VerticalAlignment="Top"
     Margin="75,10,0,0"  Height="25"
      >
@@ -37,7 +39,11 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
         <ComboBox Style="{DynamicResource MyCbbStyle}" 
     HorizontalAlignment="Left" VerticalAlignment="Top"
     Margin="240,10,0,0"  Height="25" Width="80"
+                  x:Name="cobxTransition"
      >
+            <ComboBoxItem Content="positive"/>
+            <ComboBoxItem Content="negative"/>
+            <ComboBoxItem Content="all"/>
 
         </ComboBox>
 
@@ -47,6 +53,9 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
         <uc:MyNumUpDown 
     HorizontalAlignment="Left" VerticalAlignment="Top"
     Margin="75,50,0,0"  Height="25"
+             MaxValue="100" MinValue="1"
+                         DecimalPlaces="0" OffsetValue="1"
+                         DefaultValue="30" x:Name="numCaliperNum"
      >
 
         </uc:MyNumUpDown>
@@ -56,8 +65,11 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
         <ComboBox Style="{DynamicResource MyCbbStyle}" 
     HorizontalAlignment="Left" VerticalAlignment="Top"
     Margin="240,50,0,0"  Height="25" Width="80"
+                   x:Name="cobxSelect"
      >
-
+            <ComboBoxItem Content="first"/>
+            <ComboBoxItem Content="last"/>
+            <ComboBoxItem Content="max"/>
         </ComboBox>
 
 
@@ -67,12 +79,15 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
         <uc:MyNumUpDown 
     HorizontalAlignment="Left" VerticalAlignment="Top"
     Margin="75,90,0,0"  Height="25"
+             MaxValue="100" MinValue="5"
+             DecimalPlaces="0" OffsetValue="1"
+             DefaultValue="15" x:Name="numCaliperWidth"
      >
 
         </uc:MyNumUpDown>
-        <Button Style="{DynamicResource  PrimaryButton}" Content="绘制直线区域"
+        <Button Style="{DynamicResource  PrimaryButton}" Content="绘制检测区域"
 HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="170,90,0,0" Width="150" Height="30"/>
+ Margin="170,90,0,0" Width="150" Height="30" Click="btnDrawRegion_Click"/>
 
         <Label Style="{DynamicResource LabelStyle}" Content="卡尺高度："
 HorizontalAlignment="Left" VerticalAlignment="Top" 
@@ -80,13 +95,19 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
         <uc:MyNumUpDown 
     HorizontalAlignment="Left" VerticalAlignment="Top"
     Margin="75,130,0,0"  Height="25"
+             MaxValue="200" MinValue="5"
+ DecimalPlaces="0" OffsetValue="1"
+ DefaultValue="60" x:Name="numCaliperHeight"
      >
 
         </uc:MyNumUpDown>
-        <Button Style="{DynamicResource  PrimaryButton}" Content="轨迹提取"
+        <Button Style="{DynamicResource  PrimaryButton}" Content="直线识别"
 HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
- Margin="170,130,0,0" Width="150" Height="30"/>
-       
+ Margin="170,170,0,0" Width="150" Height="30" Click="btnLineIdentify_Click"/>
+
+        <Button Style="{DynamicResource  PrimaryButton}" Content="参数保存"
+HorizontalAlignment="Left" VerticalAlignment="Top" attach:ButtonAttach.ButtonCornerRadius="3"
+ Margin="170,130,0,0" Width="150" Height="30" Click="btnSaveParam_Click"/>
 
     </Grid>
 </Page>

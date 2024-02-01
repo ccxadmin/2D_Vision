@@ -138,7 +138,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as CoordConvertParam).CoordYName = Model.SelectCoordYName;
             par.calibFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
-
+            OnSaveManageHandle?.Invoke(dataManage);
         }
         /// <summary>
         /// 手动测试

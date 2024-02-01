@@ -182,6 +182,38 @@ namespace PositionToolsLib.参数
                 this.y2 = value;
             }
         }
+
+        
+         bool usePixelRatio = false;
+        /// <summary>
+        /// 使用像素比
+        /// </summary>
+        [Description("使用像素比"), DefaultValue(false)]
+        public bool UsePixelRatio
+        {
+            get => this.usePixelRatio;
+            set
+            {
+                this.usePixelRatio = value;
+            }
+        }
+
+        double pixelRatio = 1;
+        /// <summary>
+        /// 像素比
+        /// </summary>
+        [Description("像素比"), DefaultValue(1)]
+        public double PixelRatio
+        {
+            get => this.pixelRatio;
+            set
+            {
+                this.pixelRatio = value;
+            }
+        }
+
+
+
         double distance = 0;
         /// <summary>
         ///距离

@@ -144,6 +144,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as ErosionParam).MaskWidth = Model.SelectMaskWidth;
             (par as ErosionParam).MaskHeight = Model.SelectMaskHeight;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
+            OnSaveManageHandle?.Invoke(dataManage);
         }
     }
 }

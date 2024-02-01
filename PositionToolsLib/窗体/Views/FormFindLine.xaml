@@ -186,7 +186,8 @@ Margin="60,440,10,10" Width="200"  attach:ButtonAttach.ButtonCornerRadius="3"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"  ItemsSource="{Binding Model.DgResultOfFindLineList,Mode=TwoWay}" Background="#ffffff"  >
+             Style="{DynamicResource datagrid}" SelectionUnit="FullRow" IsReadOnly="true"
+                                       ItemsSource="{Binding Model.DgResultOfFindLineList,Mode=TwoWay}" Background="#ffffff"  >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>
                                     <DataGridTextColumn Header="X坐标1"  Binding="{Binding X1,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}" />

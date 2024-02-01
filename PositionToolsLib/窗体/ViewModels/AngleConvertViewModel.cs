@@ -181,7 +181,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as AngleConvertParam).EndYName = Model.SelectEndYName;
             par.calibFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
-
+            OnSaveManageHandle?.Invoke(dataManage);
         }
         /// <summary>
         /// 手动测试

@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace PositionToolsLib.窗体.Models
 {
@@ -248,6 +250,93 @@ namespace PositionToolsLib.窗体.Models
 
             }
         }
+
+        private int outputTypeSelectIndex;
+        public int OutputTypeSelectIndex
+        {
+            get { return this.outputTypeSelectIndex; }
+            set
+            {
+                outputTypeSelectIndex = value;
+                DoNotify();
+            }
+        }
+        private Visibility outputLocationEnable;
+        public Visibility OutputLocationEnable
+        {
+            get { return this.outputLocationEnable; }
+            set
+            {
+                outputLocationEnable = value;
+                DoNotify();
+            }
+        }
+        private Visibility outputSizeEnable;
+        public Visibility OutputSizeEnable
+        {
+            get { return this.outputSizeEnable; }
+            set
+            {
+                outputSizeEnable = value;
+                DoNotify();
+            }
+        }
+        private Visibility outputTrajectoryEnable;
+        public Visibility OutputTrajectoryEnable
+        {
+            get { return this.outputTrajectoryEnable; }
+            set
+            {
+                outputTrajectoryEnable = value;
+                DoNotify();
+            }
+        }
+
+        private ObservableCollection<DgOutputTypeOfTrajectory> dgDataOfOutputTrajectoryList =
+       new ObservableCollection<DgOutputTypeOfTrajectory>();
+        public ObservableCollection<DgOutputTypeOfTrajectory> DgDataOfOutputTrajectoryList
+        {
+            get { return this.dgDataOfOutputTrajectoryList; }
+            set
+            {
+                dgDataOfOutputTrajectoryList = value;
+                DoNotify();
+
+            }
+        }
+        private int dgOutputTrajectorySelectIndex;
+        public int DgOutputTrajectorySelectIndex
+        {
+            get { return this.dgOutputTrajectorySelectIndex; }
+            set
+            {
+                dgOutputTrajectorySelectIndex = value;
+                DoNotify();
+            }
+        }
+
+        private ObservableCollection<DgOutputTypeOfSize> dgDataOfOutputSizeList =
+      new ObservableCollection<DgOutputTypeOfSize>();
+        public ObservableCollection<DgOutputTypeOfSize> DgDataOfOutputSizeList
+        {
+            get { return this.dgDataOfOutputSizeList; }
+            set
+            {
+                dgDataOfOutputSizeList = value;
+                DoNotify();
+
+            }
+        }
+        private int dgOutputSizeSelectIndex;
+        public int DgOutputSizeSelectIndex
+        {
+            get { return this.dgOutputSizeSelectIndex; }
+            set
+            {
+                dgOutputSizeSelectIndex = value;
+                DoNotify();
+            }
+        }
     }
 
     [Serializable]
@@ -295,6 +384,46 @@ namespace PositionToolsLib.窗体.Models
         //}
 
     }
+    [Serializable]
+    public class DataOfResultShow 
+    {
+        public DataOfResultShow(bool use, string toolName, string toolStatus)
+        {
+            Use = use;
+            ToolName = toolName;
+            ToolStatus = toolStatus;
+          
+        }
+        private bool use;
+        public bool Use
+        {
+            get => this.use;
+
+            set { this.use = value; }
+        }
+        private string toolName;
+        public string ToolName
+        {
+            get => this.toolName;
+            set
+            {
+                this.toolName = value;
+            }
+        }
+
+        private string toolStatus;
+        public string ToolStatus
+        {
+            get => this.toolStatus;
+            set
+            {
+                this.toolStatus = value;
+            }
+        }
+
+    
+
+    }
 
     [Serializable]
     public class DgResultOfResultShow
@@ -307,11 +436,131 @@ namespace PositionToolsLib.窗体.Models
             Y =double.Round( y,3);
             Angle =double.Round( angle,3);
         }
+        public DgResultOfResultShow(int id, double x,
+                         double y, float r)
+        {
+            ID = id;
+            X = double.Round(x, 3);
+            Y = double.Round(y, 3);       
+            Radius= double.Round(r, 3);
+        }
+        public DgResultOfResultShow(int id, double distance)
+        {
+            ID = id;       
+            Distance = double.Round(distance, 3);
+        }
         public int ID { get; set; }
      
         public double X { get; set; }
         public double Y { get; set; }
         public double Angle { get; set; }
+        public double Radius { get; set; }
+        public double Distance { get; set; }
+    }
+    [Serializable]
+    public class DgOutputTypeOfTrajectory : NotifyBase
+    {
+        public DgOutputTypeOfTrajectory(int _id, bool _isUse,
+                        string _toolName)
+        {
+            ID = _id;
+            IsUse = _isUse;
+            ToolName = _toolName;
+          
+        }
+        private int id;
+        public int ID { 
+            get=>this.id;
+            set { this.id = value; DoNotify();}
+        }
+        private bool isUse;
+        public bool IsUse { 
+            get=>this.isUse;
+            set { this.isUse = value; DoNotify(); }
+        }
+        private string toolName;
+        public string  ToolName {
+            get=>this.toolName;
+            set { this.toolName = value; DoNotify(); }
+        }
+    
+    }
 
+    [Serializable]
+    public class OutputTypeOfTrajectory 
+    {
+        public OutputTypeOfTrajectory(int _id, bool _isUse,
+                        string _toolName)
+        {
+            ID = _id;
+            IsUse = _isUse;
+            ToolName = _toolName;
+
+        }
+      
+        public int ID { get; set; }
+     
+        public bool IsUse { get; set; }
+     
+        public string ToolName { get; set; }
+
+    }
+
+    [Serializable]
+    public class DgOutputTypeOfSize : NotifyBase
+    {
+        public DgOutputTypeOfSize(int _id, bool _isUse,
+                        string _toolName)
+        {
+            ID = _id;
+            IsUse = _isUse;
+            ToolName = _toolName;
+
+        }
+        private int id;
+        public int ID
+        {
+            get => this.id;
+            set { this.id = value; DoNotify(); }
+        }
+        private bool isUse;
+        public bool IsUse
+        {
+            get => this.isUse;
+            set { this.isUse = value; DoNotify(); }
+        }
+        private string toolName;
+        public string ToolName
+        {
+            get => this.toolName;
+            set { this.toolName = value; DoNotify(); }
+        }
+
+    }
+
+    [Serializable]
+    public class OutputTypeOfSize
+    {
+        public OutputTypeOfSize(int _id, bool _isUse,
+                        string _toolName)
+        {
+            ID = _id;
+            IsUse = _isUse;
+            ToolName = _toolName;
+
+        }
+
+        public int ID { get; set; }
+
+        public bool IsUse { get; set; }
+
+        public string ToolName { get; set; }
+
+    }
+    public enum EumOutputType
+    {
+        Location,    //定位
+        Size,       //尺寸
+        Trajectory  //轨迹
     }
 }

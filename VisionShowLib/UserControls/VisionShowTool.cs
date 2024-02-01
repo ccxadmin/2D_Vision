@@ -41,7 +41,7 @@ namespace VisionShowLib.UserControls
         #endregion
 
         #region   Field
-
+        EumParamOperate currParamOperate = EumParamOperate.expand;
         bool isOdd = true;
         DateTime t1, t2;
         public List<pixelPoint> pixelPointList = null;
@@ -67,7 +67,7 @@ namespace VisionShowLib.UserControls
         private Cursor scaleCursor = null;//鼠标图标对象
 
         int i_width = 0;
-        int i_height= 0;
+        int i_height = 0;
         #endregion
 
         #region Construction
@@ -125,7 +125,7 @@ namespace VisionShowLib.UserControls
         public VisionShowTool(string titleName) : this()
         {
             TitleName = titleName;
-           
+
         }
         ~VisionShowTool()
         {
@@ -256,7 +256,7 @@ namespace VisionShowLib.UserControls
             {
                 if (ObjectValided(value))
                 {
-                   
+
                     //showImage.Dispose();
                     showImage = value;
 
@@ -741,7 +741,7 @@ namespace VisionShowLib.UserControls
             if (!ObjectValided(Rotimage))  //图像为空时.
                 return;
 
-         
+
             HObject Rimage = null;
             HOperatorSet.GenEmptyObj(out Rimage);
             HOperatorSet.RotateImage(Rotimage, out Rimage, AngleSetting, "constant");
@@ -786,7 +786,7 @@ namespace VisionShowLib.UserControls
             h_Disp.HalconWindow.SetColor("white");
             h_Disp.HalconWindow.DispLine(-100.0, -100.0, -101.0, -101.0);
 
-         
+
         }
         /// <summary>
         /// 显示图像
@@ -819,7 +819,7 @@ namespace VisionShowLib.UserControls
                     crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
       ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
                     i_width = ImageWidth;
-                    i_height= ImageHeight;
+                    i_height = ImageHeight;
                 }
                 UpdateRegions(crosscont1, "red");
                 UpdateRegions(crosscont2, "red");
@@ -908,16 +908,16 @@ namespace VisionShowLib.UserControls
                     {
                         if (i_width != ImageWidth ||
                   i_height != ImageHeight)
-                        {             
+                        {
                             crosscont1.Dispose();
                             crosscont1.GenContourPolygonXld((new HTuple(ImageHeight / 2)).TupleConcat(
                       ImageHeight / 2), (new HTuple(0)).TupleConcat(ImageWidth));
                             crosscont2.Dispose();
                             crosscont2.GenContourPolygonXld((new HTuple(0)).TupleConcat(
                   ImageHeight), (new HTuple(ImageWidth / 2)).TupleConcat(ImageWidth / 2));
-                         
+
                             i_width = ImageWidth;
-                            i_height= ImageHeight;
+                            i_height = ImageHeight;
                         }
                         UpdateRegions(crosscont1, "red");
                         UpdateRegions(crosscont2, "red");
@@ -1712,7 +1712,7 @@ namespace VisionShowLib.UserControls
                 string[] buf = ImageRotation.Split('_');
                 int angle = int.Parse(buf[1]);
                 DispImage(ref GrabImg, -angle);
-       
+
                 LoadedImageNoticeHandle?.Invoke(D_HImage, new EventArgs());
             }
         }
@@ -1998,7 +1998,7 @@ namespace VisionShowLib.UserControls
             图像旋转toolStripButton.Enabled = false;
             图像采集toolStripButton.Enabled = false;
             运行toolStripButton.Enabled = false;
-        
+
             图像旋转toolStripButton.Image = Resource.旋转2;
             图像采集toolStripButton.Image = Resource.相机2;
             运行toolStripButton.Image = Resource.运行2;
@@ -2016,7 +2016,7 @@ namespace VisionShowLib.UserControls
             运行toolStripButton.Image = Resource.运行;
         }
 
-        public  void SetEnable(bool flag)
+        public void SetEnable(bool flag)
         {
             if (this.InvokeRequired)
             {
@@ -2029,12 +2029,14 @@ namespace VisionShowLib.UserControls
                 图像采集toolStripButton.Enabled = flag;
                 运行toolStripButton.Enabled = flag;
                 停止toolStripButton.Enabled = flag;
+                toolStripButton1.Enabled = flag;
                 if (flag)
                 {
                     图像旋转toolStripButton.Image = Resource.旋转;
                     图像采集toolStripButton.Image = Resource.相机;
                     运行toolStripButton.Image = Resource.运行;
                     停止toolStripButton.Image = Resource.停止;
+                    toolStripButton1.Image = Resource.折叠__1_;
                 }
                 else
                 {
@@ -2042,6 +2044,7 @@ namespace VisionShowLib.UserControls
                     图像采集toolStripButton.Image = Resource.相机2;
                     运行toolStripButton.Image = Resource.运行2;
                     停止toolStripButton.Image = Resource.停止__1_;
+                    toolStripButton1.Image = Resource.折叠__2_;
                 }
             }
         }
@@ -2056,6 +2059,40 @@ namespace VisionShowLib.UserControls
             }
         }
 
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            if (currParamOperate == EumParamOperate.expand)
+                SetParamMode(EumParamOperate.fold);
+            else
+                SetParamMode(EumParamOperate.expand);
+        }
+        public Action<EumParamOperate> ParamOperateActon = null;
+        public void SetParamMode(EumParamOperate paramOperate)
+        {
+            if (currParamOperate == paramOperate) return;
+
+            if (this.InvokeRequired)
+                this.Invoke(new Action(IgnoreLoadImage));
+            else
+            {
+                currParamOperate = paramOperate;
+                //折叠操作
+                if (paramOperate == EumParamOperate.fold)
+                {                   
+                    toolStripButton1.Image = Resource.折叠;
+                    toolStripButton1.ToolTipText = "展开参数页面";
+                    ParamOperateActon?.Invoke(EumParamOperate.fold);
+                }
+                //展开操作
+                else
+                {
+             
+                    toolStripButton1.Image = Resource.折叠__1_;
+                    toolStripButton1.ToolTipText = "折叠参数页面";
+                    ParamOperateActon?.Invoke(EumParamOperate.expand);
+                }
+            }
+        }
     }
 
     #region Data
@@ -2217,4 +2254,11 @@ namespace VisionShowLib.UserControls
 
     }
     #endregion
+    public enum EumParamOperate
+    {
+        fold,
+        expand
+    }
 }
+
+

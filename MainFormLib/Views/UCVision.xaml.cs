@@ -118,26 +118,41 @@ namespace MainFormLib.Views
             viewModel.ToolsOfGlue_ContextMenuCommand.DoExecute?.Invoke(sender);
         }
 
-
-        void AppenTxt(string info)
+        void AppenTxt(string objName,string info)
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                TextPointer tpstart = richTxtInfo.Document.ContentStart;
-                int length = Math.Abs(richTxtInfo.Document.ContentEnd.GetOffsetToPosition(tpstart));
-                if (length > 5000)
-                    richTxtInfo.Document.Blocks.Clear();
-                richTxtInfo.AppendText(info);
-                richTxtInfo.AppendText("\r");
-                richTxtInfo.ScrollToEnd();
+                if(objName== "richTxtInfo")
+                {
+                    TextPointer tpstart = richTxtInfo.Document.ContentStart;
+                    int length = Math.Abs(richTxtInfo.Document.ContentEnd.GetOffsetToPosition(tpstart));
+                    if (length > 5000)
+                        richTxtInfo.Document.Blocks.Clear();
+                    richTxtInfo.AppendText(info);
+                    richTxtInfo.AppendText("\r");
+                    richTxtInfo.ScrollToEnd();
+                }
+               else if(objName == "scanRichTxtInfo")
+                {
+                    TextPointer tpstart = scanRichTxtInfo.Document.ContentStart;
+                    int length = Math.Abs(scanRichTxtInfo.Document.ContentEnd.GetOffsetToPosition(tpstart));
+                    if (length > 5000)
+                        scanRichTxtInfo.Document.Blocks.Clear();
+                    scanRichTxtInfo.AppendText(info);
+                    scanRichTxtInfo.AppendText("\r");
+                    scanRichTxtInfo.ScrollToEnd();
+                }
             }));
         }
 
-        void ClearTxt()
+        void ClearTxt(string objName)
         {
             this.Dispatcher.Invoke(new Action(() =>
             {
-                richTxtInfo.Document.Blocks.Clear();
+                if (objName == "richTxtInfo")
+                    richTxtInfo.Document.Blocks.Clear();
+                else if (objName == "scanRichTxtInfo")
+                    scanRichTxtInfo.Document.Blocks.Clear();
             }));
         }
 

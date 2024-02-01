@@ -23,6 +23,8 @@ namespace PositionToolsLib.窗体.ViewModels
         public CommandBase StartYSelectionChangedCommand { get; set; }
         public CommandBase EndXSelectionChangedCommand { get; set; }
         public CommandBase EndYSelectionChangedCommand { get; set; }
+        public CommandBase cobxUsePixelRatioCheckChangeCommand { get; set; }
+        public CommandBase btnGetPixelRatioClickCommand { get; set; }
         //保存
         public CommandBase SaveButClickCommand { get; set; }
         //测试
@@ -70,6 +72,15 @@ namespace PositionToolsLib.窗体.ViewModels
             TestButClickCommand = new CommandBase();
             TestButClickCommand.DoExecute = new Action<object>((o) => btnTest_Click());
             TestButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            cobxUsePixelRatioCheckChangeCommand = new CommandBase();
+            cobxUsePixelRatioCheckChangeCommand.DoExecute = new Action<object>((o) => cobxUsePixelRatio_CheckChange());
+            cobxUsePixelRatioCheckChangeCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            
+            btnGetPixelRatioClickCommand = new CommandBase();
+            btnGetPixelRatioClickCommand.DoExecute = new Action<object>((o) => btnGetPixelRatio_Click());
+            btnGetPixelRatioClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
 
             ShowData();
             cobxImageList_SelectedIndexChanged(null);
@@ -122,6 +133,8 @@ namespace PositionToolsLib.窗体.ViewModels
             int index5 = Model.PositionDataList.IndexOf(columnName2);
             Model.SelectEndYIndex = index5;
 
+            Model.UsePixelRatio=(par as DistancePPParam).UsePixelRatio ;
+            Model.TxbPixelRatio=(par as DistancePPParam).PixelRatio  ;
         }
         /// <summary>
         ///输入图像选择
@@ -183,6 +196,24 @@ namespace PositionToolsLib.窗体.ViewModels
             }
         }
 
+        void cobxUsePixelRatio_CheckChange()
+        {
+            BaseParam par = baseTool.GetParam();
+            (par as DistancePPParam).UsePixelRatio = Model.UsePixelRatio;
+        }
+        /// <summary>
+        /// 获取像素转换比
+        /// </summary>
+        void btnGetPixelRatio_Click()
+        {
+            if (getPixelRatioHandle != null)
+            {
+                double tem = getPixelRatioHandle.Invoke();
+                if (tem <= 0)
+                    tem = 1;
+                Model.TxbPixelRatio = tem;
+            }
+        }
         /// <summary>
         /// 参数保存
         /// </summary>
@@ -195,9 +226,11 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as DistancePPParam).EndYName = Model.SelectEndYName;
             (par as DistancePPParam).CamParamFilePath = Model.CamParamFilePath;
             (par as DistancePPParam).CamPoseFilePath = Model.CamPoseFilePath;
+            (par as DistancePPParam).UsePixelRatio = Model.UsePixelRatio;
+            (par as DistancePPParam).PixelRatio = Model.TxbPixelRatio;
 
-            OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
-
+           OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
+            OnSaveManageHandle?.Invoke(dataManage);
         }
         private void cobxStartX_SelectedIndexChanged(object o)
         {
@@ -249,6 +282,8 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as DistancePPParam).StartYName = Model.SelectStartYName;
             (par as DistancePPParam).EndXName = Model.SelectEndXName;
             (par as DistancePPParam).EndYName = Model.SelectEndYName;
+            (par as DistancePPParam).UsePixelRatio = Model.UsePixelRatio;
+            (par as DistancePPParam).PixelRatio = Model.TxbPixelRatio;
             RunResult rlt = baseTool.Run();
             ShowTool.ClearAllOverLays();
             HOperatorSet.GetImageSize(imgBuf, out HTuple width, out HTuple height);

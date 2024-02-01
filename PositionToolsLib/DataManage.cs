@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using HalconDotNet;
+using PositionToolsLib.窗体.Pages;
 
 namespace PositionToolsLib
 {
@@ -18,7 +19,7 @@ namespace PositionToolsLib
         /// 图像缓存集合
         /// </summary>
         //[NonSerialized]
-         public Dictionary<string, HObject> imageBufDic = new Dictionary<string, HObject>();
+        public Dictionary<string, HObject> imageBufDic = new Dictionary<string, HObject>();
         /// <summary>
         /// 矩阵缓存集合
         /// </summary>
@@ -28,6 +29,14 @@ namespace PositionToolsLib
         /// </summary>
          public List<string> enumerableTooDic = new List<string>();
         /// <summary>
+        /// 轨迹工具名称
+        /// </summary>
+        public List<string> trajectoryTooDic = new List<string>();
+        /// <summary>
+        /// 轨迹工具名称
+        /// </summary>
+        public List<string> sizeTooDic = new List<string>();
+        /// <summary>
         /// 结果缓存集合:需要显示的区域轮廓
         /// </summary>
         //[NonSerialized]
@@ -36,12 +45,14 @@ namespace PositionToolsLib
         /// <summary>
         /// 结果缓存集合:测试信息
         /// </summary>
-         public Dictionary<string, string> resultInfoDic = new Dictionary<string, string>();
+        //[NonSerialized]
+        public Dictionary<string, string> resultInfoDic = new Dictionary<string, string>();
 
         /// <summary>
         /// 结果缓存集合:测试结果
         /// </summary>
-         public Dictionary<string, bool> resultFlagDic = new Dictionary<string, bool>();
+        //[NonSerialized]
+        public Dictionary<string, bool> resultFlagDic = new Dictionary<string, bool>();
         /// <summary>
         ///结果缓存集合:直线结果
         /// </summary>
@@ -50,6 +61,14 @@ namespace PositionToolsLib
         ///结果缓存集合: 定位坐标结果 (像素坐标或物理坐标)（x,y,angle）
         /// </summary>
          public Dictionary<string, StuCoordinateData> PositionDataDic = new Dictionary<string, StuCoordinateData>();
+        /// <summary>
+        /// 轨迹点集合
+        /// </summary>
+        public Dictionary<string, List<DgTrajectoryData>> TrajectoryDataDic = new Dictionary<string, List<DgTrajectoryData>>();
+        /// <summary>
+        /// 尺寸集合
+        /// </summary>
+        public Dictionary<string,double> SizeDataDic = new Dictionary<string, double>();
         /// <summary>
         ///结果缓存集合: 定位坐标结果 (像素坐标+物理坐标)
         /// </summary>
@@ -71,12 +90,15 @@ namespace PositionToolsLib
             //imageBufDic.Clear();
             matrixBufDic.Clear();
             enumerableTooDic.Clear();
+            trajectoryTooDic.Clear();
+            sizeTooDic.Clear();
             resultBufDic.Clear();
             resultInfoDic.Clear();
             resultFlagDic.Clear();
             LineDataDic.Clear();
             PositionDataDic.Clear();
-
+            TrajectoryDataDic.Clear();
+            SizeDataDic.Clear();
         }
     
         /// <summary>

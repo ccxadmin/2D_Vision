@@ -41,7 +41,7 @@ using FunctionLib.Location;
 using System.Drawing.Imaging;
 using System.Threading;
 using System.Collections.ObjectModel;
-using PositionToolsLib.窗体.Models;
+
 using PositionToolsLib.工具;
 using GlueDetectionLib.工具;
 using System.Threading.Channels;
@@ -58,6 +58,8 @@ using System.Reflection;
 using System.Windows.Documents;
 using System.Windows.Media.Media3D;
 using System.Numerics;
+using DalsaCamera;
+using PositionToolsLib.窗体.Pages;
 
 namespace MainFormLib.ViewModels
 {
@@ -104,8 +106,8 @@ namespace MainFormLib.ViewModels
         List<GlueRecheckDat> datas = new List<GlueRecheckDat>();//发送给运控的数据
         StuCoordinateData positionSharpData = new StuCoordinateData(0, 0, 0);
         /*-----------------------------------------其他工具---------------------------------------*/
-        public Action<string> AppenTxtAction = null;
-        public Action ClearTxtAction = null;
+        public Action<string,string> AppenTxtAction = null;
+        public Action<string> ClearTxtAction = null;
         HObject GrabImg = null;
         HObject imgBuf = null;//图像缓存     
         Log log;
@@ -130,6 +132,16 @@ namespace MainFormLib.ViewModels
         //限位阈值
         int LimitMethd = 20;
         HObject autoFocusRegion = null;
+        EumUsingCamType usingCamType = EumUsingCamType.Frame;
+        EumOutputType outputType = EumOutputType.Location;
+        /*------------------------------------------线扫相机--------------------------------------*/
+        CameraParamOfScan cameraParamOfScan = null;//线扫相机参数
+        IDalsaCam dalsaCam = new DalsaCLDevice();//线扫相机
+        FormGifShow f_GifShow;//进度显示
+        long currCamExpouseOfScan = 1000;
+        int currCamGainOfScan = 0;
+
+
         #region Command
         public CommandBase WindowsLoadedCommand { get; set; }
         public CommandBase NinePointsCalibFormClickCommand { get; set; }
@@ -145,6 +157,7 @@ namespace MainFormLib.ViewModels
         public CommandBase ToolsOfPosition_ContextMenuCommand { get; set; }
         public CommandBase ToolsOfGlue_ContextMenuCommand { get; set; }
         public CommandBase ClearTextCommand { get; set; }
+        public CommandBase ScanClearTextCommand { get; set; }      
         public CommandBase NewRecipeClickCommand { get; set; }
         public CommandBase DeleteRecipeClickCommand { get; set; }
         public CommandBase SaveRecpeClickCommand { get; set; }
@@ -165,6 +178,15 @@ namespace MainFormLib.ViewModels
         public CommandBase RdbtnCheckedChangedCommand { get; set; }
         public CommandBase AssistCircleKeyDownCommand { get; set; }
         public CommandBase ScaleRuleCheckChangeCommand { get; set; }
+        public CommandBase SaveParamOfScanCamClickCommand { get; set; }
+        public CommandBase OpenScanCamConfigFileClickCommand { get; set; }
+        public CommandBase ScanExpouseNumericKeyDownCommand { get; set; }
+        public CommandBase ScanGainNumericKeyDownCommand { get; set; }
+        public CommandBase OpenScanCamClickCommand { get; set; }
+        public CommandBase CloseScanCamClickCommand { get; set; }
+        public CommandBase BtnScanCamGrabClickCommand { get; set; }
+        public CommandBase BtnScanCamSnapClickCommand { get; set; }
+        public CommandBase OutputTypeSelectionChangedCommand { get; set; }
         #endregion
 
         /*-----------------------------------------Construction---------------------------------------*/
@@ -188,9 +210,9 @@ namespace MainFormLib.ViewModels
             ShowTool.SaveWindowImageHnadle += new EventHandler(OnSaveWindowImageHnadle);
             ShowTool.BtnRunClick = Run_Click;
             ShowTool.BtnStopClick = Stop_Click;
-          
+            ShowTool.ParamOperateActon = OnParamOperate;
             #region Command
-            WindowsLoadedCommand = new CommandBase();
+              WindowsLoadedCommand = new CommandBase();
             WindowsLoadedCommand.DoExecute = new Action<object>((o) => Windows_Load());
             WindowsLoadedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
@@ -198,6 +220,10 @@ namespace MainFormLib.ViewModels
             NinePointsCalibFormClickCommand = new CommandBase();
             NinePointsCalibFormClickCommand.DoExecute = new Action<object>((o) => NinePointsCalibForm_Click());
             NinePointsCalibFormClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            OutputTypeSelectionChangedCommand = new CommandBase();
+            OutputTypeSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxOutputTypeList_SelectedIndexChanged(o));
+            OutputTypeSelectionChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
             ModelTypeSelectionChangedCommand = new CommandBase();
             ModelTypeSelectionChangedCommand.DoExecute = new Action<object>((o) => cobxModelTypeList_SelectedIndexChanged(o));
@@ -250,6 +276,10 @@ namespace MainFormLib.ViewModels
             ClearTextCommand.DoExecute = new Action<object>((o) => ClearTextClick());
             ClearTextCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
+            ScanClearTextCommand = new CommandBase();
+            ScanClearTextCommand.DoExecute = new Action<object>((o) => ScanClearTextClick());
+            ScanClearTextCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
             NewRecipeClickCommand = new CommandBase();
             NewRecipeClickCommand.DoExecute = new Action<object>((o) => NewRecipe_Click());
             NewRecipeClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
@@ -269,10 +299,6 @@ namespace MainFormLib.ViewModels
             CloseCamButClickCommand = new CommandBase();
             CloseCamButClickCommand.DoExecute = new Action<object>((o) => CloseCam_Click());
             CloseCamButClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
-            ExpouseValueChangedCommand = new CommandBase();
-            ExpouseValueChangedCommand.DoExecute = new Action<object>((o) => CloseCam_Click());
-            ExpouseValueChangedCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
             ExpouseValueChangedCommand = new CommandBase();
             ExpouseValueChangedCommand.DoExecute = new Action<object>((o) => ExpouseValueChanged(o));
@@ -338,11 +364,46 @@ namespace MainFormLib.ViewModels
             ScaleRuleCheckChangeCommand = new CommandBase();
             ScaleRuleCheckChangeCommand.DoExecute = new Action<object>((o) => ScaleRule_CheckedChanged());
             ScaleRuleCheckChangeCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            SaveParamOfScanCamClickCommand = new CommandBase();
+            SaveParamOfScanCamClickCommand.DoExecute = new Action<object>((o) => btnSaveScanCamParam_Click());
+            SaveParamOfScanCamClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            OpenScanCamConfigFileClickCommand = new CommandBase();
+            OpenScanCamConfigFileClickCommand.DoExecute = new Action<object>((o) => btnOpenScanCamConfigFile_Click());
+            OpenScanCamConfigFileClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            ScanExpouseNumericKeyDownCommand = new CommandBase();
+            ScanExpouseNumericKeyDownCommand.DoExecute = new Action<object>((o) => ScanExpouseNumericKeyDown(o));
+            ScanExpouseNumericKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            Model.ScanExpouseNumericCommand = new Action(() => ScanExpouseNumericEvent());
+
+            ScanGainNumericKeyDownCommand = new CommandBase();
+            ScanGainNumericKeyDownCommand.DoExecute = new Action<object>((o) => ScanGainNumericKeyDown(o));
+            ScanGainNumericKeyDownCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+            Model.ScanGainNumericCommand = new Action(() => ScanGainNumericEvent());
+
+            OpenScanCamClickCommand = new CommandBase();
+            OpenScanCamClickCommand.DoExecute = new Action<object>((o) => btnOpenScanCamera_Click());
+            OpenScanCamClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            CloseScanCamClickCommand = new CommandBase();
+            CloseScanCamClickCommand.DoExecute = new Action<object>((o) => btnCloseScanCamera_Click());
+            CloseScanCamClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            BtnScanCamGrabClickCommand = new CommandBase();
+            BtnScanCamGrabClickCommand.DoExecute = new Action<object>((o) => btnScanGrab_Click());
+            BtnScanCamGrabClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
+            BtnScanCamSnapClickCommand = new CommandBase();
+            BtnScanCamSnapClickCommand.DoExecute = new Action<object>((o) => btnScanSnap_Click());
+            BtnScanCamSnapClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
+
             #endregion
 
         }
-        public VisionViewModel(Action<string> appenTxtAction,
-            Action clearTxtAction,
+        public VisionViewModel(Action<string, string> appenTxtAction,
+               Action<string> clearTxtAction,
                string camStationName = "camStationName_1"
             ) : this()
         {
@@ -356,7 +417,7 @@ namespace MainFormLib.ViewModels
             BuiltConnect();
             LoadRecipeFile();//加载配方文件,同时获取当前启用的配方名称
             LoadMatrix();   //默认加载了default标定矩阵关系
-            saveToUsePath = rootFolder + "\\配方\\"+ currRecipeName;
+            saveToUsePath = rootFolder + "\\配方\\" + currRecipeName;
             CorrectCalibFile = rootFolder + "\\标定矩阵\\标定助手\\default\\相机内参.dat";
             if (!Directory.Exists(rootFolder))
                 Directory.CreateDirectory(rootFolder);
@@ -367,10 +428,26 @@ namespace MainFormLib.ViewModels
             if (!Directory.Exists(saveToUsePath))
                 Directory.CreateDirectory(saveToUsePath);
 
-           
+
             LoadCommDev();//加载外部通讯工具     
             LoadRecipe();//加载配方
-            LoadCamera();//加载相机
+
+            usingCamType = (EumUsingCamType)Enum.Parse(typeof(EumUsingCamType),
+                      GeneralUse.ReadValue("相机", "种类", "config", "Frame", rootFolder + "\\Config"));
+            if (usingCamType== EumUsingCamType.Frame)
+            {
+                Model.FrameCamEnable = true;
+                Model.ScanCamEnable = false;
+                LoadCamera();//加载相机
+            }            
+            else
+            {
+                Model.FrameCamEnable = false;
+                Model.ScanCamEnable = true;
+                LoadScanCamera();//线扫相机
+            }
+               
+            GeneralUse.WriteValue("相机", "种类", usingCamType.ToString(), "config", rootFolder + "\\Config");
         }
 
 
@@ -394,11 +471,57 @@ namespace MainFormLib.ViewModels
 
         }
         /// <summary>
+        /// 输出类型切换
+        /// </summary>
+        /// <param name="o"></param>
+        void cobxOutputTypeList_SelectedIndexChanged(object o)
+        {
+            if (outputType == (EumOutputType)Model.OutputTypeSelectIndex)//如果无切换则不重载
+                return;
+            outputType = (EumOutputType)Model.OutputTypeSelectIndex;
+            Model.OutputType = outputType;
+            if(outputType== EumOutputType.Location)
+            {
+                string secondName = GeneralUse.ReadValue("定位检测", "模板类型", "config", "ProductModel_1",
+                  saveToUsePath + "\\Location");
+                currModelType = (EumModelType)Enum.Parse(typeof(EumModelType), secondName);
+                Model.ModelType = currModelType;//当前模板类型
+                Model.ModelTypeSelectIndex = (int)currModelType;
+                if (currModelType == EumModelType.CaliBoardModel)
+                    LoadNinePointsCaliData(ref caliModel);
+                LoadPositionFlow("Location", secondName);
+                        
+            }
+            else if(outputType == EumOutputType.Trajectory)
+            {
+                LoadPositionFlow("Trajectory", "轨迹识别1");
+            }
+            else if (outputType == EumOutputType.Size)
+            {
+                LoadPositionFlow("Size", "尺寸测量1");
+            }
+            //切换重新加载相机曝光增益参数
+            if (usingCamType == EumUsingCamType.Frame)
+            {
+                Model.FrameCamEnable = true;
+                Model.ScanCamEnable = false;
+                LoadCamParam();
+            }
+            Appentxt("输出类型手动切换完成");
+            if (!PosBaseTool.ObjectValided(this.GrabImg))
+                return;
+            ShowTool.ClearAllOverLays();
+            ShowTool.DispImage(this.GrabImg);
+      
+        }
+
+        /// <summary>
         /// 定位检测模板类型切换
         /// </summary>
         /// <param name="o"></param>
         void cobxModelTypeList_SelectedIndexChanged(object o)
         {
+            if (Model.ModelTypeSelectIndex == -1) return;
             if (currModelType == (EumModelType)Model.ModelTypeSelectIndex)//如果无切换则不重载
                 return;
             currModelType = (EumModelType)Model.ModelTypeSelectIndex;
@@ -408,17 +531,23 @@ namespace MainFormLib.ViewModels
 
             Model.ModelType= currModelType;
             string secondName = Enum.GetName(typeof(EumModelType), currModelType);
-            LoadPositionFlow(secondName);
+            LoadPositionFlow("Location",secondName);
+      
+            //切换模板重新加载相机曝光增益参数
+            if (usingCamType == EumUsingCamType.Frame)
+            {
+                Model.FrameCamEnable = true;
+                Model.ScanCamEnable = false;
+                LoadCamParam();
+            }
             Appentxt("模板手动切换完成");
-           //切换模板重新加载相机曝光增益参数
-            LoadCamParam();
             if (!PosBaseTool.ObjectValided(this.GrabImg))
                 return;
             ShowTool.ClearAllOverLays();
             ShowTool.DispImage(this.GrabImg);          
         }
         /// <summary>
-        /// 定位检测工具栏按钮事件
+        /// 视觉检测工具栏按钮事件
         /// </summary>
         /// <param name="o"></param>
         void PosToolBarBtn_Click(object o)
@@ -442,6 +571,7 @@ namespace MainFormLib.ViewModels
                     {
                         // Open document
                         string path = dialog.FileName;
+                       string[] strings= path.Split('\\');
                         try
                         {
                             ResetNumOfPos();
@@ -458,7 +588,9 @@ namespace MainFormLib.ViewModels
                                 tem.Add(s.Value.GetToolName(), s.Value);
                                 s.Value.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
                                 if (s.Value.GetType() == typeof(ImageCorrectTool)||
-                                     s.Value.GetType() == typeof(DistancePPTool))
+                                     s.Value.GetType() == typeof(DistancePPTool)||
+                                    s.Value.GetType() == typeof(DistancePLTool)||
+                                    s.Value.GetType() == typeof(DistanceLLTool))
                                     continue;
                                 //切换配方会改变标定矩阵关系，影响坐标及角度换算工具的运行结果
                                 s.Value.SetMatrix(hv_HomMat2D);
@@ -470,7 +602,8 @@ namespace MainFormLib.ViewModels
                         }
                         catch (Exception er)
                         {
-                            MessageBox.Show("定位检测流程读取失败，异常信息:" + er.Message);
+                            MessageBox.Show(string.Format("检测流程[类型:{0},名称:{1}]读取失败，异常信息:{2}",
+                               outputType.ToString(), strings[strings.Length-1]) , er.Message);
                         }
                     }
                     #endregion
@@ -478,25 +611,43 @@ namespace MainFormLib.ViewModels
                 case "保存流程":
                     #region 保存流程
                     //文件夹名称
-                    string firstName = "定位检测";
+                    string firstName = outputType.ToString();
                     string secondName = Enum.GetName(typeof(EumModelType), currModelType);
                     if (!Directory.Exists(saveToUsePath + "\\" + firstName))
                         Directory.CreateDirectory(saveToUsePath + "\\" + firstName);
-
+                    GeneralUse.WriteValue("视觉检测", "输出类型", firstName, "config",
+                           saveToUsePath + "\\Config");
                     try
                     {
                         projectOfPos.Refresh();
-                    
-                        GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
-                            + firstName + "\\" + secondName + ".proj",
-                            projectOfPos);
+                        if (outputType == EumOutputType.Location)
+                        {
+                            GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
+                           + firstName + "\\" + secondName + ".proj",
+                           projectOfPos);
 
-                        GeneralUse.WriteValue("定位检测", "模板类型", secondName, "config",
-                                      saveToUsePath + "\\" + firstName);
+                            GeneralUse.WriteValue("定位检测", "模板类型", secondName, "config",
+                                          saveToUsePath + "\\" + firstName);
+                        }
+                        else if (outputType == EumOutputType.Trajectory)
+                        {
+                            secondName = "轨迹识别1";
+                            GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
+                             + firstName + "\\" + secondName + ".proj",
+                             projectOfPos);
+                        }
+                        else if (outputType == EumOutputType.Size)
+                        {
+                            secondName = "尺寸测量1";
+                            GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
+                             + firstName + "\\" + secondName + ".proj",
+                             projectOfPos);
+                        }
                     }
                     catch (Exception er)
                     {
-                        MessageBox.Show("定位检测流程保存失败，异常信息:" + er.Message);
+                        MessageBox.Show(string.Format("视觉检测流程[类型:{0},名称:{1}]保存失败，异常信息:{2}",
+                           outputType.ToString(), secondName,er.Message));
                     }
                     #endregion
                     break;
@@ -648,7 +799,7 @@ namespace MainFormLib.ViewModels
                 case "保存流程":
                     #region 保存流程
                     //文件夹名称
-                    string firstName = "胶水检测";       
+                    string firstName = "AOI";       
                     if (!Directory.Exists(saveToUsePath + "\\" + firstName))
                         Directory.CreateDirectory(saveToUsePath + "\\" + firstName);
 
@@ -656,7 +807,7 @@ namespace MainFormLib.ViewModels
                     {
                         projectOfGlue.Refresh();
                         GeneralUse.WriteSerializationFile<ProjectOfGlue>(saveToUsePath + "\\"
-                            + firstName + "\\" +  "AOI.proj",
+                            + firstName + "\\" + "胶水AOI.proj",
                             projectOfGlue);
                     }
                     catch (Exception er)
@@ -691,7 +842,7 @@ namespace MainFormLib.ViewModels
         }
 
         /// <summary>
-        /// 定位检测菜单栏按钮事件（新增定位检测工具）
+        /// 视觉检测菜单栏按钮事件（新增视觉检测工具）
         /// </summary>
         /// <param name="o"></param>
         void PosMenu_Click(object o)
@@ -791,10 +942,14 @@ namespace MainFormLib.ViewModels
                     tool = new PositionToolsLib.工具.DistancePPTool();
                     break;
                 case "点线距离":
+                    tool = new PositionToolsLib.工具.DistancePLTool();
                     break;
                 case "线线距离":
+                    tool = new PositionToolsLib.工具.DistanceLLTool();
                     break;
                 case "轨迹提取":
+                    tool = new PositionToolsLib.工具.TrajectoryExtractTool();
+
                     break;
                 case "结果显示":
                     tool = new PositionToolsLib.工具.ResultShowTool();
@@ -812,7 +967,9 @@ namespace MainFormLib.ViewModels
             }
             tool.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
             if (tool.GetType() != typeof(ImageCorrectTool)&&
-                tool.GetType() != typeof(DistancePPTool))
+                tool.GetType() != typeof(DistancePPTool)&&
+                tool.GetType() != typeof(DistancePLTool)&&
+                tool.GetType() != typeof(DistanceLLTool))
             {
                 tool.SetMatrix(hv_HomMat2D);
                 tool.SetCalibFilePath(NineCalibFile);
@@ -917,7 +1074,7 @@ namespace MainFormLib.ViewModels
             projectOfGlue.GetNum();
         }
         /// <summary>
-        /// 定位检测工具流程鼠标单击事件
+        /// 视觉检测工具流程鼠标单击事件
         /// </summary>
         void ListViewToolsOfPosition_MouseUp()
         {
@@ -964,7 +1121,7 @@ namespace MainFormLib.ViewModels
             }
         }
         /// <summary>
-        /// 定位检测工具流程鼠标双击事件
+        /// 视觉检测工具流程鼠标双击事件
         /// </summary>
         /// <param name="o"></param>
         void ListViewToolsOfPosition_DoubleClick(object o)
@@ -1020,7 +1177,8 @@ namespace MainFormLib.ViewModels
             }
             else if (toolName.Contains("模板匹配"))
             {
-               (tool.GetParam() as PositionToolsLib.参数.MatchParam).RootFolder = saveToUsePath+"\\定位检测\\"+ currModelType.ToString();
+                string firstName = outputType.ToString();
+               (tool.GetParam() as PositionToolsLib.参数.MatchParam).RootFolder = saveToUsePath+"\\"+ firstName+"\\"+ currModelType.ToString();
                 FormMatch f = new PositionToolsLib.窗体.Views.FormMatch(tool);
                 MatchViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 MatchViewModel.This.OnSaveManageHandle = SaveManageOfPos;
@@ -1106,21 +1264,36 @@ namespace MainFormLib.ViewModels
             else if (toolName.Contains("点点距离"))
             {
                 FormDistancePP f = new PositionToolsLib.窗体.Views.FormDistancePP(tool);
+               DistancePPViewModel.This.getPixelRatioHandle
+                     += OnGetPixelRatio;
                 DistancePPViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 DistancePPViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("点线距离"))
             {
-
+                FormDistancePL f = new PositionToolsLib.窗体.Views.FormDistancePL(tool);
+               DistancePLViewModel.This.getPixelRatioHandle
+                     += OnGetPixelRatio;
+                DistancePLViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
+                DistancePLViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
             }
             else if (toolName.Contains("线线距离"))
             {
-
+                FormDistanceLL f = new PositionToolsLib.窗体.Views.FormDistanceLL(tool);
+                DistanceLLViewModel.This.getPixelRatioHandle
+                    += OnGetPixelRatio;
+                DistanceLLViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
+                DistanceLLViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
             }
             else if (toolName.Contains("轨迹提取"))
             {
-
+                FormTrajectoryExtract f = new PositionToolsLib.窗体.Views.FormTrajectoryExtract(tool);
+                TrajectoryExtractViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
+                TrajectoryExtractViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
             }
             else if (toolName.Contains("结果显示"))
             {
@@ -1219,9 +1392,9 @@ namespace MainFormLib.ViewModels
             }
             else if (toolName.Contains("模板匹配"))
             {
-                if (!Directory.Exists(saveToUsePath + "\\胶水检测"))
-                    Directory.CreateDirectory(saveToUsePath + "\\胶水检测");
-                (tool.GetParam() as GlueDetectionLib.参数.MatchParam).RootFolder = saveToUsePath + "\\胶水检测" ;
+                if (!Directory.Exists(saveToUsePath + "\\AOI"))
+                    Directory.CreateDirectory(saveToUsePath + "\\AOI");
+                (tool.GetParam() as GlueDetectionLib.参数.MatchParam).RootFolder = saveToUsePath + "\\AOI" ;
                 GlueDetectionLib.窗体.Views.FormMatch f =
                     new GlueDetectionLib.窗体.Views.FormMatch(tool);
                 GlueDetectionLib.窗体.ViewModels.MatchViewModel.This.OnSaveParamHandle
@@ -1310,7 +1483,7 @@ namespace MainFormLib.ViewModels
             }
         }
         /// <summary>
-        /// 定位检测右键菜单栏
+        /// 视觉检测右键菜单栏
         /// </summary>
         /// <param name="o"></param>
         void ToolsOfPosition_ContextMenuClick(object o)
@@ -1353,6 +1526,10 @@ namespace MainFormLib.ViewModels
                     projectOfPos.dataManage.matrixBufDic.Remove(toolName);
                 if (projectOfPos.dataManage.enumerableTooDic.Contains(toolName))
                     projectOfPos.dataManage.enumerableTooDic.Remove(toolName);
+                if (projectOfPos.dataManage.trajectoryTooDic.Contains(toolName))
+                    projectOfPos.dataManage.trajectoryTooDic.Remove(toolName);
+                if (projectOfPos.dataManage.sizeTooDic.Contains(toolName))
+                    projectOfPos.dataManage.sizeTooDic.Remove(toolName);
                 if (projectOfPos.dataManage.resultBufDic.ContainsKey(toolName))
                     projectOfPos.dataManage.resultBufDic.Remove(toolName);
                 if (projectOfPos.dataManage.resultInfoDic.ContainsKey(toolName))
@@ -1361,7 +1538,10 @@ namespace MainFormLib.ViewModels
                     projectOfPos.dataManage.LineDataDic.Remove(toolName);
                 if (projectOfPos.dataManage.PositionDataDic.ContainsKey(toolName))
                     projectOfPos.dataManage.PositionDataDic.Remove(toolName);
-
+                if (projectOfPos.dataManage.TrajectoryDataDic.ContainsKey(toolName))
+                    projectOfPos.dataManage.TrajectoryDataDic.Remove(toolName);
+                if (projectOfPos.dataManage.SizeDataDic.ContainsKey(toolName))
+                    projectOfPos.dataManage.SizeDataDic.Remove(toolName);
                 projectOfPos.toolsDic.Remove(projectOfPos.toolNamesList[index]);
                 projectOfPos.toolNamesList.RemoveAt(index);
 
@@ -1592,8 +1772,13 @@ namespace MainFormLib.ViewModels
         private void btnSaveCamParma_Click()
         {
             //相机参数
-            string path = saveToUsePath + "\\定位检测\\" +
+            string path = saveToUsePath + "\\Location\\" +
                        Enum.GetName(typeof(EumModelType), currModelType);
+            if (outputType == EumOutputType.Trajectory)
+                path = saveToUsePath + "\\Trajectory";
+            else if (outputType == EumOutputType.Size)
+                path = saveToUsePath + "\\Size";
+
             if (Directory.Exists(path))
                 Directory.CreateDirectory(path);         
             GeneralUse.WriteValue("相机", "曝光", currCamExpouse.ToString(),
@@ -1613,6 +1798,48 @@ namespace MainFormLib.ViewModels
             GeneralUse.WriteValue("自动对焦", "限位阈值", LimitMethd.ToString(),
                 "config", rootFolder + "\\Config");
 
+        }
+        /// <summary>
+        /// 线扫相机保存参数
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnSaveScanCamParam_Click()
+        {
+            string DirectName = "线扫相机";
+            if (!Directory.Exists(saveToUsePath + "\\" + DirectName))
+                Directory.CreateDirectory(saveToUsePath + "\\" + DirectName);
+           string path=saveToUsePath + "\\" + DirectName + "\\相机参数";
+            if (cameraParamOfScan == null)
+                cameraParamOfScan = new CameraParamOfScan();
+            cameraParamOfScan.camType =(EumScanCamType) Model.ScanCamTypeSelectIndex;
+            cameraParamOfScan.deviceName =Model.TxbDeviceName;
+            cameraParamOfScan.configPath =Model.TxbConfigPath;
+            cameraParamOfScan.expouse = Model.NumExpouseOfScan;
+            cameraParamOfScan.Gain = Model.NumGainOfScan;
+
+            GeneralUse.WriteSerializationFile<CameraParamOfScan>(path, cameraParamOfScan);
+
+        }
+        /// <summary>
+        /// 打开线扫相机配置文件
+        /// </summary>
+        private void btnOpenScanCamConfigFile_Click()
+        {
+            // Configure open file dialog box
+            var dialog = new Microsoft.Win32.OpenFileDialog();
+            dialog.FileName = "线扫相机ccf配置文件"; // Default file name
+            dialog.DefaultExt = ".ccf"; // Default file extension
+            dialog.Filter = "*.ccf|*.CCF"; ; // Filter files by extension
+            dialog.InitialDirectory = saveToUsePath;
+            // Show open file dialog box
+            bool? result = dialog.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                cameraParamOfScan.configPath =Model.TxbConfigPath = dialog.FileName;
+            }
         }
         /// <summary>
         /// 相机停止采集
@@ -1641,16 +1868,31 @@ namespace MainFormLib.ViewModels
         /// <param name="obj"></param>
         void ExpouseValueChanged(object obj)
         {
-            currCamExpouse = Model.ExpouseSliderValue;
-            Model.ExpouseNumricValue = currCamExpouse;
-            if (CurrCam != null)
-                if (CurrCam.IsAlive)
-                {
-                    bool flag = CurrCam.SetExposureTime(currCamExpouse);
-                    if (!flag)
-                        Appentxt("相机曝光设置失败！");
-                    //MessageBox.Show("相机曝光设置失败！");
-                }
+            string name = ((Slider)obj).Name;
+            //面阵相机
+            if (name == "sliderFrameExpouse")
+            {
+                currCamExpouse = Model.ExpouseSliderValue;
+                Model.ExpouseNumricValue = currCamExpouse;
+                if (CurrCam != null)
+                    if (CurrCam.IsAlive)
+                    {
+                        bool flag = CurrCam.SetExposureTime(currCamExpouse);
+                        if (!flag)
+                            Appentxt("相机曝光设置失败！");
+                        //MessageBox.Show("相机曝光设置失败！");
+                    }
+            }
+            //线扫相机
+            else
+            {
+                currCamExpouseOfScan = Model.SliderExpouseOfScan;
+                Model.NumExpouseOfScan = currCamExpouseOfScan;
+                if (dalsaCam != null)
+                    if (dalsaCam.CamIsOK)
+                        dalsaCam.SetExposure(currCamExpouseOfScan);
+            }
+
         }
         /// <summary>
         /// 相机曝光值输入
@@ -1694,16 +1936,30 @@ namespace MainFormLib.ViewModels
         /// <param name="obj"></param>
         void GainValueChanged(object obj)
         {
-            currCamGain = Model.GainSliderValue;
-            Model.GainNumricValue = currCamGain;
-            if (CurrCam != null)
-                if (CurrCam.IsAlive)
-                {
-                    bool flag = CurrCam.SetGain(currCamGain);
-                    if (!flag)
-                        Appentxt("相机增益设置失败！");
-                  
-                }
+            string name = ((Slider)obj).Name;
+            //面阵相机
+            if (name == "sliderFrameGain")
+            {
+                currCamGain = Model.GainSliderValue;
+                Model.GainNumricValue = currCamGain;
+                if (CurrCam != null)
+                    if (CurrCam.IsAlive)
+                    {
+                        bool flag = CurrCam.SetGain(currCamGain);
+                        if (!flag)
+                            Appentxt("相机增益设置失败！");
+
+                    }
+            } //线扫相机
+            else
+            {
+                currCamGainOfScan = Model.SliderGainOfScan;
+                Model.NumGainOfScan = currCamGainOfScan;
+                if (dalsaCam != null)
+                    if (dalsaCam.CamIsOK)
+                        dalsaCam.SetGain(currCamGainOfScan);
+            }
+
         }
         /// <summary>
         /// 相机增益值输入
@@ -1864,6 +2120,152 @@ namespace MainFormLib.ViewModels
                 "config", rootFolder + "\\Config");
         }
 
+        void ScanExpouseNumericEvent()
+        {
+            currCamExpouseOfScan = Model.NumExpouseOfScan;
+            Model.SliderExpouseOfScan = currCamExpouseOfScan; 
+            if (dalsaCam != null)
+                if (dalsaCam.CamIsOK)
+                    dalsaCam.SetExposure(currCamExpouseOfScan);          
+        }
+        void ScanExpouseNumericKeyDown(object obj)
+        {
+            KeyEventArgs args = (KeyEventArgs)obj;
+            if (args.Key == Key.Enter)
+            {
+                currCamExpouseOfScan = Model.NumExpouseOfScan;
+                Model.SliderExpouseOfScan = currCamExpouseOfScan;
+                if (dalsaCam != null)
+                    if (dalsaCam.CamIsOK)
+                        dalsaCam.SetExposure(currCamExpouseOfScan);             
+            }
+        }
+
+        void ScanGainNumericEvent()
+        {
+            currCamGainOfScan = Model.NumGainOfScan;
+            Model.SliderGainOfScan = currCamGainOfScan;
+            if (dalsaCam != null)
+                if (dalsaCam.CamIsOK)
+                    dalsaCam.SetGain(currCamGainOfScan);
+        }
+        void ScanGainNumericKeyDown(object obj)
+        {
+            KeyEventArgs args = (KeyEventArgs)obj;
+            if (args.Key == Key.Enter)
+            {
+                currCamGainOfScan = Model.NumGainOfScan;
+                Model.SliderGainOfScan = currCamGainOfScan;
+                if (dalsaCam != null)
+                    if (dalsaCam.CamIsOK)
+                        dalsaCam.SetGain(currCamGainOfScan);
+            }
+        }
+        /// <summary>
+        /// 打开线扫相机
+        /// </summary>
+        void btnOpenScanCamera_Click()
+        {
+            dalsaCam.DeviceName =Model.TxbDeviceName;  //设备名(gige相机名/cameralink 采集卡名)
+            dalsaCam.ConfigFileName =Model.TxbConfigPath;  //ccf路径
+
+            if (!dalsaCam.InitCamera(dalsaCam.ConfigFileName))
+            {
+                //MessageBox.Show("设备初始化失败!");
+                ScanAppentxt("相机打开失败");
+            }
+            if (dalsaCam.CamIsOK)
+                dalsaCam.OnShowImage += ShowImage;
+            Model.BtnGrabScanCameraEnable = dalsaCam.CamIsOK;
+            Model.BtnShotScanCameraEnable = dalsaCam.CamIsOK;
+          
+            Model.BtnOpenScanCameraEnable = !dalsaCam.CamIsOK;
+            Model.BtnCloseScanCameraEnable = dalsaCam.CamIsOK;
+        }
+        /// <summary>
+        ///线扫图像显示
+        /// </summary>
+        /// <param name="image"></param>
+        private void ShowImage(HObject image)
+        {
+            if (null != image)
+            {
+                ShowTool.ClearAllOverLays();
+                GrabImg.Dispose();
+                HOperatorSet.CopyObj(image, out GrabImg, 1, 1);
+                ShowTool.DispImage(GrabImg);
+                ShowTool.D_HImage = GrabImg;
+            }
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+                if (f_GifShow != null && f_GifShow.IsActive && f_GifShow.IsLoaded)
+                    f_GifShow.Close();
+            });
+          
+        }
+        /// <summary>
+        /// 关闭线扫相机
+        /// </summary>
+       private void  btnCloseScanCamera_Click()
+        {
+            if (dalsaCam.CamIsOK)
+                dalsaCam.OnShowImage -= ShowImage;
+            dalsaCam.FreeDalsaCam();
+            Model.BtnGrabScanCameraEnable = false;
+            Model.BtnShotScanCameraEnable = false;
+            Model.BtnOpenScanCameraEnable = true;
+            Model.BtnCloseScanCameraEnable = false;         
+        }
+        /// <summary>
+        /// 线扫相机 Grab,Freeze操作
+        /// </summary>
+        private void btnScanGrab_Click()
+        {
+            if (Model.BtnGrabContent == "Grab")
+            {
+                Model.BtnGrabContent = "Freeze";
+                dalsaCam.Grab();
+                ScanAppentxt("线扫自由采集中");
+              Model.BtnShotScanCameraEnable  = false;
+            }
+            else
+            {
+                Model.BtnGrabContent = "Grab";
+                dalsaCam.Freeze();
+                ScanAppentxt("线扫采集停止");
+                Model.BtnShotScanCameraEnable = true;
+            }
+        }
+        /// <summary>
+        /// 线扫相机Snap操作
+        /// </summary>
+        private void btnScanSnap_Click()
+        {
+            dalsaCam.Freeze();
+            Thread.Sleep(20);
+
+            dalsaCam.Snap();
+
+            Task.Run(ShowPic);
+        } 
+        /// <summary>
+            /// 显示进度条
+            /// </summary>
+        private void ShowPic()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
+                f_GifShow = new  FormGifShow();                      
+                f_GifShow.Topmost = true;
+                f_GifShow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                f_GifShow.Show();
+            });
+          
+        }
         /// <summary>
         /// 辅助工具
         /// </summary>
@@ -1897,10 +2299,26 @@ namespace MainFormLib.ViewModels
         {
             AddAssistToolToCross();
         }
+        void OnParamOperate(EumParamOperate operate)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
 
+                if (operate == EumParamOperate.fold)//折叠
+                {
+                    Model.Width = 0;
+                }
+                else//展开
+                {
+                    Model.Width = 350;
+                }
+            });
+        }
         #endregion
 
-        #region--------------定位检测---------------
+        #region--------------视觉检测---------------
         public PosDataManage GetManageOfPos()
         {
             return this.projectOfPos.dataManage;
@@ -1911,7 +2329,7 @@ namespace MainFormLib.ViewModels
         }
        
         /// <summary>
-        /// 定位检测参数保存
+        /// 视觉检测参数保存
         /// </summary>
         /// <param name="toolName"></param>
         /// <param name="par"></param>
@@ -2002,6 +2420,7 @@ namespace MainFormLib.ViewModels
 
 
                 }
+               
             }
         }
         #endregion
@@ -2181,16 +2600,17 @@ namespace MainFormLib.ViewModels
 
         #region   Method
         /// <summary>
-        /// 加载定位检测流程
+        /// 加载视觉检测流程
         /// </summary>
+        /// <param name="firstName"></param>
         /// <param name="secondName"></param>
         /// <returns></returns>
-         bool LoadPositionFlow(string secondName)
+        bool LoadPositionFlow(string firstName , string secondName)
         {
             try
             {
                 ResetNumOfPos();
-                #region 需要先注销定位检测TCP
+                #region 需要先注销视觉检测TCP
              
                 foreach (var item in this.projectOfPos.toolsDic)
                 {
@@ -2240,7 +2660,7 @@ namespace MainFormLib.ViewModels
                 }
                 #endregion
                 this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>
-                    (saveToUsePath + "\\" + "定位检测" + "\\" + secondName + ".proj");
+                    (saveToUsePath + "\\" + firstName + "\\" + secondName + ".proj");
            
                 projectOfPos.GetNum();
                 projectOfPos.toolNamesList = new List<string>();
@@ -2254,7 +2674,9 @@ namespace MainFormLib.ViewModels
                     tem.Add(s.Value.GetToolName(), s.Value);
                     s.Value.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
                     if (s.Value.GetType() == typeof(ImageCorrectTool)||
-                        s.Value.GetType() == typeof(DistancePPTool))
+                        s.Value.GetType() == typeof(DistancePPTool)||
+                         s.Value.GetType() == typeof(DistancePLTool)||
+                          s.Value.GetType() == typeof(DistanceLLTool))
                         continue;
                     s.Value.SetMatrix(hv_HomMat2D);
                     s.Value.SetCalibFilePath(NineCalibFile);
@@ -2269,7 +2691,7 @@ namespace MainFormLib.ViewModels
                     else
                         projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
 
-                #region 后订阅+定位检测TCP
+                #region 后订阅+视觉检测TCP
               
                 foreach (var item in this.projectOfPos.toolsDic)
                 {
@@ -2319,7 +2741,9 @@ namespace MainFormLib.ViewModels
             }
             catch (Exception er)
             {
-                Appentxt("定位检测流程加载失败，异常信息:" + er.Message);
+                Appentxt(string.Format("检测流程[类型:{0}," +
+                    "   名称:{1}]加载失败，异常信息:{2}", firstName,
+                      secondName, er.Message) );
                 return false;
             }
             return true;
@@ -2386,7 +2810,7 @@ namespace MainFormLib.ViewModels
                 }
                 #endregion
                 this.projectOfGlue = GeneralUse.ReadSerializationFile<ProjectOfGlue>
-                    (saveToUsePath + "\\" + "胶水检测" + "\\" + "AOI.proj");
+                    (saveToUsePath + "\\" + "AOI" + "\\" + "胶水AOI.proj");
                 projectOfGlue.GetNum();
                 projectOfGlue.toolNamesList = new List<string>();
                 if (projectOfGlue.dataManage == null)
@@ -2509,25 +2933,39 @@ namespace MainFormLib.ViewModels
             {
                 // 在UI线程上执行更新操作
                 // 更新绑定数据的代码
-
+                string outputName = GeneralUse.ReadValue("视觉检测", "输出类型", "config", "Location",
+                             saveToUsePath + "\\Config" );
+                outputType = (EumOutputType)Enum.Parse(typeof(EumOutputType), outputName);
+                Model.OutputType = outputType;
+                Model.OutputTypeSelectIndex=(int)outputType;
                 //文件夹名称
-                string firstName = "定位检测";
+                string firstName = outputName;
                 if (!Directory.Exists(saveToUsePath + "\\" + firstName))
                     Directory.CreateDirectory(saveToUsePath + "\\" + firstName);
-                string secondName = GeneralUse.ReadValue("定位检测", "模板类型", "config", "ProductModel_1",
-                              saveToUsePath + "\\" + firstName);
-                currModelType = (EumModelType)Enum.Parse(typeof(EumModelType), secondName);
+                string secondName= GeneralUse.ReadValue("定位检测", "模板类型", "config", "ProductModel_1",
+                                  saveToUsePath + "\\" + firstName);
+                if (outputType == EumOutputType.Location)
+                {
 
+                    currModelType = (EumModelType)Enum.Parse(typeof(EumModelType), secondName);
+                    Model.ModelType = currModelType;//当前模板类型
+                    Model.ModelTypeSelectIndex = (int)currModelType;
 
-                Model.ModelType = currModelType;//当前模板类型
-                Model.ModelTypeSelectIndex = (int)currModelType;
-
-                if (currModelType == EumModelType.CaliBoardModel)
-                    LoadNinePointsCaliData(ref caliModel);
-
-                LoadPositionFlow(secondName);//加载定位检测流程
+                    if (currModelType == EumModelType.CaliBoardModel)
+                        LoadNinePointsCaliData(ref caliModel);
+                }
+                else if (outputType == EumOutputType.Trajectory)
+                {
+                    secondName = "轨迹识别1";
+                }
+                else if (outputType == EumOutputType.Size)
+                {
+                    secondName = "尺寸测量1";
+                }
+                LoadPositionFlow(firstName,secondName);//加载视觉检测流程
                 LoadGlueAoiFlow();//加载胶水检测流程
-                Appentxt(string.Format("当前加载配方：{0}，模板：{1}", currRecipeName, secondName));
+                Appentxt(string.Format("当前加载配方：{0}，输出类型：{1},流程名称：{2}", 
+                    currRecipeName, firstName, secondName));
                 if (PosBaseTool.ObjectValided(this.GrabImg))
                 {
                     ShowTool.ClearAllOverLays();
@@ -2543,8 +2981,12 @@ namespace MainFormLib.ViewModels
         void LoadCamParam()
         {          
             //相机参数
-            string path = saveToUsePath + "\\定位检测\\" +
+            string path = saveToUsePath + "\\Location\\" +
                        Enum.GetName(typeof(EumModelType), currModelType);
+            if (outputType == EumOutputType.Trajectory)
+                 path = saveToUsePath + "\\Trajectory";
+            else if(outputType== EumOutputType.Size)
+                path = saveToUsePath + "\\Size";
             if (Directory.Exists(path))
                 Directory.CreateDirectory(path);
             currCamExpouse = long.Parse(GeneralUse.ReadValue("相机", "曝光", "config", "1000", path));
@@ -2582,8 +3024,13 @@ namespace MainFormLib.ViewModels
         void LoadCamera()
         {
             //相机参数
-            string path = saveToUsePath + "\\定位检测\\"+
+            string path = saveToUsePath + "\\Location\\"+
                        Enum.GetName(typeof(EumModelType), currModelType);
+            if (outputType == EumOutputType.Trajectory)
+                path = saveToUsePath + "\\Trajectory";
+            else if (outputType == EumOutputType.Size)
+                path = saveToUsePath + "\\Size";
+
             if (Directory.Exists(path))
                 Directory.CreateDirectory(path);
             currCamExpouse =long.Parse( GeneralUse.ReadValue("相机", "曝光", "config", "1000", path));
@@ -2735,7 +3182,28 @@ namespace MainFormLib.ViewModels
                 Model.CobxCamIndexerEnable = !flag;
             });
         }
+        /// <summary>
+        /// 加载线扫相机
+        /// </summary>
+        void LoadScanCamera()
+        {
+            //线扫相机参数
+            string DirectName = "线扫相机";
+            if (!Directory.Exists(saveToUsePath + "\\" + DirectName))
+                Directory.CreateDirectory(saveToUsePath + "\\" + DirectName);
+            string path = saveToUsePath + "\\" + DirectName + "\\相机参数";
+            cameraParamOfScan = GeneralUse.ReadSerializationFile<CameraParamOfScan>(path);
+            if (cameraParamOfScan == null)
+                cameraParamOfScan = new CameraParamOfScan();
 
+            Model.ScanCamTypeSelectIndex= (int)cameraParamOfScan.camType;
+            Model.TxbDeviceName=cameraParamOfScan.deviceName  ;
+            Model.TxbConfigPath= cameraParamOfScan.configPath ;
+            Model.NumExpouseOfScan=cameraParamOfScan.expouse ;
+            Model.NumGainOfScan= cameraParamOfScan.Gain ;
+            if (!File.Exists(cameraParamOfScan.configPath))
+                Appentxt("线扫相机配置文件不存在！");
+        }
         /// <summary>
         /// 加载参数
         /// </summary>
@@ -2815,7 +3283,9 @@ namespace MainFormLib.ViewModels
                 foreach (var s in projectOfPos.toolsDic)
                 {
                     if (s.Value.GetType() == typeof(ImageCorrectTool)||
-                        s.Value.GetType() == typeof(DistancePPTool))
+                        s.Value.GetType() == typeof(DistancePPTool)||
+                        s.Value.GetType() == typeof(DistancePLTool)||
+                        s.Value.GetType() == typeof(DistanceLLTool))
                         continue;
                     s.Value.SetMatrix(hv_HomMat2D);//给每个工具传递当前坐标变换矩阵
                     s.Value.SetCalibFilePath(NineCalibFile);
@@ -2825,16 +3295,16 @@ namespace MainFormLib.ViewModels
         /// <summary>
         /// 运行检测流程
         /// </summary>
-        private StuCoordinateData RunTestFlowOfPosition()
+        private object RunTestFlowOfPosition()
         {
             objs.Clear();
             infos.Clear();
             List<string> InfoList = new List<string>();
-
+            dynamic data = null;
             if (!PosBaseTool.ObjectValided(this.GrabImg))
             {
                 Appentxt("图像为空");
-                return new StuCoordinateData(0, 0, 0);
+                return null;
             }
             if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
                 projectOfPos.dataManage.imageBufDic.Add("原始图像", null);
@@ -2845,7 +3315,7 @@ namespace MainFormLib.ViewModels
             if (count <= 0)
             {
                 Appentxt("流程为空");
-                return new StuCoordinateData(0, 0, 0);
+                return null;
             }
             InfoList.Add(string.Format("Channel:{0}", "unknow"));
             InfoList.Add(string.Format("SN:{0}", "default"));
@@ -2867,10 +3337,9 @@ namespace MainFormLib.ViewModels
                     Appentxt(string.Format("工具：{0}，运行完成，时长：{1}ms", name, rlt.runTime));
 
             }
-            StuCoordinateData data = new StuCoordinateData(0, 0, 0);
-          
+               
             InfoList.Add(string.Format("CT:{0}ms", ctime));
-
+           
             if (projectOfPos.toolNamesList.Exists(t => t.Contains("结果显示")))
             {
                 int index = projectOfPos.toolNamesList.FindIndex(t => t.Contains("结果显示"));
@@ -2884,21 +3353,50 @@ namespace MainFormLib.ViewModels
                     color = "green",
                     obj = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).ResultRegion.Clone()
                 });
-                data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).CoordinateData;
-        
-                InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
-                    data.x, data.y, data.angle));
+                EumOutputType output = 
+                    (EumOutputType)((int)(tool.GetParam() as PositionToolsLib.参数.ResultShowParam).OutputType);
+                if(outputType!= output)
+                {
+                    Appentxt(string.Format("结果显示工具输出类型不符，当前需要将其设置为:{0}",
+                        outputType.ToString()));
+                    return null;
+                }
+                if (outputType == EumOutputType.Location)
+                {
+                    data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).CoordinateData;
+                    InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
+                      data.x, data.y, data.angle));
+                }
+                else if (outputType == EumOutputType.Trajectory)
+                {
+                    data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).TrajectoryDataList;
+                    foreach (var s in data)
+                        InfoList.Add(string.Format("Pos_id:{0},Pos_x:{1:f3},Pos_y:{2:f3},Pos_r:{3:f3}\n",
+                                s.ID, s.X, s.Y, s.Radius));
 
+                }
+                else if (outputType == EumOutputType.Size)
+                {
+                    data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).Distances;
+                    int id = 1;
+                    foreach (var s in data)
+                    {
+                        InfoList.Add(string.Format("Dis_id:{0},Distance:{1:f3}\n",
+                               id, s));
+                        id++;
+                    }
+                       
+                }
+            
             }
             else
             {
               
-
-                Appentxt("流程中无结果显示工具，无法输出正确结果");
-                InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
-                 0, 0, 0));
-                data = new StuCoordinateData(0, 0, 0);
-
+               Appentxt("流程中无结果显示工具，无法输出正确结果");
+                //InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
+                // 0, 0, 0));
+                //data = new StuCoordinateData(0, 0, 0);
+                return null;
 
             }
 
@@ -2921,7 +3419,9 @@ namespace MainFormLib.ViewModels
                             inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.FindCircleParam).ResultInspectROI;
                         else if (name.Contains("Blob"))
                             inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.BlobParam).ResultInspectROI;
-
+                        else if (name.Contains("轨迹提取"))
+                            inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.TrajectoryExtractParam).TrajectoryTool.param.ResultInspectROI;
+                        
                         if (PosBaseTool.ObjectValided(inspectROI))
                         {
                             ShowTool.DispRegion(inspectROI, "blue");
@@ -2950,6 +3450,8 @@ namespace MainFormLib.ViewModels
                         inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.FindCircleParam).ResultInspectROI;
                     else if (name.Contains("Blob"))
                         inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.BlobParam).ResultInspectROI;
+                    else if (name.Contains("轨迹提取"))
+                        inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.TrajectoryExtractParam).TrajectoryTool.param.ResultInspectROI;
 
                     if (PosBaseTool.ObjectValided(inspectROI))
                     {
@@ -3045,10 +3547,16 @@ namespace MainFormLib.ViewModels
             #endregion
 
             if (!totalResult)
-                data = new PositionToolsLib.StuCoordinateData(0, 0, 0);
+                if (outputType == EumOutputType.Location)
+                    data = new PositionToolsLib.StuCoordinateData(0, 0, 0);
+                else if (outputType == EumOutputType.Trajectory)
+                    data = null;
+                else if (outputType == EumOutputType.Size)
+                    data = null;
+
             return data;
         }
-        /// </summary>
+        /// <summary>
         /// 像素坐标转机械坐标
         /// </summary>
         /// <param name="fc"></param>
@@ -3683,7 +4191,7 @@ namespace MainFormLib.ViewModels
 
         }
         /// <summary>
-        /// 复位定位检测工具编号
+        /// 复位视觉检测工具编号
         /// </summary>
         private void ResetNumOfPos()
         {
@@ -3695,6 +4203,8 @@ namespace MainFormLib.ViewModels
             PositionToolsLib.工具.ColorConvertTool.inum = 0;
             PositionToolsLib.工具.CoordConvertTool.inum = 0;
             PositionToolsLib.工具.DilationTool.inum = 0;
+            PositionToolsLib.工具.DistanceLLTool.inum = 0;
+            PositionToolsLib.工具.DistancePLTool.inum = 0;
             PositionToolsLib.工具.DistancePPTool.inum = 0;
             PositionToolsLib.工具.ErosionTool.inum = 0;
             PositionToolsLib.工具.FindCircleTool.inum = 0;
@@ -3709,6 +4219,7 @@ namespace MainFormLib.ViewModels
             PositionToolsLib.工具.ResultShowTool.inum = 0;
             PositionToolsLib.工具.TcpRecvTool.inum = 0;
             PositionToolsLib.工具.TcpSendTool.inum = 0;
+            PositionToolsLib.工具.TrajectoryExtractTool.inum = 0;
 
         }
         /// <summary>
@@ -3732,7 +4243,7 @@ namespace MainFormLib.ViewModels
             GlueDetectionLib.工具.TcpSendTool.inum = 0;
         }
         /// <summary>
-        /// 显示定位检测流程
+        /// 显示视觉检测流程
         /// </summary>
         private void ShowTestFlowOfPosition()
         {
@@ -3776,10 +4287,18 @@ namespace MainFormLib.ViewModels
         /// </summary>
         private void ClearTextClick()
         {
-            //Model.ClearRichText = false;
-            //Model.ClearRichText = true;
-            ClearTxtAction?.Invoke();
+         
+            ClearTxtAction?.Invoke("richTxtInfo");
         }
+        /// <summary>
+        /// 富文本信息清除
+        /// </summary>
+        private void ScanClearTextClick()
+        {
+
+            ClearTxtAction?.Invoke("scanRichTxtInfo");
+        }
+        
         /// <summary>
         /// 添加测试文本及日志
         /// </summary>
@@ -3789,10 +4308,24 @@ namespace MainFormLib.ViewModels
             string dConvertString = string.Format("{0}  {1}\r",
                               DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), info);
             //Model.RichIfo = dConvertString;
-            AppenTxtAction?.Invoke(dConvertString);
+            AppenTxtAction?.Invoke("richTxtInfo", dConvertString);
             log.Info("测试信息", info);
 
         }
+        /// <summary>
+        /// 添加测试文本及日志
+        /// </summary>
+        /// <param name="info"></param>
+        private void ScanAppentxt(string info)
+        {
+            string dConvertString = string.Format("{0}  {1}\r",
+                              DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), info);
+            //Model.RichIfo = dConvertString;
+            AppenTxtAction?.Invoke("scanRichTxtInfo", dConvertString);
+            log.Info("测试信息", info);
+
+        }
+
         /// <summary>
         /// 复制文件夹及文件
         /// </summary>
@@ -4652,6 +5185,58 @@ namespace MainFormLib.ViewModels
             return this.currModelType.ToString();
         }
         /// <summary>
+        /// 切换输出类型
+        /// </summary>
+        /// <param name="eumoutputType"></param>
+        /// <returns></returns>
+        public bool SwitchOutputType(EumOutputType eumoutputType)
+        {
+            Appentxt(string.Format("指令开启输出类型切换,名称:{0}",
+                                   Enum.GetName(typeof(EumOutputType), eumoutputType)));
+            if (outputType == eumoutputType)//如果无切换则不重载
+            {
+                Appentxt(string.Format("当前输出类型类型:{0}与当前正使用的同名！",
+                       Enum.GetName(typeof(EumOutputType), eumoutputType)));
+                return true;
+            }
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                outputType = Model.OutputType = eumoutputType;
+                Model.OutputTypeSelectIndex = (int)outputType;
+
+                if (outputType == EumOutputType.Location)
+                {
+                    string secondName = GeneralUse.ReadValue("定位检测", "模板类型", "config", "ProductModel_1",
+                      saveToUsePath + "\\Location");
+                    currModelType = (EumModelType)Enum.Parse(typeof(EumModelType), secondName);
+                    Model.ModelType = currModelType;//当前模板类型
+                    Model.ModelTypeSelectIndex = (int)currModelType;
+                    if (currModelType == EumModelType.CaliBoardModel)
+                        LoadNinePointsCaliData(ref caliModel);
+                    LoadPositionFlow("Location", secondName);
+
+                }
+                else if (outputType == EumOutputType.Trajectory)
+                {
+                    LoadPositionFlow("Trajectory", "轨迹识别1");
+                }
+                else if (outputType == EumOutputType.Size)
+                {
+                    LoadPositionFlow("Size", "尺寸测量1");
+                }
+                //切换重新加载相机曝光增益参数
+                if (usingCamType == EumUsingCamType.Frame)
+                {
+                    Model.FrameCamEnable = true;
+                    Model.ScanCamEnable = false;
+                    LoadCamParam();
+                }
+                Appentxt("输出类型切换完成");
+            });
+            return true;
+        }
+        /// <summary>
         ///  模板切换
         /// </summary>
         /// <param name="eumModelType">模板切换类型参数</param>
@@ -4661,7 +5246,7 @@ namespace MainFormLib.ViewModels
 
             return
                  Application.Current.Dispatcher.Invoke(() =>
-             {
+             { 
                  // 在UI线程上执行更新操作
                  // 更新绑定数据的代码
                  Appentxt(string.Format("指令开启模板切换,模板名称:{0}",
@@ -4672,15 +5257,23 @@ namespace MainFormLib.ViewModels
                             Enum.GetName(typeof(EumModelType), eumModelType)));
                      return true;
                  }
+                 outputType = Model.OutputType = EumOutputType.Location;
+                 Model.OutputTypeSelectIndex = (int)outputType;
                  Model.ModelType = eumModelType;
                  if (currModelType == EumModelType.CaliBoardModel)
                      LoadNinePointsCaliData(ref caliModel);
                  currModelType = eumModelType;
                  string secondName = Enum.GetName(typeof(EumModelType), currModelType);
-                 bool loadFlag = LoadPositionFlow(secondName);
+                 bool loadFlag = LoadPositionFlow("Location", secondName);
                  Model.ModelTypeSelectIndex = (int)eumModelType;
                  //切换模板重新加载相机曝光增益参数
-                 LoadCamParam();
+                 if (usingCamType == EumUsingCamType.Frame)
+                 {
+                     Model.FrameCamEnable = true;
+                     Model.ScanCamEnable = false;
+                     LoadCamParam();
+                 }
+
                  return loadFlag;
                  //if (!PosBaseTool.ObjectValided(this.GrabImg))
                  //    return;
@@ -5147,6 +5740,14 @@ namespace MainFormLib.ViewModels
             }
         }
         /// <summary>
+        /// 参数画面操作：折叠或展开
+        /// </summary>
+        /// <param name="paramOperate"></param>
+        public void SetParamMode(EumParamOperate paramOperate)
+        {
+            ShowTool.SetParamMode(paramOperate);
+        }
+        /// <summary>
         /// 系统运行
         /// </summary>
         /// <returns></returns>
@@ -5497,11 +6098,28 @@ namespace MainFormLib.ViewModels
               
                 Appentxt(string.Format("相机当前工作状态：{0}",
                          Enum.GetName(typeof(EunmCamWorkStatus), workstatus)));
-
+                object obj = null;
+                if (workstatus != EunmCamWorkStatus.AOI&&
+                      workstatus != EunmCamWorkStatus.AutoFocus)
+                {
+                     obj = RunTestFlowOfPosition();
+                    if (obj == null)
+                    {
+                        virtualConnect.WriteData("流程异常ERR");
+                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        if (tool != null)
+                        {
+                            tool.SendData(string.Format("流程异常ERR"));
+                        }
+                        Appentxt("流程异常ERR");
+                        return;
+                    }
+                }               
                 if (workstatus == EunmCamWorkStatus.NinePointcLocation)  //9点标定定位模式
                 {
-                    DgPixelPointIndexer++;
-                    StuCoordinateData data = RunTestFlowOfPosition();
+                  
+                    DgPixelPointIndexer++;                   
+                    StuCoordinateData data = (StuCoordinateData)obj;
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         // 在UI线程上执行更新操作
@@ -5552,7 +6170,7 @@ namespace MainFormLib.ViewModels
                 else if (workstatus == EunmCamWorkStatus.RotatoLocation)  //旋转中心计定位模式
                 {
                     DgRotatePointIndexer++;
-                   StuCoordinateData data = RunTestFlowOfPosition();
+                    StuCoordinateData data = (StuCoordinateData)obj;
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         // 在UI线程上执行更新操作
@@ -5601,7 +6219,7 @@ namespace MainFormLib.ViewModels
                 }
                 else if (workstatus == EunmCamWorkStatus.DeviationLocation)  //标定偏差校验
                 {
-                   StuCoordinateData data = RunTestFlowOfPosition();
+                    StuCoordinateData data = (StuCoordinateData)obj;
 
                     Create_Physical_coorsys();
                     if (data.x == 0 && data.y == 0 && data.angle == 0)
@@ -5646,8 +6264,8 @@ namespace MainFormLib.ViewModels
                 }
                 else if (workstatus == EunmCamWorkStatus.NormalTest_T1)  //正常定位测试(产品1)
                 {
-         
-                   StuCoordinateData data = RunTestFlowOfPosition();
+
+                    StuCoordinateData data = (StuCoordinateData)obj;
                     Create_Physical_coorsys();
                       
                     string buff = "[发送特征点位数据]";
@@ -5668,7 +6286,7 @@ namespace MainFormLib.ViewModels
                 }
                 else if (workstatus == EunmCamWorkStatus.NormalTest_T2)  //正常定位测试(产品2)
                 {
-                    StuCoordinateData data = RunTestFlowOfPosition();
+                    StuCoordinateData data = (StuCoordinateData)obj;
 
                     Create_Physical_coorsys();
                    
@@ -5690,8 +6308,8 @@ namespace MainFormLib.ViewModels
                 }
                 else if (workstatus == EunmCamWorkStatus.NormalTest_G)  //正常定位测试(点胶阀)
                 {
-                 
-                    StuCoordinateData data = RunTestFlowOfPosition();
+
+                    StuCoordinateData data = (StuCoordinateData)obj;
                     Create_Physical_coorsys();                  
                     string buff = "[发送特征点位数据]";
                     buff += string.Format("x:{0:f3},y:{1:f3},a:{2:f3};",
@@ -5737,9 +6355,48 @@ namespace MainFormLib.ViewModels
                 }         
                 else if (workstatus == EunmCamWorkStatus.Trajectory)
                 {
-                    
-                }
+                    List<DgTrajectoryData> datas = (List<DgTrajectoryData>)obj;//轨迹点集合
+                    Create_Physical_coorsys();
 
+                    string buff = "[发送轨迹点位数据]";
+                    foreach(var s in datas)
+                      buff += string.Format("id:{0},x:{1:f3},y:{2:f3},r:{3:f3};",
+                                   s.ID,s.X, s.Y, s.Radius);
+                    Appentxt(buff);
+                    virtualConnect.WriteData(buff.Replace("[发送轨迹点位数据]", ""));
+                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(buff.Replace("[发送轨迹点位数据]", ""));
+                    }
+                    stopwatch.Stop();
+                    int spend = (int)stopwatch.ElapsedMilliseconds;
+                    ShowTool.DetectionTime = spend;
+                }
+                else if(workstatus == EunmCamWorkStatus.Size)
+                {
+                    List<double> datas = (List<double>)obj;//尺寸集合
+                    Create_Physical_coorsys();
+
+                    string buff = "[发尺寸测量数据]";
+                    int id = 1;
+                    foreach (var s in datas)
+                    {
+                        buff += string.Format("id:{0},distance:{1:f3};",
+                                   id, s);
+                        id++;
+                    }                     
+                    Appentxt(buff);
+                    virtualConnect.WriteData(buff.Replace("[发尺寸测量数据]", ""));
+                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(buff.Replace("[发尺寸测量数据]", ""));
+                    }
+                    stopwatch.Stop();
+                    int spend = (int)stopwatch.ElapsedMilliseconds;
+                    ShowTool.DetectionTime = spend;
+                }
             }
         }
         //相机连接状态
@@ -5752,7 +6409,7 @@ namespace MainFormLib.ViewModels
 
         #region TCP
         /// <summary>
-        /// 获取定位检测TCP发送工具
+        /// 获取视觉检测TCP发送工具
         /// </summary>
         /// <returns></returns>
         PosTcpSendTool GetToolToSendOfPos()
@@ -5771,7 +6428,7 @@ namespace MainFormLib.ViewModels
             return null;
         }
         /// <summary>
-        /// 获取定位检测TCP发送工具
+        /// 获取视觉检测TCP发送工具
         /// </summary>
         /// <returns></returns>
         GlueTcpSendTool GetToolToSendOfGlue()
@@ -5802,6 +6459,12 @@ namespace MainFormLib.ViewModels
             {
                 if (strData.Contains("NP,")) //9点标定流程
                 {
+                    if (outputType != EumOutputType.Location)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Location");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Location");
+                        return;
+                    }
                     if (currModelType != EumModelType.CaliBoardModel)
                         SwitchModelType(EumModelType.CaliBoardModel);
                     string[] tempdataArray = strData.Split(',');
@@ -5926,6 +6589,12 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Contains("C,"))//旋转中心标定流程
                 {
+                    if (outputType != EumOutputType.Location)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Location");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Location");
+                        return;
+                    }
                     if (currModelType != EumModelType.CaliBoardModel)
                         SwitchModelType(EumModelType.CaliBoardModel);
 
@@ -6035,6 +6704,12 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Equals("Deviation"))//标定偏差校验
                 {
+                    if (outputType != EumOutputType.Location)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Location");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Location");
+                        return;
+                    }
                     if (currModelType != EumModelType.CaliBoardModel)
                         SwitchModelType(EumModelType.CaliBoardModel);
                     if (this.projectOfPos.toolsDic.Count > 0 &&
@@ -6059,6 +6734,12 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Equals("T1"))
                 {
+                    if (outputType != EumOutputType.Location)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Location");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Location");
+                        return;
+                    }
                     if (currModelType != EumModelType.ProductModel_1)
                         SwitchModelType(EumModelType.ProductModel_1);
 
@@ -6070,6 +6751,12 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Equals("T2"))
                 {
+                    if (outputType != EumOutputType.Location)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Location");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Location");
+                        return;
+                    }
                     if (currModelType != EumModelType.ProductModel_2)
                         SwitchModelType(EumModelType.ProductModel_2);
 
@@ -6081,7 +6768,12 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Equals("G"))
                 {
-
+                    if (outputType != EumOutputType.Location)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Location");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Location");
+                        return;
+                    }
                     if (currModelType != EumModelType.GluetapModel)
                         SwitchModelType(EumModelType.GluetapModel);
 
@@ -6149,7 +6841,27 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Contains("Trajectory"))//轨迹提取
                 {
-
+                    if (outputType != EumOutputType.Trajectory)
+                    {
+                        Appentxt("当前输出结果类型不符，应当为Trajectory");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Trajectory");
+                        return;
+                    }
+                    stopwatch.Restart();
+                    Appentxt("开始轨迹提取检测");
+                    OneGrab(EunmCamWorkStatus.Trajectory);
+                }
+                else if (strData.Contains("Size"))//尺寸测量
+                {
+                    if (outputType != EumOutputType.Size)
+                    {
+                        Appentxt("当前输出结果类型不符，Size");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为Size");
+                        return;
+                    }
+                    stopwatch.Restart();
+                    Appentxt("开始尺寸测量检测");
+                    OneGrab(EunmCamWorkStatus.Size);
                 }
                 else
                     return;

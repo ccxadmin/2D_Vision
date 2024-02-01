@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PositionToolsLib.窗体.Views
+namespace PositionToolsLib.窗体.Pages
 {
     /// <summary>
     /// CirclePage.xaml 的交互逻辑

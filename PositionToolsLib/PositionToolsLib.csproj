@@ -59,8 +59,4 @@
     </Resource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="窗体\Pages\" />
-  </ItemGroup>
-
 </Project>

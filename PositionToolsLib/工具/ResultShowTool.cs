@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
+using PositionToolsLib.窗体.Models;
+using PositionToolsLib.窗体.Pages;
 
 namespace PositionToolsLib.工具
 {
@@ -60,8 +62,7 @@ namespace PositionToolsLib.工具
             DataManage dm = GetManage();
             try
             {
-                (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(0, 0, 0);
-
+             
                 if (BaseTool.ObjectValided((toolParam as ResultShowParam).ResultRegion))
                       (toolParam as ResultShowParam).ResultRegion.Dispose();
                 (toolParam as ResultShowParam).ResultInfo.Clear();
@@ -80,24 +81,52 @@ namespace PositionToolsLib.工具
                 }
                 (toolParam as ResultShowParam).OutputImg = (toolParam as ResultShowParam).InputImg;//输出图像 
 
-                double X = 0, Y = 0, angle = 0;
-                if(dm.resultFlagDic[(toolParam as ResultShowParam).InputXCoorName])
-                {
-                    StuCoordinateData xDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputXCoorName];
-                    X =Math.Round( xDat.x,3);
+                EumOutputType outputType = (toolParam as ResultShowParam).OutputType;
+                if (outputType == EumOutputType.Location)
+                {                 
+                    double X = 0, Y = 0, angle = 0;
+                    if (dm.resultFlagDic[(toolParam as ResultShowParam).InputXCoorName.Replace("起点", "").Replace("终点", "")])
+                    {
+                        StuCoordinateData xDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputXCoorName];
+                        X = Math.Round(xDat.x, 3);
+                    }
+                    if (dm.resultFlagDic[(toolParam as ResultShowParam).InputYCoorName.Replace("起点", "").Replace("终点", "")])
+                    {
+                        StuCoordinateData yDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputYCoorName];
+                        Y = Math.Round(yDat.y, 3);
+                    }
+                    if (dm.resultFlagDic[(toolParam as ResultShowParam).InputAngleCoorName.Replace("起点", "").Replace("终点", "")])
+                    {
+                        StuCoordinateData angleDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputAngleCoorName];
+                        angle = Math.Round(angleDat.angle, 3);
+                    }
+
+                    (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(X, Y, angle);
                 }
-                if (dm.resultFlagDic[(toolParam as ResultShowParam).InputYCoorName])
+                else if (outputType == EumOutputType.Trajectory)
                 {
-                    StuCoordinateData yDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputYCoorName];
-                    Y =Math.Round( yDat.y,3);
+                    List<OutputTypeOfTrajectory> names = (toolParam as ResultShowParam).TrajectoryNameList;
+                    List<DgTrajectoryData> TrajectoryDatas = new List<DgTrajectoryData> ();
+                    foreach (var s in names)
+                    {
+                        if (s.IsUse)
+                            if (dm.TrajectoryDataDic.ContainsKey(s.ToolName))
+                                TrajectoryDatas.AddRange(dm.TrajectoryDataDic[s.ToolName]);
+                    }
+                   (toolParam as ResultShowParam).TrajectoryDataList = TrajectoryDatas;
                 }
-                if (dm.resultFlagDic[(toolParam as ResultShowParam).InputAngleCoorName])
+                else if (outputType == EumOutputType.Size)
                 {
-                    StuCoordinateData angleDat = dm.PositionDataDic[(toolParam as ResultShowParam).InputAngleCoorName];
-                    angle =Math.Round( angleDat.angle,3);
+                    List<OutputTypeOfSize> names = (toolParam as ResultShowParam).SizeNameList;
+                    List<double> SizeDatas = new List<double>();
+                    foreach (var s in names)
+                    {
+                        if (s.IsUse)
+                            if (dm.SizeDataDic.ContainsKey(s.ToolName))
+                                SizeDatas.Add(dm.SizeDataDic[s.ToolName]);
+                    }
+                   (toolParam as ResultShowParam).Distances = SizeDatas;
                 }
-                 
-                (toolParam as ResultShowParam).CoordinateData = new StuCoordinateData(X, Y, angle);
 
                 HObject emptyObj = null;
                 HOperatorSet.GenEmptyObj(out emptyObj);

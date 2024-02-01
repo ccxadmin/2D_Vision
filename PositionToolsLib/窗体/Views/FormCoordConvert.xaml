@@ -140,7 +140,8 @@ Margin="180,270,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}"   ItemsSource="{Binding Model.DgResultOfCoordConvertList,Mode=TwoWay}"  Background="#ffffff"  >
+             Style="{DynamicResource datagrid}"   SelectionUnit="FullRow" IsReadOnly="true"
+                                       ItemsSource="{Binding Model.DgResultOfCoordConvertList,Mode=TwoWay}"  Background="#ffffff"  >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridtextblock}"/>
                                     <DataGridTextColumn Header="X坐标"  Binding="{Binding X,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />

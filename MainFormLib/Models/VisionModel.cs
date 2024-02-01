@@ -24,6 +24,7 @@ using HalconDotNet;
 using GlueDetectionLib;
 using FunctionLib.Cam;
 using PositionToolsLib.工具;
+using PositionToolsLib.窗体.Models;
 
 namespace MainFormLib.Models
 {
@@ -36,6 +37,9 @@ namespace MainFormLib.Models
             { modelTypeList.Add(s); }
             foreach (CamType s in Enum.GetValues(typeof(CamType)))
             { CamTypeList.Add(s); }
+            foreach (EumOutputType s in Enum.GetValues(typeof(EumOutputType)))
+            { OutputTypeList.Add(s); }
+
         }
         
         /// <summary>
@@ -360,6 +364,55 @@ namespace MainFormLib.Models
             }
         }
 
+
+        private EumOutputType outputType = EumOutputType.Location ;
+
+        public EumOutputType OutputType
+        {
+            get { return outputType; }
+            set
+            {
+                outputType = value;
+                DoNotify();
+            }
+        }
+
+        private ObservableCollection<EumOutputType> outputTypeList
+                              = new ObservableCollection<EumOutputType>();
+        public ObservableCollection<EumOutputType> OutputTypeList
+        {
+            get { return this.outputTypeList; }
+            set
+            {
+                outputTypeList = value;
+                DoNotify();
+            }
+        }
+
+        private string outputTypeSelectName;
+        public string OutputTypeSelectName
+        {
+            get { return this.outputTypeSelectName; }
+            set
+            {
+                outputTypeSelectName = value;
+                DoNotify();
+            }
+        }
+
+        private int outputTypeSelectIndex;
+        public int OutputTypeSelectIndex
+        {
+            get { return this.outputTypeSelectIndex; }
+            set
+            {
+                outputTypeSelectIndex = value;
+                DoNotify();
+            }
+        }
+
+
+
         private ObservableCollection<EumModelType> modelTypeList
                                = new ObservableCollection<EumModelType>();
         public ObservableCollection<EumModelType> ModelTypeList
@@ -484,34 +537,6 @@ namespace MainFormLib.Models
             }
         }
         
-        /// <summary>
-        /// 富文本信息
-        /// </summary>
-        private string richIfo;
-        public string RichIfo
-        {
-            get { return richIfo; }
-            set
-            {
-                richIfo = value;
-                DoNotify();
-            }
-        }
-
-        /// <summary>
-        /// 文本信息清除
-        /// </summary>
-        private bool clearRichText;
-        public bool ClearRichText
-        {
-            get { return clearRichText; }
-            set
-            {
-                clearRichText = value;
-                DoNotify();
-            }
-        }
-
         private Action assistCircleCommand;
         public Action AssistCircleCommand
         {
@@ -586,7 +611,6 @@ namespace MainFormLib.Models
             }
         }
 
-
         private bool glueListViewEnable=true;
         public bool GlueListViewEnable
         {
@@ -617,6 +641,233 @@ namespace MainFormLib.Models
                 DoNotify();
             }
         }
+
+        private int width = 350;
+        public int Width
+        {
+            get { return width; }
+            set
+            {
+                width = value;
+                DoNotify();
+            }
+        }
+
+        /***********线扫相机**************/
+        /// <summary>
+        ///选择线扫相机类型索引编号
+        /// </summary>
+        private int scanCamTypeSelectIndex;
+        public int ScanCamTypeSelectIndex
+        {
+            get { return this.scanCamTypeSelectIndex; }
+            set
+            {
+                scanCamTypeSelectIndex = value;
+                DoNotify();
+            }
+        }
+        private string txbDeviceName;
+        public string TxbDeviceName
+        {
+            get { return this.txbDeviceName; }
+            set
+            {
+                txbDeviceName = value;
+                DoNotify();
+            }
+        }
+
+        private string txbConfigPath;
+        public string TxbConfigPath
+        {
+            get { return this.txbConfigPath; }
+            set
+            {
+                txbConfigPath = value;
+                DoNotify();
+            }
+        }
+        public long scanExpouseMaxValue;
+        public long ScanExpouseMaxValue
+        {
+            get { return this.scanExpouseMaxValue; }
+            set
+            {
+                scanExpouseMaxValue = value;
+                DoNotify();
+            }
+        }
+
+        public long scanExpouseMinValue;
+        public long ScanExpouseMinValue
+        {
+            get { return this.scanExpouseMinValue; }
+            set
+            {
+                scanExpouseMinValue = value;
+                DoNotify();
+            }
+        }
+
+        public long sliderExpouseOfScan = 50;
+        public long SliderExpouseOfScan
+        {
+            get { return this.sliderExpouseOfScan; }
+            set
+            {
+                sliderExpouseOfScan = value;
+                DoNotify();
+            }
+        }
+        private long numExpouseOfScan;
+        public long NumExpouseOfScan
+        {
+            get { return this.numExpouseOfScan; }
+            set
+            {
+                numExpouseOfScan = value;
+                DoNotify();
+            }
+        }
+
+        public int scanGainMaxValue;
+        public int ScanGainMaxValue
+        {
+            get { return this.scanGainMaxValue; }
+            set
+            {
+                scanGainMaxValue = value;
+                DoNotify();
+            }
+        }
+
+        public int scanGainMinValue;
+        public int ScanGainMinValue
+        {
+            get { return this.scanGainMinValue; }
+            set
+            {
+                scanGainMinValue = value;
+                DoNotify();
+            }
+        }
+
+        public int sliderGainOfScan;
+        public int SliderGainOfScan
+        {
+            get { return this.sliderGainOfScan; }
+            set
+            {
+                sliderGainOfScan = value;
+                DoNotify();
+            }
+        }
+        private int numGainOfScan;
+        public int NumGainOfScan
+        {
+            get { return this.numGainOfScan; }
+            set
+            {
+                numGainOfScan = value;
+                DoNotify();
+            }
+        }
+
+        private Action scanExpouseNumericCommand;
+        public Action ScanExpouseNumericCommand
+        {
+            get { return scanExpouseNumericCommand; }
+            set
+            {
+                scanExpouseNumericCommand = value;
+                DoNotify();
+            }
+        }
+        private Action scanGainNumericCommand;
+        public Action ScanGainNumericCommand
+        {
+            get { return scanGainNumericCommand; }
+            set
+            {
+                scanGainNumericCommand = value;
+                DoNotify();
+            }
+        }
+       
+        private bool btnOpenScanCameraEnable=true;
+        public bool BtnOpenScanCameraEnable
+        {
+            get { return this.btnOpenScanCameraEnable; }
+            set
+            {
+                btnOpenScanCameraEnable = value;
+                DoNotify();
+            }
+        }
+        private bool btnCloseScanCameraEnable;
+        public bool BtnCloseScanCameraEnable
+        {
+            get { return this.btnCloseScanCameraEnable; }
+            set
+            {
+                btnCloseScanCameraEnable = value;
+                DoNotify();
+            }
+        }
+        private bool btnGrabScanCameraEnable;
+        public bool BtnGrabScanCameraEnable
+        {
+            get { return this.btnGrabScanCameraEnable; }
+            set
+            {
+                btnGrabScanCameraEnable = value;
+                DoNotify();
+            }
+        }
+
+        private bool btnShotScanCameraEnable;
+        public bool BtnShotScanCameraEnable
+        {
+            get { return this.btnShotScanCameraEnable; }
+            set
+            {
+                btnShotScanCameraEnable = value;
+                DoNotify();
+            }
+        }
+
+        private string btnGrabContent="Grab";
+        public string BtnGrabContent
+        {
+            get { return this.btnGrabContent; }
+            set
+            {
+                btnGrabContent = value;
+                DoNotify();
+            }
+        }
+        private bool frameCamEnable;
+        public bool FrameCamEnable
+        {
+            get { return this.frameCamEnable; }
+            set
+            {
+                frameCamEnable = value;
+                DoNotify();
+            }
+        }
+        private bool scanCamEnable;
+        public bool ScanCamEnable
+        {
+            get { return this.scanCamEnable; }
+            set
+            {
+                scanCamEnable = value;
+                DoNotify();
+            }
+        }
+      
     }
 
 
@@ -627,6 +878,21 @@ namespace MainFormLib.Models
         {
             if (value.Equals(parameter)) return Visibility.Visible;
             else return Visibility.Hidden;
+            //return value.Equals(parameter);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is bool b && b) return parameter;
+            return Binding.DoNothing;
+        }
+    }
+    public class VisibConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value.Equals(parameter)) return Visibility.Visible;
+            else return Visibility.Collapsed;
             //return value.Equals(parameter);
         }
 
@@ -665,6 +931,8 @@ namespace MainFormLib.Models
             return Binding.DoNothing;
         }
     }
+
+
     public class CheckConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -716,6 +984,12 @@ namespace MainFormLib.Models
         all
     }
 
+    public enum EumUsingCamType
+    { 
+      Frame,
+      Scan
+    }
+
     /// <summary>
     /// 当前相机工作方式
     /// </summary>
@@ -762,6 +1036,10 @@ namespace MainFormLib.Models
         /// </summary>
         Trajectory,
         /// <summary>
+        /// 尺寸测量
+        /// </summary>
+        Size,
+        /// <summary>
         /// 无
         /// </summary>
         None
@@ -790,7 +1068,14 @@ namespace MainFormLib.Models
         Rectangle
 
     }
-   
+
+
+    public enum EumOutputType
+    {
+        Location,    //定位
+        Size,       //尺寸
+        Trajectory  //轨迹
+    }
     /// <summary>
     /// 模板类型
     /// </summary>
@@ -805,6 +1090,41 @@ namespace MainFormLib.Models
 
         GluetapModel   //点胶阀
     }
+
+    public enum EumScanCamType
+    {
+        Gige,
+        CameraLink
+
+    }
+    /// <summary>
+    /// 线扫相机参数
+    /// </summary>
+    [Serializable]
+    public class CameraParamOfScan
+    {
+        /// <summary>
+        /// 相机连接方式
+        /// </summary>
+        public EumScanCamType camType = EumScanCamType.Gige;
+        /// <summary>
+        /// 设备名称
+        /// </summary>
+        public string deviceName = "";
+        /// <summary>
+        /// 曝光
+        /// </summary>
+        public long expouse = 50;
+        /// <summary>
+        /// 增益
+        /// </summary>
+        public int Gain = 0;
+        /// <summary>
+        /// 配置文件路径
+        /// </summary>
+        public string configPath = "";
+    }
+
 
     [Serializable]
     /// <summary>
@@ -948,7 +1268,7 @@ namespace MainFormLib.Models
         }
         public void GetNum()
         {
-            nums = new int[22];
+            nums = new int[25];
             nums[0] = PositionToolsLib.工具.AngleConvertTool.inum;    
             nums[1] = PositionToolsLib.工具.BinaryzationTool.inum ;
             nums[2] = PositionToolsLib.工具.BlobTool.inum ;
@@ -957,20 +1277,23 @@ namespace MainFormLib.Models
             nums[5] = PositionToolsLib.工具.ColorConvertTool.inum ;
             nums[6] = PositionToolsLib.工具.CoordConvertTool.inum;
             nums[7] = PositionToolsLib.工具.DilationTool.inum ;
-            nums[8] = PositionToolsLib.工具.DistancePPTool.inum;
-            nums[9] = PositionToolsLib.工具.ErosionTool.inum ;
-            nums[10] = PositionToolsLib.工具.FindCircleTool.inum ;
-            nums[11] = PositionToolsLib.工具.FindLineTool.inum ;
-            nums[12] = PositionToolsLib.工具.FitLineTool.inum ;
-            nums[13] = PositionToolsLib.工具.ImageCorrectTool.inum;
-            nums[14] = PositionToolsLib.工具.LineCentreTool.inum ;
-            nums[15] = PositionToolsLib.工具.LineIntersectionTool.inum ;
-            nums[16] = PositionToolsLib.工具.LineOffsetTool.inum;
-            nums[17] = PositionToolsLib.工具.MatchTool.inum ;
-            nums[18] = PositionToolsLib.工具.OpeningTool.inum ;
-            nums[19] = PositionToolsLib.工具.ResultShowTool.inum ;
-            nums[20] = PositionToolsLib.工具.TcpRecvTool.inum;
-            nums[21] = PositionToolsLib.工具.TcpSendTool.inum;
+            nums[8] = PositionToolsLib.工具.DistanceLLTool.inum;
+            nums[9] = PositionToolsLib.工具.DistancePLTool.inum;
+            nums[10] = PositionToolsLib.工具.DistancePPTool.inum;
+            nums[11] = PositionToolsLib.工具.ErosionTool.inum ;
+            nums[12] = PositionToolsLib.工具.FindCircleTool.inum ;
+            nums[13] = PositionToolsLib.工具.FindLineTool.inum ;
+            nums[14] = PositionToolsLib.工具.FitLineTool.inum ;
+            nums[15] = PositionToolsLib.工具.ImageCorrectTool.inum;
+            nums[16] = PositionToolsLib.工具.LineCentreTool.inum ;
+            nums[17] = PositionToolsLib.工具.LineIntersectionTool.inum ;
+            nums[18] = PositionToolsLib.工具.LineOffsetTool.inum;
+            nums[19] = PositionToolsLib.工具.MatchTool.inum ;
+            nums[20] = PositionToolsLib.工具.OpeningTool.inum ;
+            nums[21] = PositionToolsLib.工具.ResultShowTool.inum ;
+            nums[22] = PositionToolsLib.工具.TcpRecvTool.inum;
+            nums[23] = PositionToolsLib.工具.TcpSendTool.inum;
+            nums[24] = PositionToolsLib.工具.TrajectoryExtractTool.inum;
         }
         public void SetNum()
         {
@@ -983,20 +1306,23 @@ namespace MainFormLib.Models
             PositionToolsLib.工具.ColorConvertTool.inum = nums[5];
             PositionToolsLib.工具.CoordConvertTool.inum = nums[6];
             PositionToolsLib.工具.DilationTool.inum = nums[7];
-            PositionToolsLib.工具.DistancePPTool.inum = nums[8];
-            PositionToolsLib.工具.ErosionTool.inum = nums[9];
-            PositionToolsLib.工具.FindCircleTool.inum = nums[10];
-            PositionToolsLib.工具.FindLineTool.inum = nums[11];
-            PositionToolsLib.工具.FitLineTool.inum = nums[12];
-            PositionToolsLib.工具.ImageCorrectTool.inum = nums[13];
-            PositionToolsLib.工具.LineCentreTool.inum = nums[14];
-            PositionToolsLib.工具.LineIntersectionTool.inum = nums[15];
-            PositionToolsLib.工具.LineOffsetTool.inum = nums[16];
-            PositionToolsLib.工具.MatchTool.inum = nums[17];
-            PositionToolsLib.工具.OpeningTool.inum = nums[18];
-            PositionToolsLib.工具.ResultShowTool.inum = nums[19];
-            PositionToolsLib.工具.TcpRecvTool.inum = nums[20];
-            PositionToolsLib.工具.TcpSendTool.inum = nums[21];
+            PositionToolsLib.工具.DistanceLLTool.inum = nums[8];
+            PositionToolsLib.工具.DistancePLTool.inum = nums[9];
+            PositionToolsLib.工具.DistancePPTool.inum = nums[10];
+            PositionToolsLib.工具.ErosionTool.inum = nums[11];
+            PositionToolsLib.工具.FindCircleTool.inum = nums[12];
+            PositionToolsLib.工具.FindLineTool.inum = nums[13];
+            PositionToolsLib.工具.FitLineTool.inum = nums[14];
+            PositionToolsLib.工具.ImageCorrectTool.inum = nums[15];
+            PositionToolsLib.工具.LineCentreTool.inum = nums[16];
+            PositionToolsLib.工具.LineIntersectionTool.inum = nums[17];
+            PositionToolsLib.工具.LineOffsetTool.inum = nums[18];
+            PositionToolsLib.工具.MatchTool.inum = nums[19];
+            PositionToolsLib.工具.OpeningTool.inum = nums[20];
+            PositionToolsLib.工具.ResultShowTool.inum = nums[21];
+            PositionToolsLib.工具.TcpRecvTool.inum = nums[22];
+            PositionToolsLib.工具.TcpSendTool.inum = nums[23];
+            PositionToolsLib.工具.TrajectoryExtractTool.inum = nums[24];
         }
     }
 

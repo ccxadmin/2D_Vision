@@ -50,6 +50,8 @@
             运行toolStripButton = new ToolStripButton();
             toolStripSeparator12 = new ToolStripSeparator();
             停止toolStripButton = new ToolStripButton();
+            toolStripSeparator13 = new ToolStripSeparator();
+            toolStripButton1 = new ToolStripButton();
             toolTip1 = new ToolTip(components);
             contextMenuStrip1 = new ContextMenuStrip(components);
             无操作ToolStripMenuItem = new ToolStripMenuItem();
@@ -83,7 +85,7 @@
             toolStrip1.BackColor = Color.FromArgb(255, 109, 60);
             toolStrip1.Font = new Font("Calibri", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
             toolStrip1.ImageScalingSize = new Size(20, 20);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { lblTitleName, toolStripSeparator1, 无操作toolStripButton, toolStripSeparator2, 放大toolStripButton, toolStripSeparator3, 缩小toolStripButton, toolStripSeparator4, 平移toolStripButton, toolStripSeparator5, 自适应toolStripButton, toolStripSeparator8, 图像旋转toolStripButton, toolStripSeparator10, 图像采集toolStripButton, toolStripSeparator11, 运行toolStripButton, toolStripSeparator12, 停止toolStripButton });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { lblTitleName, toolStripSeparator1, 无操作toolStripButton, toolStripSeparator2, 放大toolStripButton, toolStripSeparator3, 缩小toolStripButton, toolStripSeparator4, 平移toolStripButton, toolStripSeparator5, 自适应toolStripButton, toolStripSeparator8, 图像旋转toolStripButton, toolStripSeparator10, 图像采集toolStripButton, toolStripSeparator11, 运行toolStripButton, toolStripSeparator12, 停止toolStripButton, toolStripSeparator13, toolStripButton1 });
             toolStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
             toolStrip1.Location = new Point(1, 1);
             toolStrip1.Name = "toolStrip1";
@@ -246,6 +248,23 @@
             停止toolStripButton.Size = new Size(37, 35);
             停止toolStripButton.Text = "停止运行";
             停止toolStripButton.Click += 停止toolStripButton_Click;
+            // 
+            // toolStripSeparator13
+            // 
+            toolStripSeparator13.Name = "toolStripSeparator13";
+            toolStripSeparator13.Size = new Size(6, 38);
+            // 
+            // toolStripButton1
+            // 
+            toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButton1.Image = (Image)resources.GetObject("toolStripButton1.Image");
+            toolStripButton1.ImageScaling = ToolStripItemImageScaling.None;
+            toolStripButton1.ImageTransparentColor = Color.Magenta;
+            toolStripButton1.Name = "toolStripButton1";
+            toolStripButton1.Size = new Size(39, 35);
+            toolStripButton1.Text = "参数折叠";
+            toolStripButton1.ToolTipText = "参数折叠";
+            toolStripButton1.Click += toolStripButton1_Click;
             // 
             // contextMenuStrip1
             // 
@@ -483,5 +502,7 @@
         private ToolStripButton 运行toolStripButton;
         private ToolStripSeparator toolStripSeparator12;
         private ToolStripButton 停止toolStripButton;
+        private ToolStripSeparator toolStripSeparator13;
+        private ToolStripButton toolStripButton1;
     }
 }

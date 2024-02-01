@@ -139,7 +139,7 @@ namespace PositionToolsLib.窗体.ViewModels
             BaseParam par = baseTool.GetParam();
             (par as ColorConvertParam).ImgFormat = Model.ImageFormat;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
-
+            OnSaveManageHandle?.Invoke(dataManage);
         }
     }
 }

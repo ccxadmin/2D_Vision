@@ -39,14 +39,17 @@
             <TabItem Style="{DynamicResource TabItemStyle}" Header="22222">
                 <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
         VerticalScrollBarVisibility="Auto">-->
-                <DockPanel x:Name="panel2">
+                <WrapPanel x:Name="panel2">
                     <Button Content="打开相机" Width="120" Height=" 30" Click="Button_Click"/>
                     <Button Content="关闭相机" Width="120" Height=" 30" Click="Button_Click"/>
                     <Button Content="单帧采集" Width="120" Height=" 30" Click="Button_Click"/>
                     <Button Content="连续采集" Width="120" Height=" 30" Click="Button_Click"/>
                     <Button Content="停止采集" Width="120" Height=" 30" Click="Button_Click"/>
                     <Button Content="切换标定" Width="120" Height=" 30" Click="Button_Click"/>
-                </DockPanel>
+                    <Button Content="加载GIF" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="折叠参数" Width="120" Height=" 30" Click="Button_Click"/>
+                    <Button Content="展开参数" Width="120" Height=" 30" Click="Button_Click"/>
+                </WrapPanel>
                 <!--</ScrollViewer>-->
             </TabItem>
 

@@ -228,7 +228,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top"
                             <Rectangle Stroke="#ff6d3c" StrokeThickness="1"/>
                             <DataGrid  Margin="3"  HorizontalAlignment="Stretch" Width="auto" Name="dg" 
              VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ffffff"
-             Style="{DynamicResource datagrid}" 
+             Style="{DynamicResource datagrid}" SelectionUnit="FullRow" IsReadOnly="true"
                                            ItemsSource="{Binding Model.DgResultOfMatchList,Mode=TwoWay}"  Background="#ffffff"  >
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="ID" Binding="{Binding ID,Mode=TwoWay}" Width="40" ElementStyle="{StaticResource datagridtextblock}"/>

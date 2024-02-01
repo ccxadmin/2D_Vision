@@ -1,9 +1,9 @@
-﻿<Page x:Class="PositionToolsLib.窗体.Views.AnyCurvePage"
+﻿<Page x:Class="PositionToolsLib.窗体.Pages.AnyCurvePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:PositionToolsLib.窗体.Views"
+      xmlns:local="clr-namespace:PositionToolsLib.窗体.Pages"
       
  xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"    
 xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
@@ -42,7 +42,7 @@ Style="{x:Null}" FocusVisualStyle="{x:Null}"
                 Width="100" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"/>
 
         <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
-         VerticalAlignment="Top" Content="轨迹提取" Margin="73,75,0,0"
+         VerticalAlignment="Top" Content="任意曲线识别" Margin="73,75,0,0"
          Width="100" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"/>
 
         <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"

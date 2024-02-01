@@ -20,6 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Location\calibration.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="FilesRAWLibrary">
       <HintPath>dll\FilesRAWLibrary.dll</HintPath>
     </Reference>

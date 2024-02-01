@@ -64,7 +64,7 @@ namespace PositionToolsLib.工具
 
      
         /// <summary>
-        /// 拟合直线工具运行
+        /// 点点距离工具运行
         /// </summary>
         /// <returns></returns>
         override public RunResult Run()
@@ -72,6 +72,8 @@ namespace PositionToolsLib.工具
             DataManage dm = GetManage();
             if (!dm.enumerableTooDic.Contains(toolName))
                 dm.enumerableTooDic.Add(toolName);
+            if (!dm.sizeTooDic.Contains(toolName))
+                dm.sizeTooDic.Add(toolName);
             RunResult result = new RunResult();
             string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             if (sw == null) sw = new System.Diagnostics.Stopwatch();
@@ -79,6 +81,10 @@ namespace PositionToolsLib.工具
 
             try
             {
+                if (!dm.SizeDataDic.ContainsKey(toolName))
+                    dm.SizeDataDic.Add(toolName, 0);
+                else
+                    dm.SizeDataDic[toolName] = 0;
                 (toolParam as DistancePPParam).Distance = 0;
                 (toolParam as DistancePPParam).InputImg = dm.imageBufDic[(toolParam as DistancePPParam).InputImageName];
                 if (!ObjectValided((toolParam as DistancePPParam).InputImg))
@@ -139,13 +145,32 @@ namespace PositionToolsLib.工具
                     StuCoordinateData yDat = dm.PositionDataDic[(toolParam as DistancePPParam).EndYName];
                     y2 = yDat.y;
                 }
-                HOperatorSet.ImagePointsToWorldPlane(CamParam, CamPose, y1, x1, "mm", 
-                    out HTuple hv_X2, out HTuple hv_Y2);
-                HOperatorSet.ImagePointsToWorldPlane(CamParam, CamPose, y2, x2, "mm", 
-                    out HTuple hv_X3, out HTuple hv_Y3);
-                HOperatorSet.DistancePp(hv_Y2, hv_X2, hv_Y3, hv_X3, out HTuple hv_Distance1);
-                (toolParam as DistancePPParam).Distance = Math.Round(hv_Distance1.D, 3);
+                //检测
+                if ((toolParam as DistancePPParam).UsePixelRatio)//使用像素比转换计算
+                {
+                    HOperatorSet.DistancePp(y1, x1, y2, x2, out HTuple hv_Distance1);
+                    double distance = hv_Distance1.D * (toolParam as DistancePPParam).PixelRatio;
+                    (toolParam as DistancePPParam).Distance = Math.Round(distance, 3);
+                    if (!dm.SizeDataDic.ContainsKey(toolName))
+                        dm.SizeDataDic.Add(toolName, Math.Round(distance, 3));
+                    else
+                        dm.SizeDataDic[toolName] = Math.Round(distance, 3);
+                }
+                else
+                {
 
+                    HOperatorSet.ImagePointsToWorldPlane(CamParam, CamPose, y1, x1, "mm",
+                                       out HTuple hv_X2, out HTuple hv_Y2);
+                    HOperatorSet.ImagePointsToWorldPlane(CamParam, CamPose, y2, x2, "mm",
+                        out HTuple hv_X3, out HTuple hv_Y3);
+                    HOperatorSet.DistancePp(hv_Y2, hv_X2, hv_Y3, hv_X3, out HTuple hv_Distance1);
+                    (toolParam as DistancePPParam).Distance = Math.Round(hv_Distance1.D, 3);
+                    if (!dm.SizeDataDic.ContainsKey(toolName))
+                        dm.SizeDataDic.Add(toolName, Math.Round(hv_Distance1.D, 3));
+                    else
+                        dm.SizeDataDic[toolName] = Math.Round(hv_Distance1.D, 3);
+                }
+            
                 string info = toolName + "检测完成";
                 //测试信息
                 if (!dm.resultInfoDic.ContainsKey(toolName))
@@ -163,20 +188,23 @@ namespace PositionToolsLib.工具
                 HOperatorSet.ConcatObj(cross1, cross2,out HObject objectConcat1);
                 HOperatorSet.GenContourPolygonXld(out HObject line, new HTuple(y1).TupleConcat(y2),
                     new HTuple(x1).TupleConcat(x2));
+                HOperatorSet.ConcatObj(objectConcat1, line, out HObject objectConcat2);
+
 
                 if (!dm.resultBufDic.ContainsKey(toolName))
-                    dm.resultBufDic.Add(toolName, line.Clone());
+                    dm.resultBufDic.Add(toolName, objectConcat2.Clone());
                 else
-                    dm.resultBufDic[toolName] = line.Clone();
+                    dm.resultBufDic[toolName] = objectConcat2.Clone();
 
-                HOperatorSet.ConcatObj((toolParam as DistancePPParam).InputImg, line, out HObject objectsConcat2);
-                (toolParam as DistancePPParam).OutputImg = objectsConcat2;
+                HOperatorSet.ConcatObj((toolParam as DistancePPParam).InputImg, objectConcat2, out HObject objectsConcat3);
+                (toolParam as DistancePPParam).OutputImg = objectsConcat3;
                 result.runFlag = true;
                 (toolParam as DistancePPParam).DistancePPRunStatus = true;
 
                 cross1.Dispose();
                 cross2.Dispose();
                 objectConcat1.Dispose();
+                objectConcat2.Dispose();
                 line.Dispose();
 
             }

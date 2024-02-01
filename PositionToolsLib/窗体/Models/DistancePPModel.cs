@@ -191,6 +191,28 @@ new ObservableCollection<DistancePPResultData>();
 
             }
         }
+
+        private double txbPixelRatio = 1;
+        public double TxbPixelRatio
+        {
+            get { return this.txbPixelRatio; }
+            set
+            {
+                txbPixelRatio = value;
+                DoNotify();
+            }
+        }
+
+        private bool usePixelRatio ;
+        public bool UsePixelRatio
+        {
+            get { return this.usePixelRatio; }
+            set
+            {
+                usePixelRatio = value;
+                DoNotify();
+            }
+        }
     }
     [Serializable]
     public class DistancePPResultData

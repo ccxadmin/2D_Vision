@@ -145,6 +145,7 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as DilationParam).MaskWidth = Model.SelectMaskWidth;
             (par as DilationParam).MaskHeight = Model.SelectMaskHeight;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
+            OnSaveManageHandle?.Invoke(dataManage);
         }
 
     }

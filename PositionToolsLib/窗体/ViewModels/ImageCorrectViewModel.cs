@@ -129,7 +129,7 @@ namespace PositionToolsLib.窗体.ViewModels
             BaseParam par = baseTool.GetParam();
             (par as ImageCorrectParam).CamParamFilePath = Model.CalibFilePath;
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
-
+            OnSaveManageHandle?.Invoke(dataManage);
         }
         /// <summary>
         /// 手动测试

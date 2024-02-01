@@ -25,7 +25,9 @@ Height="700" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="{Binding Model.Width}"
+                              MinWidth="0"
+                              MaxWidth="350"/>
         </Grid.ColumnDefinitions>
         <DockPanel Margin="1" >
             <Grid>
@@ -42,6 +44,7 @@ Height="700" Width="1000">
         <Grid Grid.Column="1"  Margin="1">
             <Grid.Resources>
                 <model:ComparisonConverter x:Key="ComparisonConverter" />
+                <model:VisibConverter x:Key="visibConverter" />
                 <model:EnumConverter x:Key="enumConverter" />
                 <model:BoolConverter x:Key="boolConverter" />
                 <model:CheckConverter x:Key="checkConverter" />
@@ -56,7 +59,9 @@ Height="700" Width="1000">
             <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
 
             <TabControl Style="{DynamicResource TabControlStyle}" Margin="2" >
-                <TabItem Style="{DynamicResource TabItemStyle}" Header="面阵相机">
+                <TabItem Style="{DynamicResource TabItemStyle}"
+                         IsEnabled="{Binding Model.FrameCamEnable}"
+                         Header="面阵相机">
                     <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">-->
 
@@ -123,7 +128,7 @@ Margin="230,45,0,0" Width="80"  attach:ButtonAttach.ButtonCornerRadius="3"   IsE
                            Margin="10,8,0,0"/>
                                 <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,8,0,0"  Height="25" 
+                              Margin="80,8,0,0"  Height="25" x:Name="sliderFrameExpouse"
                                          Maximum="{Binding Model.ExpouseMaxValue,Mode=TwoWay}"
                                          Minimum="{Binding Model.ExpouseMinValue,Mode=TwoWay}"
                                          Value="{Binding Model.ExpouseSliderValue,Mode=TwoWay}"
@@ -153,7 +158,7 @@ Margin="210,8,0,0" Width="100"   MaxValue="{Binding Model.ExpouseMaxValue,Mode=T
                            Margin="10,45,0,0"/>
                                 <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
-                              Margin="80,47,0,0"  Height="25" 
+                              Margin="80,47,0,0"  Height="25"  x:Name="sliderFrameGain"
                                           Maximum="{Binding Model.GainMaxValue,Mode=TwoWay}"
  Minimum="{Binding Model.GainMinValue,Mode=TwoWay}"
  Value="{Binding Model.GainSliderValue,Mode=TwoWay}"
@@ -257,8 +262,7 @@ PassEventArgsToCommand="True"/>
                                       Header="测试信息">
 
                             <RichTextBox    VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" 
-     attach:RichTextBoxAttach.RichText="{Binding  Model.RichIfo,Mode=TwoWay}" x:Name="richTxtInfo"
-     attach:RichTextBoxAttach.ClearRichText="{Binding  Model.ClearRichText,Mode=TwoWay}">
+      x:Name="richTxtInfo" >
                                 <RichTextBox.Resources>
                                     <Style  TargetType="{x:Type RichTextBox}">
                                         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -316,10 +320,12 @@ PassEventArgsToCommand="True"/>
                     </Grid>
                     <!--</ScrollViewer>-->
                 </TabItem>
-                <TabItem Style="{DynamicResource TabItemStyle}" Header="线扫相机"  >
+                <TabItem Style="{DynamicResource TabItemStyle}"
+                        
+                         Header="线扫相机"  >
                     <!--<ScrollViewer HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Disabled">-->
-                    <Grid Margin="2">
+                    <Grid Margin="2"    IsEnabled="{Binding Model.ScanCamEnable}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
@@ -332,27 +338,34 @@ PassEventArgsToCommand="True"/>
                                 <Label Style="{DynamicResource LabelStyle}" Content="相机类型："
                                        HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,8"/>
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" Height="30" Width="120"
-                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="85,5,0,0"/>
+                                          HorizontalAlignment="Left" VerticalAlignment="Top" Margin="85,5,0,0"
+                                      SelectedIndex="{Binding Model.ScanCamTypeSelectIndex,Mode=TwoWay}" 
+                                          x:Name="cobxScanCamTypeList">
+                                    <ComboBoxItem Content="Gige"/>
+                                    <ComboBoxItem Content="Cameralink"/>
+                                </ComboBox>
                                 <Button Style="{DynamicResource PrimaryButton}" Content="参数保存"
                                             HorizontalAlignment="Left" VerticalAlignment="Top" Height="30"
-                                            Width="80" Margin="225,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" />
-                                <Label Style="{DynamicResource LabelStyle}" Content="相机类型："
+                                            Width="80" Margin="225,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" 
+                                    Command="{Binding SaveParamOfScanCamClickCommand}"    />
+                                <Label Style="{DynamicResource LabelStyle}" Content="设备名称："
              HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,44,0,0"/>
                                 <TextBox Style="{DynamicResource baseInput}" HorizontalAlignment="Left"
                                              VerticalAlignment="Top" attach:TexboxAttach.TextBoxCornerRadius="3"
-                                             Height="30" Width="220" Margin="85,40,0,0"/>
+                                             Height="30" Width="220" Margin="85,40,0,0"
+                                     Text="{Binding Model.TxbDeviceName,Mode=TwoWay}"    />
                                 <Label Style="{DynamicResource LabelStyle}" Content="配置文件："
 HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,75,0,0"/>
                                 <Button  HorizontalAlignment="Left" Width="25" Background="Transparent"
                                             VerticalAlignment="Top" Margin="85,75,0,0" BorderThickness="0"
-                                             ToolTip="打开文件">
+                                             ToolTip="打开文件"  Command="{Binding OpenScanCamConfigFileClickCommand}">
                                     <Image Source="../images/打开 (2).png"/>
                                 </Button>
                                 <TextBox Style="{DynamicResource baseInput}" HorizontalAlignment="Left"
                                              VerticalAlignment="Top" Margin="85,100,0,0" TextWrapping="Wrap"
                                              Width="220" Height="100" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                              ScrollViewer.VerticalScrollBarVisibility="auto" HorizontalContentAlignment="Left"
-                                             VerticalContentAlignment="Top"/>
+                                             VerticalContentAlignment="Top" Text="{Binding Model.TxbConfigPath,Mode=TwoWay}"/>
 
                             </Grid>
 
@@ -365,19 +378,24 @@ HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,75,0,0"/>
                                 <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="80,8,0,0"  Height="25" 
-                                       
+                              Maximum="{Binding Model.ScanExpouseMaxValue,Mode=TwoWay}"
+ Minimum="{Binding Model.ScanExpouseMinValue,Mode=TwoWay}"
+ Value="{Binding Model.SliderExpouseOfScan,Mode=TwoWay}" x:Name="sliderScanExpouse"
                                  Thumb.DragCompleted ="expouseSlider_DragCompleted" >
 
                                 </Slider>
                                 <uc:MyNumUpDown  Height="25" 
                             HorizontalAlignment="Left" VerticalAlignment="Top"
 Margin="210,8,0,0" Width="100"  
-                   OffsetValue="1000" DecimalPlaces="0"   
-                                   ValueChangeAction="{Binding Model.ExpouseNumericCommand}"         >
+           MaxValue="{Binding Model.ScanExpouseMaxValue,Mode=TwoWay}"
+  MinValue="{Binding  Model.ScanExpouseMinValue,Mode=TwoWay}"
+         NumericValue="{Binding Model.NumExpouseOfScan,Mode=TwoWay}"
+                   OffsetValue="10" DecimalPlaces="0"   
+                                   ValueChangeAction="{Binding Model.ScanExpouseNumericCommand}"         >
 
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="KeyDown">
-                                            <behaviors:InvokeCommandAction Command="{Binding ExpouseNumericKeyDownCommand}"                                                                    
+                                            <behaviors:InvokeCommandAction Command="{Binding ScanExpouseNumericKeyDownCommand}"                                                                    
                                         PassEventArgsToCommand="True"/>
                                         </behaviors:EventTrigger>
 
@@ -391,7 +409,9 @@ Margin="210,8,0,0" Width="100"
                                 <Slider  Style="{DynamicResource  sliderStyle}" Width="125"
                               HorizontalAlignment="Left" VerticalAlignment="Top"
                               Margin="80,47,0,0"  Height="25" 
-                                         
+                          Maximum="{Binding Model.ScanGainMaxValue,Mode=TwoWay}"
+Minimum="{Binding Model.ScanGainMinValue,Mode=TwoWay}"
+Value="{Binding Model.SliderGainOfScan,Mode=TwoWay}"   x:Name="sliderScanGain"
                                      Thumb.DragCompleted ="gainSlider_DragCompleted"     >
 
 
@@ -399,13 +419,15 @@ Margin="210,8,0,0" Width="100"
                                 <uc:MyNumUpDown  Height="25" 
                             HorizontalAlignment="Left" VerticalAlignment="Top"
 Margin="210,45,0,0" Width="100"  
-                             
+                   MaxValue="{Binding Model.ScanGainMaxValue,Mode=TwoWay}"
+MinValue="{Binding  Model.ScanGainMinValue,Mode=TwoWay}"
+       NumericValue="{Binding Model.NumGainOfScan,Mode=TwoWay}"
                       OffsetValue="1" DecimalPlaces="0"                           
-                         ValueChangeAction="{Binding Model.GainNumericCommand}"       >
+                         ValueChangeAction="{Binding Model.ScanGainNumericCommand}"       >
 
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="KeyDown">
-                                            <behaviors:InvokeCommandAction Command="{Binding GainNumericKeyDownCommand}"                                                                    
+                                            <behaviors:InvokeCommandAction Command="{Binding ScanGainNumericKeyDownCommand}"                                                                    
       PassEventArgsToCommand="True"/>
                                         </behaviors:EventTrigger>
 
@@ -421,25 +443,34 @@ Margin="210,45,0,0" Width="100"
                             <Grid>
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="OpenCam"
 HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
- Margin="30,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
+ Margin="30,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"
+                                     Command="{Binding OpenScanCamClickCommand}"   
+                                 IsEnabled="{Binding Model.BtnOpenScanCameraEnable}"       />
                                 
-                                <Button Style="{DynamicResource  PrimaryButton}" Content="Grab"
+                                <Button Style="{DynamicResource  PrimaryButton}"
                           HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
-                           Margin="180,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
+                           Margin="180,5,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"
+                                        IsEnabled="{Binding Model.BtnGrabScanCameraEnable}"
+                                        Command="{Binding BtnScanCamGrabClickCommand}"
+                                        Content="{Binding Model.BtnGrabContent,Mode=TwoWay}"/>
 
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="CloseCam"
 HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
- Margin="30,45,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
+ Margin="30,45,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"
+                                  IsEnabled="{Binding Model.BtnCloseScanCameraEnable}"    
+                                        Command="{Binding CloseScanCamClickCommand}"/>
                                 
                                 <Button Style="{DynamicResource  PrimaryButton}" Content="SnapShot"
 HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
- Margin="180,45,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"/>
+ Margin="180,45,0,0" attach:ButtonAttach.ButtonCornerRadius="3" Width="100" Grid.Column="1"
+                                          IsEnabled="{Binding Model.BtnShotScanCameraEnable}"
+                                        Command="{Binding BtnScanCamSnapClickCommand}"/>
                             </Grid>
                         </GroupBox>
                         <GroupBox Style="{DynamicResource GroupBoxStyle}" Grid.Row="3"   Header="测试信息" >
 
                             <RichTextBox  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"               
->
+                           x:Name="scanRichTxtInfo">
                                 <RichTextBox.Resources>
                                     <Style  TargetType="{x:Type RichTextBox}">
                                         <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
@@ -451,7 +482,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
                                         <Setter Property="Margin" Value="1"/>
                                         <Setter Property="IsReadOnly" Value="true"/>
                                         <!--<Setter Property="Width" Value="auto"/>
-                                   <Setter Property="MinWidth" Value="200"/>-->
+         <Setter Property="MinWidth" Value="200"/>-->
                                         <!--<Setter Property="Height" Value="180"/>-->
                                         <Setter Property="SnapsToDevicePixels" Value="True" />
                                         <Setter Property="Template">
@@ -487,7 +518,7 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
                                 </RichTextBox.Resources>
                                 <RichTextBox.ContextMenu>
                                     <ContextMenu>
-                                        <MenuItem Header="清除" Command="{Binding ClearTextCommand}"/>
+                                        <MenuItem Header="清除" Command="{Binding ScanClearTextCommand}"/>
                                     </ContextMenu>
                                 </RichTextBox.ContextMenu>
                             </RichTextBox>
@@ -496,11 +527,13 @@ HorizontalAlignment="Left" VerticalAlignment="Top"  Height="30"
                     </Grid>
                     <!--</ScrollViewer>-->
                 </TabItem>
-                <TabItem Style="{DynamicResource TabItemStyle}" Header="定位检测">
+                <TabItem Style="{DynamicResource TabItemStyle}" Header="视觉检测">
                     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                          VerticalScrollBarVisibility="Auto" >
                         <Grid Margin="1" >
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
                                 <RowDefinition Height="auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
@@ -591,10 +624,33 @@ CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"  IsEnable
 
                                 </Expander.Content>
                             </Expander>
-                            <Grid Grid.Row="1">
+                            <GroupBox Grid.Row="1"  Style="{DynamicResource GroupBoxStyle}" Header="输出类型"   > 
+                                <Grid>
+                                    <Label Style="{DynamicResource  LabelStyle}" Content="输出类型：" VerticalAlignment="Top" Margin="3,7,0,0"/>
+                                    <ComboBox Style="{DynamicResource MyCbbStyle}" HorizontalAlignment="Center"
+VerticalAlignment="Top" Width="160" Height="25" Margin="0,7,0,7" 
+                       IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
+                               ItemsSource="{Binding Model.OutputTypeList,                                            
+                         UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                               SelectedItem="{ Binding Model.OutputTypeSelectName,Mode=TwoWay}" x:Name="cobxOutputTypeList"
+                               SelectedIndex="{Binding Model.OutputTypeSelectIndex,Mode=TwoWay}">
+                                        <!--<ComboBoxItem Content="ProductModel_1"/>
+                         <ComboBoxItem Content="ProductModel_2"/>
+                         <ComboBoxItem Content="CaliBoardModel"/>
+                         <ComboBoxItem Content="GluetapModel"/>-->
+                                        <behaviors:Interaction.Triggers>
+                                            <behaviors:EventTrigger EventName="SelectionChanged">
+                                                <behaviors:InvokeCommandAction Command="{Binding OutputTypeSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxOutputTypeList,Path=SelectedValue}"/>
+                                            </behaviors:EventTrigger>
+                                        </behaviors:Interaction.Triggers>
+                                    </ComboBox>
+                                </Grid>
+                            </GroupBox>
+                            <Grid Grid.Row="2" 
+                                  Visibility="{Binding Model.OutputType,  Mode=OneWay, Converter={StaticResource visibConverter}, ConverterParameter={x:Static model:EumOutputType.Location}}"   >
                                 <Label Style="{DynamicResource  LabelStyle}" Content="模板类型：" VerticalAlignment="Top" Margin="3,7,0,0"/>
                                 <ComboBox Style="{DynamicResource MyCbbStyle}" HorizontalAlignment="Center"
-           VerticalAlignment="Top" Width="160" Height="25" Margin="0,7,0,0" 
+           VerticalAlignment="Top" Width="160" Height="25" Margin="0,7,0,7" 
                                   IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
                                           ItemsSource="{Binding Model.ModelTypeList,                                            
                                     UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
@@ -621,380 +677,382 @@ CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"  IsEnable
                                     </Button.Content>
                                 </Button>
 
-                                <GroupBox Style="{DynamicResource GroupBoxStyle}" Header="检测流程"  Margin="0,40,0,0"   >
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
+                               
+                            </Grid>
+                            <GroupBox Grid.Row="3"   Style="{DynamicResource GroupBoxStyle}" Header="检测流程"    >
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
 
-                                        <ToolBarTray Height="35"  Grid.Row="0"  Margin="1"
+                                    <ToolBarTray Height="35"  Grid.Row="0"  Margin="1"
                                                      IsEnabled="{Binding Model.PosToolBarEnable}">
-                                            <ToolBarTray.Style>
-                                                <Style TargetType="ToolBarTray">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsEnabled"  Value="False">
-                                                            <Setter Property="Background" Value="#dddddd"/>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </ToolBarTray.Style>
+                                        <ToolBarTray.Style>
+                                            <Style TargetType="ToolBarTray">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsEnabled"  Value="False">
+                                                        <Setter Property="Background" Value="#dddddd"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ToolBarTray.Style>
 
-                                            <ToolBar Height="35" Band="0" BandIndex="0" Background="Transparent" Padding="0">
-                                                <Button Margin="2" Background="Transparent"  
+                                        <ToolBar Height="35" Band="0" BandIndex="0" Background="Transparent" Padding="0">
+                                            <Button Margin="2" Background="Transparent"  
                                                         Command="{Binding PosToolBarBtnClickCommand}"                         
                                                        CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                         ToolTip="打开流程" IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                                    <Button.Style>
-                                                        <Style TargetType="Button">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsEnabled" Value="False">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/打开文件.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsEnabled" Value="True">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/打开项目.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Button.Style>
-                                                </Button>
-                                                <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                                <Button Margin="2" Background="Transparent"  
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/打开文件.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="True">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/打开项目.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
+                                            <Button Margin="2" Background="Transparent"  
                                                           Command="{Binding PosToolBarBtnClickCommand}"                         
  CommandParameter="{Binding RelativeSource={RelativeSource Self}}" ToolTip="保存流程" IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                                    <Button.Style>
-                                                        <Style TargetType="Button">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsEnabled" Value="False">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/保存 (1).png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsEnabled" Value="True">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/保存项目.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Button.Style>
-                                                </Button>
-                                                <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                                <Button Margin="2" Background="Transparent"  
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/保存 (1).png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="True">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/保存项目.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
+                                            <Button Margin="2" Background="Transparent"  
                                                           Command="{Binding PosToolBarBtnClickCommand}"                         
  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                         ToolTip="运行流程" IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                                    <Button.Style>
-                                                        <Style TargetType="Button">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsEnabled" Value="False">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/试运行 (2).png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsEnabled" Value="True">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/试运行.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Button.Style>
-                                                </Button>
-                                                <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                                <Button Margin="2" Background="Transparent"   
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/试运行 (2).png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="True">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/试运行.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
+                                            <Button Margin="2" Background="Transparent"   
                                                           Command="{Binding PosToolBarBtnClickCommand}"                         
  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                         ToolTip="清空流程" IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                                    <Button.Style>
-                                                        <Style TargetType="Button">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsEnabled" Value="False">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/清空.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsEnabled" Value="True">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/清空_清空.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Button.Style>
-                                                </Button>
-                                                <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                                <Button Margin="2" Background="Transparent"  
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/清空.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="True">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/清空_清空.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
+                                            <Button Margin="2" Background="Transparent"  
                                                           Command="{Binding PosToolBarBtnClickCommand}"                         
  CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                         ToolTip="标定助手" IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}" >
-                                                    <Button.Style>
-                                                        <Style TargetType="Button">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsEnabled" Value="False">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/指标定义.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsEnabled" Value="True">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/标定助手.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Button.Style>
-                                                </Button>
-                                                <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                                <Button Margin="2" Background="Transparent"  
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/指标定义.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="True">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/标定助手.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
+                                            <Button Margin="2" Background="Transparent"  
                                                          Command="{Binding PosToolBarBtnClickCommand}"                         
 CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                        ToolTip="通讯管理"  IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                                    <Button.Style>
-                                                        <Style TargetType="Button">
-                                                            <Style.Triggers>
-                                                                <Trigger Property="IsEnabled" Value="False">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/通讯 (2).png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                                <Trigger Property="IsEnabled" Value="True">
-                                                                    <Setter Property="Content" >
-                                                                        <Setter.Value>
-                                                                            <Image Source="../imgs/通讯.png"/>
-                                                                        </Setter.Value>
-                                                                    </Setter>
-                                                                </Trigger>
-                                                            </Style.Triggers>
-                                                        </Style>
-                                                    </Button.Style>
-                                                </Button>
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/通讯 (2).png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="True">
+                                                                <Setter Property="Content" >
+                                                                    <Setter.Value>
+                                                                        <Image Source="../imgs/通讯.png"/>
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
 
 
-                                            </ToolBar>
-                                        </ToolBarTray>
-                                        <Menu Grid.Row="1"   Margin="1" 
+                                        </ToolBar>
+                                    </ToolBarTray>
+                                    <Menu Grid.Row="1"   Margin="1" 
                                               Style="{DynamicResource WD.DefaultMenu}"
                                                IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                            <MenuItem Header="前处理"  Margin="0,3"
+                                        <MenuItem Header="前处理"  Margin="0,3"
                                          IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"             
                                                       Style="{DynamicResource WD.DefaultMenuItem}" >
-                                                <MenuItem Header="颜色转换" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="颜色转换" Style="{DynamicResource WD.DefaultMenuItem}"
                                                           Command="{Binding PosMenuClickCommand}"
                                                           CommandParameter="颜色转换" />
-                                                <MenuItem Header="膨胀" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="膨胀" Style="{DynamicResource WD.DefaultMenuItem}"
                                                           Command="{Binding PosMenuClickCommand}"
                                                           CommandParameter="膨胀"/>
-                                                <MenuItem Header="腐蚀" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="腐蚀" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="腐蚀"/>
-                                                <MenuItem Header="开运算" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="开运算" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="开运算"/>
-                                                <MenuItem Header="闭运算" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="闭运算" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="闭运算"/>
-                                                <MenuItem Header="二值化" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="二值化" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="二值化"/>
-                                            </MenuItem>
-                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                            <MenuItem Header="定位"  Margin="0,3" 
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="定位"  Margin="0,3" 
                                                  IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"     
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
-                                                <MenuItem Header="模板匹配" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="模板匹配" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="模板匹配"/>
-                                                <MenuItem Header="直线" Style="{DynamicResource WD.DefaultMenuItem}">
-                                                    <MenuItem Header="查找直线" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="直线" Style="{DynamicResource WD.DefaultMenuItem}">
+                                                <MenuItem Header="查找直线" Style="{DynamicResource WD.DefaultMenuItem}"
                                                                 Command="{Binding PosMenuClickCommand}"
                                                                 CommandParameter="查找直线"/>
-                                                    <MenuItem Header="拟合直线" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                <MenuItem Header="拟合直线" Style="{DynamicResource WD.DefaultMenuItem}"
                                                                Command="{Binding PosMenuClickCommand}"
                                                                CommandParameter="拟合直线"/>
-                                                    <MenuItem Header="直线偏移" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                <MenuItem Header="直线偏移" Style="{DynamicResource WD.DefaultMenuItem}"
                                                                 Command="{Binding PosMenuClickCommand}"
                                                                 CommandParameter="直线偏移"/>
-                                                    <MenuItem Header="平行直线" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                <MenuItem Header="平行直线" Style="{DynamicResource WD.DefaultMenuItem}"
                                                                  Command="{Binding PosMenuClickCommand}"
                                                                  CommandParameter="平行直线"/>
-                                                    <MenuItem Header="直线中心" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                <MenuItem Header="直线中心" Style="{DynamicResource WD.DefaultMenuItem}"
                                                                Command="{Binding PosMenuClickCommand}"
                                                                CommandParameter="直线中心"/>
-                                                    <MenuItem Header="直线交点" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                <MenuItem Header="直线交点" Style="{DynamicResource WD.DefaultMenuItem}"
                                                                Command="{Binding PosMenuClickCommand}"
                                                                CommandParameter="直线交点"/>
-                                                </MenuItem>
-                                                <MenuItem Header="查找圆" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            </MenuItem>
+                                            <MenuItem Header="查找圆" Style="{DynamicResource WD.DefaultMenuItem}"
                                                           Command="{Binding PosMenuClickCommand}"
                                                           CommandParameter="查找圆"/>
-                                                <MenuItem Header="Blob中心" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="Blob中心" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                             CommandParameter="Blob中心"/>
 
-                                            </MenuItem>
-                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                            <MenuItem Header="映射"  Margin="0,3" 
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="映射"  Margin="0,3" 
                                                    IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"   
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
-                                                <MenuItem Header="坐标换算" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="坐标换算" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="坐标换算"/>
-                                                <MenuItem Header="角度换算" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="角度换算" Style="{DynamicResource WD.DefaultMenuItem}"
                                                           Command="{Binding PosMenuClickCommand}"
                                                           CommandParameter="角度换算"/>
-                                                <MenuItem Header="畸变校正" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="畸变校正" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="畸变校正"/>
 
-                                            </MenuItem>
-                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                            <MenuItem Header="几何距离"  Margin="0,3" 
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="几何距离"  Margin="0,3" 
                                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"      
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
-                                                <MenuItem Header="点点距离" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="点点距离" Style="{DynamicResource WD.DefaultMenuItem}"
                                                            Command="{Binding PosMenuClickCommand}"
                                                            CommandParameter="点点距离"/>
-                                                <MenuItem Header="点线距离" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="点线距离" Style="{DynamicResource WD.DefaultMenuItem}"
                                                             Command="{Binding PosMenuClickCommand}"
                                                             CommandParameter="点线距离"/>
-                                                <MenuItem Header="线线距离" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="线线距离" Style="{DynamicResource WD.DefaultMenuItem}"
                                                             Command="{Binding PosMenuClickCommand}"
                                                             CommandParameter="线线距离"/>
-                                            </MenuItem>
-                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                            <MenuItem Header="轨迹提取"  Margin="0,3" 
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="轨迹提取"  Margin="0,3" 
                                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"      
                                                       Style="{DynamicResource WD.DefaultMenuItem}"
                                                        Command="{Binding PosMenuClickCommand}"
                                                        CommandParameter="轨迹提取">
 
-                                            </MenuItem>
-                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                            <MenuItem Header="结果显示"  Margin="0,3" 
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="结果显示"  Margin="0,3" 
                                                       IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
                                                       Style="{DynamicResource WD.DefaultMenuItem}"
                                                        Command="{Binding PosMenuClickCommand}"
                                                        CommandParameter="结果显示">
 
-                                            </MenuItem>
-                                            <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                            <MenuItem Header="通讯"  Margin="0,3" 
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="通讯"  Margin="0,3" 
                                               IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
-                                                <MenuItem Header="Tcp接收" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="Tcp接收" Style="{DynamicResource WD.DefaultMenuItem}"
              Command="{Binding PosMenuClickCommand}"
              CommandParameter="Tcp接收"/>
-                                                <MenuItem Header="Tcp发送" Style="{DynamicResource WD.DefaultMenuItem}"
+                                            <MenuItem Header="Tcp发送" Style="{DynamicResource WD.DefaultMenuItem}"
               Command="{Binding PosMenuClickCommand}"
               CommandParameter="Tcp发送"/>
-                                            </MenuItem>
+                                        </MenuItem>
 
-                                        </Menu>
-                                        <ListView Grid.Row="2"  Margin="1" 
+                                    </Menu>
+                                    <ListView Grid.Row="2"  Margin="1" 
                                              Style="{DynamicResource ListViewStyle}" 
                                                   IsEnabled="{Binding Model.PosListViewEnable}"
                                                   x:Name="listViewToolsOfPosition"  
                                                   SelectedIndex="{Binding Model.ToolsOfPositionSelectIndex,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                                                  ItemsSource="{Binding Model.ToolsOfPositionList,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"   >
 
-                                            <ListView.View>
-                                                <GridView>
-                                                    <GridViewColumn Header="序号" Width="40" DisplayMemberBinding="{Binding Path=ID}"/>
-                                                    <GridViewColumn Header="工具名称" Width="120" DisplayMemberBinding="{Binding Path=ToolName}"/>
-                                                    <GridViewColumn Header="状态" Width="40" DisplayMemberBinding="{Binding Path=ToolStatus}"/>
-                                                    <GridViewColumn Header="工具备注" Width="120" DisplayMemberBinding="{Binding Path=ToolNotes}"/>
-                                                </GridView>
-                                            </ListView.View>
-                                            <ListView.ItemContainerStyle>
-                                                <Style TargetType="ListViewItem">
-                                                    <Setter Property="ContextMenu">
-                                                        <Setter.Value>
+                                        <ListView.View>
+                                            <GridView>
+                                                <GridViewColumn Header="序号" Width="40" DisplayMemberBinding="{Binding Path=ID}"/>
+                                                <GridViewColumn Header="工具名称" Width="120" DisplayMemberBinding="{Binding Path=ToolName}"/>
+                                                <GridViewColumn Header="状态" Width="40" DisplayMemberBinding="{Binding Path=ToolStatus}"/>
+                                                <GridViewColumn Header="工具备注" Width="120" DisplayMemberBinding="{Binding Path=ToolNotes}"/>
+                                            </GridView>
+                                        </ListView.View>
+                                        <ListView.ItemContainerStyle>
+                                            <Style TargetType="ListViewItem">
+                                                <Setter Property="ContextMenu">
+                                                    <Setter.Value>
 
-                                                            <ContextMenu  Visibility="{Binding ContextMenuVisib}">
+                                                        <ContextMenu  Visibility="{Binding ContextMenuVisib}">
 
-                                                                <MenuItem Header="上移"  Style="{DynamicResource PosMenuItem}"
+                                                            <MenuItem Header="上移"  Style="{DynamicResource PosMenuItem}"
                                  IsEnabled= "{Binding MenuItemEnable,   Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.first}}"    >
-                                                                    <MenuItem.Icon>
-                                                                        <Image Source="../images/上移.ico" />
-                                                                    </MenuItem.Icon>
-                                                                </MenuItem>
-                                                                <MenuItem Header="下移"   Style="{DynamicResource PosMenuItem}"
+                                                                <MenuItem.Icon>
+                                                                    <Image Source="../images/上移.ico" />
+                                                                </MenuItem.Icon>
+                                                            </MenuItem>
+                                                            <MenuItem Header="下移"   Style="{DynamicResource PosMenuItem}"
                                  IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.last}}"   
                                                                          >
-                                                                    <MenuItem.Icon>
-                                                                        <Image Source="../images/下移.ico"/>
-                                                                    </MenuItem.Icon>
-                                                                </MenuItem>
-                                                                <MenuItem Header="删除" Style="{DynamicResource PosMenuItem}"  >
-                                                                    <MenuItem.Icon>
-                                                                        <Image Source="../images/删除.png"/>
-                                                                    </MenuItem.Icon>
-                                                                </MenuItem>
-                                                                <MenuItem Header="修改备注" Style="{DynamicResource PosMenuItem}">
+                                                                <MenuItem.Icon>
+                                                                    <Image Source="../images/下移.ico"/>
+                                                                </MenuItem.Icon>
+                                                            </MenuItem>
+                                                            <MenuItem Header="删除" Style="{DynamicResource PosMenuItem}"  >
+                                                                <MenuItem.Icon>
+                                                                    <Image Source="../images/删除.png"/>
+                                                                </MenuItem.Icon>
+                                                            </MenuItem>
+                                                            <MenuItem Header="修改备注" Style="{DynamicResource PosMenuItem}">
 
-                                                                    <MenuItem.Icon>
-                                                                        <Image Source="../images/备注 (1).png"/>
-                                                                    </MenuItem.Icon>
-                                                                </MenuItem>
-
-
-                                                            </ContextMenu>
-                                                        </Setter.Value>
-                                                    </Setter>
-                                                    <EventSetter Event="MouseDoubleClick" Handler="PosListViewItem__MouseDoubleClick"/>
-                                                    <EventSetter Event="MouseUp" Handler="PosListViewItem_MouseUp"/>
-                                                    <Setter Property="Background" Value="#ffffff"/>
-                                                    <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="true">
-                                                            <Setter Property="Background" Value="#dddddd"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsSelected" Value="true">
-                                                            <Setter Property="Background" Value="#ff6d3c"/>
-                                                            <Setter Property="Foreground" Value="#ffffff"/>
-                                                        </Trigger>
-                                                        <DataTrigger Binding="{Binding ToolStatus}"  Value="OK">
-                                                            <Setter Property="Foreground" Value="Green"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding ToolStatus}" Value="NG">
-                                                            <Setter Property="Foreground" Value="Red"/>
-                                                        </DataTrigger>
-
-                                                    </Style.Triggers>
+                                                                <MenuItem.Icon>
+                                                                    <Image Source="../images/备注 (1).png"/>
+                                                                </MenuItem.Icon>
+                                                            </MenuItem>
 
 
+                                                        </ContextMenu>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <EventSetter Event="MouseDoubleClick" Handler="PosListViewItem__MouseDoubleClick"/>
+                                                <EventSetter Event="MouseUp" Handler="PosListViewItem_MouseUp"/>
+                                                <Setter Property="Background" Value="#ffffff"/>
+                                                <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="Background" Value="#dddddd"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="true">
+                                                        <Setter Property="Background" Value="#ff6d3c"/>
+                                                        <Setter Property="Foreground" Value="#ffffff"/>
+                                                    </Trigger>
+                                                    <DataTrigger Binding="{Binding ToolStatus}"  Value="OK">
+                                                        <Setter Property="Foreground" Value="Green"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding ToolStatus}" Value="NG">
+                                                        <Setter Property="Foreground" Value="Red"/>
+                                                    </DataTrigger>
 
-                                                </Style>
-                                            </ListView.ItemContainerStyle>
-                                            <!--<behaviors:Interaction.Triggers>
+                                                </Style.Triggers>
+
+
+
+                                            </Style>
+                                        </ListView.ItemContainerStyle>
+                                        <!--<behaviors:Interaction.Triggers>
                                                 <behaviors:EventTrigger EventName="MouseDoubleClick">
                                                     <behaviors:InvokeCommandAction Command="{Binding ToolsOfPosDoubleClickCommand}" CommandParameter="{Binding ElementName=listViewToolsOfPosition,Path=SelectedValue}"/>
                                                 </behaviors:EventTrigger>
@@ -1003,11 +1061,10 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                 </behaviors:EventTrigger>
                                             </behaviors:Interaction.Triggers>-->
 
-                                        </ListView>
+                                    </ListView>
 
-                                    </Grid>
-                                </GroupBox>
-                            </Grid>
+                                </Grid>
+                            </GroupBox>
 
                         </Grid>
                     </ScrollViewer>

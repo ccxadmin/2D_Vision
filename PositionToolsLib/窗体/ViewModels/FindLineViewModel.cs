@@ -510,7 +510,7 @@ namespace PositionToolsLib.窗体.ViewModels
             return;
         }
 
-        public void draw_rake(HTuple hv_WindowHandle, out HTuple hv_Row1, out HTuple hv_Column1,
+     static   public void draw_rake(HTuple hv_WindowHandle, out HTuple hv_Row1, out HTuple hv_Column1,
       out HTuple hv_Row2, out HTuple hv_Column2)
         {
 
@@ -578,7 +578,7 @@ namespace PositionToolsLib.窗体.ViewModels
             return;
         }
 
-        public void gen_arrow_contour_xld(out HObject ho_Arrow, HTuple hv_Row1, HTuple hv_Column1,
+        static public void gen_arrow_contour_xld(out HObject ho_Arrow, HTuple hv_Row1, HTuple hv_Column1,
           HTuple hv_Row2, HTuple hv_Column2, HTuple hv_HeadLength, HTuple hv_HeadWidth)
         {
 
@@ -682,7 +682,7 @@ namespace PositionToolsLib.窗体.ViewModels
 
             return;
         }
-        public void get_rake_region(HObject ho_Image, out HObject ho_Regions, HTuple hv_Elements,
+        static public void get_rake_region(HObject ho_Image, out HObject ho_Regions, HTuple hv_Elements,
              HTuple hv_DetectHeight, HTuple hv_DetectWidth, HTuple hv_Row1, HTuple hv_Column1,
               HTuple hv_Row2, HTuple hv_Column2)
         {

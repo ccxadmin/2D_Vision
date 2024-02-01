@@ -99,6 +99,18 @@ namespace WpfApp1
                 case "切换标定":
                     f.viewModel.SwithCalib("123");
                     break;
+                case "加载GIF":
+                    FormGifShow f_GifShow=new FormGifShow();
+                    f_GifShow.Topmost = true;
+                    f_GifShow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+                    f_GifShow.Show();
+                    break;
+                case "折叠参数":
+                    f.viewModel.SetParamMode( EumParamOperate.fold);
+                    break;
+                case "展开参数":
+                    f.viewModel.SetParamMode( EumParamOperate.expand);
+                    break;
             }
           
         }
