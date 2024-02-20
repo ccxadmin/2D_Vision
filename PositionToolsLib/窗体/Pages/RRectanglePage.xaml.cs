@@ -76,11 +76,11 @@ namespace PositionToolsLib.窗体.Pages
             OnDrawRegion?.Invoke(((Button)sender).Name);
         }
         /// <summary>
-        /// 直线识别
+        /// 旋转矩形识别
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnLineIdentify_Click(object sender, RoutedEventArgs e)
+        private void btnRRectangleIdentify_Click(object sender, RoutedEventArgs e)
         {
             OnRRectangleIdentify?.Invoke();
         }

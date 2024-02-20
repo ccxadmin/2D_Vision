@@ -391,12 +391,7 @@ namespace PositionToolsLib.窗体.ViewModels
         {
             if (e.type == EumMakeType.Model)
                 maskRegion = e.region;
-            else
-            {
-                HObject mask = e.region;
-                HOperatorSet.CopyObj(mask, out maskRegion, 1, -1);
-            }
-
+           
         }
 
         /// <summary>

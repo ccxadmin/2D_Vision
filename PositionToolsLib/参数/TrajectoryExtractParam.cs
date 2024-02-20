@@ -105,7 +105,7 @@ namespace PositionToolsLib.参数
         //}
         List<DgTrajectoryData> trajectoryDataPoints = new List<DgTrajectoryData>();
         /// <summary>
-        /// 轨迹点集合
+        /// 轨迹点集合(像素坐标缓存)
         /// </summary>
         [Description("轨迹点集合"), DefaultValue(null)]
         public List<DgTrajectoryData> TrajectoryDataPoints

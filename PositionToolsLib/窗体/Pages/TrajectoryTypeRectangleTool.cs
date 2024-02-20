@@ -1,5 +1,4 @@
 ﻿using HalconDotNet;
-using PositionToolsLib.参数;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,98 +8,188 @@ using System.Threading.Tasks;
 namespace PositionToolsLib.窗体.Pages
 {
     [Serializable]
-    public class TrajectoryTypeLineTool : TrajectoryTypeBaseTool
+    public class TrajectoryTypeRectangleTool : TrajectoryTypeBaseTool
     {
-        public TrajectoryTypeLineTool()
+        public TrajectoryTypeRectangleTool()
         {
-            base.param = new TrajectoryTypeLineParam();
+            base.param = new TrajectoryTypeRectangleParam();
         }
-
         public override TemRunResult Run()
         {
             TemRunResult result = new TemRunResult();
-            result.trajectoryDataPoints=new List<DgTrajectoryData>();
+            result.trajectoryDataPoints = new List<DgTrajectoryData>();
             result.resultContour = null;
             param.ResultInspectROI = null;
             string funName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             try
             {
-                if(!ObjectValided(param.InputImage))
+                if (!ObjectValided(param.InputImage))
                 {
                     result.runFlag = false;
                     result.info = "输入图像无效";
                     return result;
                 }
-                if (!ObjectValided(((TrajectoryTypeLineParam)param ).InspectXLD))
-                {
-                    result.runFlag = false;
-                    result.info = "输入检测区域无效";
-                    return result;
-                }
-                HObject xld = (param as TrajectoryTypeLineParam).InspectXLD;
-                HOperatorSet.GetContourXld(xld, out HTuple hv_Row, out HTuple hv_Column);
-                HTuple hv_Row1 = hv_Row.TupleSelect(0);
-                HTuple hv_Row2 = hv_Row.TupleSelect(1);
-                HTuple hv_Column1 = hv_Column.TupleSelect(0);
-                HTuple hv_Column2 = hv_Column.TupleSelect(1);
 
-                get_rake_region(param.InputImage, out HObject ho_Regions,
-                   (param as TrajectoryTypeLineParam).CaliperNum, (param as TrajectoryTypeLineParam).CaliperHeight,
-                    (param as TrajectoryTypeLineParam).CaliperWidth, hv_Row1, hv_Column1, hv_Row2, hv_Column2);
+                HOperatorSet.GenEmptyObj(out HObject ho_Regions);
+                for (int i = 0; i < 4; i++)
+                {
+                    if (!ObjectValided(((TrajectoryTypeRectangleParam)param).GetParamFormIndex(i).InspectXLD))
+                    {
+                        result.runFlag = false;
+                        result.info = string.Format("输入检测区域{0}无效", "Rectangle:直线" + (i + 1));
+                        return result;
+                    }
+
+
+                    HObject xld = (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).InspectXLD;
+                    HOperatorSet.GetContourXld(xld, out HTuple hv_Row, out HTuple hv_Column);
+                    HTuple hv_Row1 = hv_Row.TupleSelect(0);
+                    HTuple hv_Row2 = hv_Row.TupleSelect(1);
+                    HTuple hv_Column1 = hv_Column.TupleSelect(0);
+                    HTuple hv_Column2 = hv_Column.TupleSelect(1);
+
+                    get_rake_region(param.InputImage, out HObject Region,
+                      (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).CaliperNum,
+                      (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).CaliperHeight,
+                        (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).CaliperWidth,
+                        hv_Row1, hv_Column1, hv_Row2, hv_Column2);
+                    HOperatorSet.ConcatObj(ho_Regions, Region, out ho_Regions);
+
+                    //卡尺
+                    rake(param.InputImage, out HObject ho_Regions2,
+                        (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).CaliperNum,
+                        (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).CaliperHeight,
+                        (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).CaliperWidth,
+                        1.0,
+                       (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).EdgeContrast,
+                        Enum.GetName(typeof(EumTransition),
+                       (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).Transition),
+                        Enum.GetName(typeof(EumSelect),
+                        (param as TrajectoryTypeRectangleParam).GetParamFormIndex(i).Select),
+                        hv_Row1, hv_Column1,
+                        hv_Row2, hv_Column2,
+                        out HTuple hv_ResultRow, out HTuple hv_ResultColumn);
+
+                    //至少两点或以上才可拟合直线
+                    if (hv_ResultRow.TupleLength() <= 1)
+                    {
+
+                        result.runFlag = false;
+                        result.info = "矩形轨迹查找失败";
+                        return result;
+                    }
+
+                    //结果直线
+                    pts_to_best_line(out HObject ho_Line, hv_ResultRow, hv_ResultColumn, 2, out HTuple hv_Row11,
+                        out HTuple hv_Column11, out HTuple hv_Row21, out HTuple hv_Column21);
+
+                    if (hv_Row11.TupleLength() <= 0)
+                    {
+                        result.runFlag = false;
+                        result.info = "矩形轨迹查找失败";
+                        return result;
+                    }
+
+                    HOperatorSet.ConcatObj(ho_Regions2, ho_Line, out HObject emptyRegionBuf);
+
+                    if (hv_Row11.TupleLength() > 0)
+                    {
+                        HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row11.D, hv_Column11.D, 50, 0);
+                        if (ObjectValided(cross))
+                            HOperatorSet.ConcatObj(emptyRegionBuf, cross, out emptyRegionBuf);
+                    }
+                    //HOperatorSet.ConcatObj(conccatedObj, emptyRegionBuf, out conccatedObj);
+                    result.trajectoryDataPoints.Add(new DgTrajectoryData(2 * i + 1, hv_Column11.D, hv_Row11.D));
+                    result.trajectoryDataPoints.Add(new DgTrajectoryData(2 * i + 2, hv_Column21.D, hv_Row21.D));
+
+                    ho_Regions2.Dispose();
+                    ho_Line.Dispose();
+                    emptyRegionBuf.Dispose();
+                }
+
                 param.ResultInspectROI = ho_Regions.Clone();
-                //卡尺
-                rake(param.InputImage, out HObject ho_Regions2,
-                    (param as TrajectoryTypeLineParam).CaliperNum, (param as TrajectoryTypeLineParam).CaliperHeight,
-                    (param as TrajectoryTypeLineParam).CaliperWidth, 1.0,
-                    (param as TrajectoryTypeLineParam).EdgeContrast,
-                    Enum.GetName(typeof(EumTransition), (param as TrajectoryTypeLineParam).Transition),
-                    Enum.GetName(typeof(EumSelect), (param as TrajectoryTypeLineParam).Select),
-                    hv_Row1, hv_Column1,
-                    hv_Row2, hv_Column2,
-                    out HTuple hv_ResultRow, out HTuple hv_ResultColumn);
-                //至少两点或以上才可拟合直线
-                if (hv_ResultRow.TupleLength() <= 1)
-                {
-                 
-                    result.runFlag = false;
-                    result.info = "直线查找失败";
-                    return result;
-                }
-
-                //结果直线
-                pts_to_best_line(out HObject ho_Line, hv_ResultRow, hv_ResultColumn, 2, out HTuple hv_Row11,
-                    out HTuple hv_Column11, out HTuple hv_Row21, out HTuple hv_Column21);
-
-                if (hv_Row11.TupleLength() <= 0)
-                {              
-                    result.runFlag = false;
-                    result.info = "直线查找失败";
-                    return result;
-                }
-
-                HOperatorSet.GenCrossContourXld(out HObject cross, hv_Row11.D, hv_Column11.D, 50, 0);
-                HOperatorSet.ConcatObj(ho_Line, cross, out HObject emptyRegionBuf);
-                HOperatorSet.GenCrossContourXld(out HObject cross2, hv_Row21.D, hv_Column21.D, 50, 0);
-                HOperatorSet.ConcatObj(emptyRegionBuf, cross2, out emptyRegionBuf);
-
-                result.resultContour = emptyRegionBuf.Clone(); 
-                result.trajectoryDataPoints.Add(new DgTrajectoryData(1, hv_Column11.D, hv_Row11.D));
-                result.trajectoryDataPoints.Add(new DgTrajectoryData(2, hv_Column21.D, hv_Row21.D));             
-                result.info = "直线轨迹检测完成";
-                result.runFlag = true;             
                 ho_Regions.Dispose();
-                ho_Regions2.Dispose();
-                ho_Line.Dispose();
-                emptyRegionBuf.Dispose();
+                //检测
+                HTuple r1 = result.trajectoryDataPoints[0].Y;
+                HTuple c1 = result.trajectoryDataPoints[0].X;
+                HTuple r2 = result.trajectoryDataPoints[1].Y;
+                HTuple c2 = result.trajectoryDataPoints[1].X;
+                HTuple r3 = result.trajectoryDataPoints[2].Y;
+                HTuple c3 = result.trajectoryDataPoints[2].X;
+                HTuple r4 = result.trajectoryDataPoints[3].Y;
+                HTuple c4 = result.trajectoryDataPoints[3].X;
+                HTuple r5 = result.trajectoryDataPoints[4].Y;
+                HTuple c5 = result.trajectoryDataPoints[4].X;
+                HTuple r6 = result.trajectoryDataPoints[5].Y;
+                HTuple c6 = result.trajectoryDataPoints[5].X;
+                HTuple r7 = result.trajectoryDataPoints[6].Y;
+                HTuple c7 = result.trajectoryDataPoints[6].X;
+                HTuple r8 = result.trajectoryDataPoints[7].Y;
+                HTuple c8 = result.trajectoryDataPoints[7].X;
+
+                HOperatorSet.IntersectionLines(r1, c1, r2, c2, r3, c3, r4, c4, out HTuple ir1, out HTuple ic1, out HTuple isOverLapping1);
+
+                HOperatorSet.IntersectionLines(r1, c1, r2, c2, r7, c7, r8, c8, out HTuple ir4, out HTuple ic4, out HTuple isOverLapping4);
+
+                HOperatorSet.IntersectionLines(r5, c5, r6, c6, r3, c3, r4, c4, out HTuple ir2, out HTuple ic2, out HTuple isOverLapping2);
+
+                HOperatorSet.IntersectionLines(r5, c5, r6, c6, r7, c7, r8, c8, out HTuple ir3, out HTuple ic3, out HTuple isOverLapping3);
+
+                HOperatorSet.GenContourPolygonXld(out HObject cocntour, ((ir1.TupleConcat(ir2)).TupleConcat(ir3)).TupleConcat(ir4),
+                   ((ic1.TupleConcat(ic2)).TupleConcat(ic3)).TupleConcat(ic4));
+              
+            
+                HOperatorSet.SmallestRectangle1Xld(cocntour, out HTuple rowx, out HTuple columnx,
+                      out HTuple row2x, out HTuple column2x);
+                cocntour.Dispose();
+        
+                result.trajectoryDataPoints.RemoveRange(4, 4);
+                // *提取仿射最小外接矩形的四个顶点坐标
+              
+                HTuple pr1 = rowx ;
+                HTuple pc1 = columnx ;
+                result.trajectoryDataPoints[0] = (new DgTrajectoryData(1, pc1.D, pr1.D));
+                HOperatorSet.GenCrossContourXld(out HObject cross1, pr1, pc1, 50, 0);
+              
+                HTuple pr2 = rowx ;
+                HTuple pc2 = column2x;
+                result.trajectoryDataPoints[1] = (new DgTrajectoryData(2, pc2.D, pr2.D));
+                HOperatorSet.GenCrossContourXld(out HObject cross2, pr2, pc2, 50, 0);
+               
+                HTuple pr3 = row2x ;
+                HTuple pc3 = column2x ;
+                result.trajectoryDataPoints[2] = (new DgTrajectoryData(3, pc3.D, pr3.D));
+                HOperatorSet.GenCrossContourXld(out HObject cross3, pr3, pc3, 50, 0);
+               
+                HTuple pr4 = row2x ;
+                HTuple pc4 = columnx;
+                result.trajectoryDataPoints[3] = (new DgTrajectoryData(4, pc4.D, pr4.D));
+                HOperatorSet.GenCrossContourXld(out HObject cross4, pr4, pc4, 50, 0);
+                HOperatorSet.GenContourPolygonXld(out HObject rectange,
+                    (((pr1.TupleConcat(pr2)).TupleConcat(pr3)).TupleConcat(pr4)).TupleConcat(pr1),
+                   (((pc1.TupleConcat(pc2)).TupleConcat(pc3)).TupleConcat(pc4)).TupleConcat(pc1));
+                HOperatorSet.ConcatObj(cross1, cross2, out HObject objectsConcat);
+                HOperatorSet.ConcatObj(objectsConcat, cross3, out objectsConcat);
+                HOperatorSet.ConcatObj(objectsConcat, cross4, out objectsConcat);
+                HOperatorSet.ConcatObj(objectsConcat, rectange, out objectsConcat);
+
+                result.resultContour = objectsConcat.Clone();
+                cross1.Dispose();
+                cross2.Dispose();
+                cross3.Dispose();
+                cross4.Dispose();
+                result.info = "矩形轨迹检测完成";
+                result.runFlag = true;
             }
             catch (Exception er)
-            {               
-                result.info = "检测异常:"+er.Message;
-                result.runFlag = false;            
+            {
+                result.info = "矩形轨迹检测异常:" + er.Message;
+                result.runFlag = false;
                 return result;
-            }         
+            }
             return result;
         }
+
         /*---------------------------------外部方法导入---------------------------*/
         #region ----External procedures----
         // Procedures 

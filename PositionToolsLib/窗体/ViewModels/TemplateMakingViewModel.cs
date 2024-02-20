@@ -48,7 +48,8 @@ namespace PositionToolsLib.窗体.ViewModels
             Model = new TemplateMakingModel();
 
             makeType = type;
-            rootPath = _rootPath;
+            if(!string.IsNullOrEmpty(_rootPath))
+               rootPath = _rootPath;
             //画笔大小
             panSize = int.Parse(GeneralUse.ReadValue("画笔大小", "模板配置", "config", "1", rootPath + "\\Config"));
             Model.PanValue = panSize.ToString();

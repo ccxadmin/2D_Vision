@@ -123,6 +123,67 @@ namespace PositionToolsLib.工具
                         }
                        
                         break;
+                    case EumTrackType.Rectangle:
+                        //检测区域
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (!trajectoryInspectObjDic.ContainsKey("Rectangle:直线" + i))
+                            {
+                                (toolParam as TrajectoryExtractParam).TrajectoryExtractRunStatus = false;
+                                result.runFlag = false;
+                                result.errInfo = toolName + "检测区域无效";
+                                if (!dm.resultFlagDic.ContainsKey(toolName))
+                                    dm.resultFlagDic.Add(toolName, false);
+                                else
+                                    dm.resultFlagDic[toolName] = false;
+                                return result;
+                            }
+                            HOperatorSet.ConcatObj(xld, trajectoryInspectObjDic["Rectangle:直线" + i],
+                                out xld);
+                        }
+
+                        break;
+                    case EumTrackType.Circle:
+                        //检测区域                      
+                        if (!trajectoryInspectObjDic.ContainsKey("Circle:圆1"))
+                        {
+                            (toolParam as TrajectoryExtractParam).TrajectoryExtractRunStatus = false;
+                            result.runFlag = false;
+                            result.errInfo = toolName + "检测区域无效";
+                            if (!dm.resultFlagDic.ContainsKey(toolName))
+                                dm.resultFlagDic.Add(toolName, false);
+                            else
+                                dm.resultFlagDic[toolName] = false;
+                            return result;
+                        }
+                        xld = trajectoryInspectObjDic["Circle:圆1"];
+                        break;
+                    case EumTrackType.AnyCurve:
+                        //检测区域                      
+                        if (!trajectoryInspectObjDic.ContainsKey("AnyCurve:任意1"))
+                        {
+                            (toolParam as TrajectoryExtractParam).TrajectoryExtractRunStatus = false;
+                            result.runFlag = false;
+                            result.errInfo = toolName + "检测区域无效";
+                            if (!dm.resultFlagDic.ContainsKey(toolName))
+                                dm.resultFlagDic.Add(toolName, false);
+                            else
+                                dm.resultFlagDic[toolName] = false;
+                            return result;
+                        }
+                        xld = trajectoryInspectObjDic["AnyCurve:任意1"];
+                        break;
+                }
+                if (!ObjectValided(xld))
+                {
+                    (toolParam as TrajectoryExtractParam).TrajectoryExtractRunStatus = false;
+                    result.runFlag = false;
+                    result.errInfo = toolName + "检测区域无效";
+                    if (!dm.resultFlagDic.ContainsKey(toolName))
+                        dm.resultFlagDic.Add(toolName, false);
+                    else
+                        dm.resultFlagDic[toolName] = false;
+                    return result;
                 }
                 HObject newXld = xld;
                 //仿射变换矩阵            
@@ -152,15 +213,82 @@ namespace PositionToolsLib.工具
                     for (int i = 1; i < 5; i++)
                     {
                         HOperatorSet.SelectObj(xld, out HObject objectSelect, i);
-                        (TypeTool.param as TrajectoryTypeRRectangleParam).GetParamFormIndex(i-1).InspectXLD
+                        (TypeTool.param as TrajectoryTypeRRectangleParam).GetParamFormIndex(i - 1).InspectXLD
                             = objectSelect.Clone();
                         objectSelect.Dispose();
                     }
                 }
+                else if (trackType == EumTrackType.Rectangle)
+                {
+                    //HOperatorSet.CountObj(xld,out HTuple num);
+                    for (int i = 1; i < 5; i++)
+                    {
+                        HOperatorSet.SelectObj(xld, out HObject objectSelect, i);
+                        (TypeTool.param as TrajectoryTypeRectangleParam).GetParamFormIndex(i - 1).InspectXLD
+                            = objectSelect.Clone();
+                        objectSelect.Dispose();
+                    }
+                }
+                else if (trackType == EumTrackType.Circle)
+                    (TypeTool.param as TrajectoryTypeCircleParam).InspectXLD = newXld.Clone();
+                else if (trackType == EumTrackType.AnyCurve)
+                {
+                    (TypeTool.param as TrajectoryTypeAnyCurveParam).InspectRegion = newXld.Clone();
+                    HOperatorSet.GenEmptyObj(out HObject maskROI);
+                    if (trajectoryInspectObjDic.ContainsKey("AnyCurve:掩膜1"))
+                    {
+                        maskROI = trajectoryInspectObjDic["AnyCurve:掩膜1"];
+                        if ((toolParam as TrajectoryExtractParam).UsePosiCorrect)
+                        {
+                            //仿射变换矩阵
+                            HTuple matrix2D = dm.matrixBufDic[(toolParam as TrajectoryExtractParam).MatrixName];
+                            if (matrix2D != null)
+                                HOperatorSet.AffineTransContourXld(trajectoryInspectObjDic["AnyCurve:掩膜1"],
+                                  out maskROI, matrix2D);
+                            else
+                            {
+                                if (!dm.resultFlagDic.ContainsKey(toolName))
+                                    dm.resultFlagDic.Add(toolName, false);
+                                else
+                                    dm.resultFlagDic[toolName] = false;
+                                (toolParam as TrajectoryExtractParam).TrajectoryExtractRunStatus = false;
+                                result.runFlag = false;
+                                result.errInfo = toolName + "检测区域位置补正异常";
+                                return result;
+                            }
+                        }
+                    }
+                     (TypeTool.param as TrajectoryTypeAnyCurveParam).MaskRegion = maskROI.Clone();
+                }
+                   
                 //子页面工具运行
                 TemRunResult temrlt = TypeTool.Run();
+                //转物理
+                int count = temrlt.trajectoryDataPoints.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    HTuple x1 = temrlt.trajectoryDataPoints[i].X;
+                    HTuple y1 = temrlt.trajectoryDataPoints[i].Y;
+                    bool transFlag = Transformation_POINT(x1, y1, out HTuple Cx, out HTuple Cy);
+                    if (!transFlag)
+                    {
+                        (toolParam as TrajectoryExtractParam).TrajectoryExtractRunStatus = false;
+                        result.runFlag = false;
+                        result.errInfo = toolName + "坐标换算异常";
+                        if (!dm.resultFlagDic.ContainsKey(toolName))
+                            dm.resultFlagDic.Add(toolName, false);
+                        else
+                            dm.resultFlagDic[toolName] = false;
+                        return result;
+                    }
+
+                    temrlt.trajectoryDataPoints[i].X = Cx.D;
+                    temrlt.trajectoryDataPoints[i].Y = Cy.D;
+                }
+
                 (toolParam as TrajectoryExtractParam).TrajectoryDataPoints =
                       temrlt.trajectoryDataPoints;
+
                 //轨迹结果缓存
                 if (!dm.TrajectoryDataDic.ContainsKey(toolName))
                     dm.TrajectoryDataDic.Add(toolName, temrlt.trajectoryDataPoints);

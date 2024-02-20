@@ -30,24 +30,32 @@ Style="{x:Null}" FocusVisualStyle="{x:Null}"
         <Border Margin="5,32,5,5" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Width="312" Height="75" BorderThickness="1.5" BorderBrush="#ff6d3c"/>
         <Label Style="{DynamicResource LabelStyle}" HorizontalAlignment="Left" VerticalAlignment="Top"
-               Margin="20,42,0,0" Content="区域类型："/>
+               Margin="15,42,0,0" Content="区域类型："/>
         <ComboBox Style="{DynamicResource MyCbbStyle}" HorizontalAlignment="Left"
-                  VerticalAlignment="Top" Margin="95,42,0,0" Width="80" Height="25"
-                  SelectedIndex="0">
+                  VerticalAlignment="Top" Margin="95,42,0,0" Width="105" Height="25"
+                 Name="cobxRegionType"
+                  SelectedIndex="0"  SelectionChanged="ComboBox_SelectionChanged" >
+            <ComboBoxItem Content="任意"/>
             <ComboBoxItem Content="矩形"/>
-            <ComboBoxItem Content="圆"/>
+            <ComboBoxItem Content="圆弧"/>
         </ComboBox>
         <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
-                VerticalAlignment="Top" Content="区域绘制" Margin="200,42,0,0"
-                Width="100" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"/>
+                VerticalAlignment="Top" Content="区域绘制" Margin="225,42,0,0"
+                Width="80" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"
+                Click="btnDrawRegion_Click"/>
+        <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
+  VerticalAlignment="Top" Content="参数保存" Margin="15,75,0,0"
+  Width="80" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"
+                Click="btnSaveParam_Click"/>
+        <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
+         VerticalAlignment="Top" Content="轨迹识别" Margin="120,75,0,0"
+         Width="80" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"
+                Click="btnAnyCurveIdentify_Click"/>
 
         <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
-         VerticalAlignment="Top" Content="任意曲线识别" Margin="73,75,0,0"
-         Width="100" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"/>
-
-        <Button Style="{DynamicResource PrimaryButton}" HorizontalAlignment="Left"
-         VerticalAlignment="Top" Content="掩膜绘制" Margin="200,75,0,0"
-         Width="100" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"/>
+         VerticalAlignment="Top" Content="掩膜绘制" Margin="225,75,0,0"
+         Width="80" attach:ButtonAttach.ButtonCornerRadius="3" Height="25"
+                Click="btnDrawMaskRegion_Click"/>
 
 
         <Label Style="{DynamicResource LabelStyle}" Content="提取参数》》》》》》"
@@ -58,26 +66,50 @@ Style="{x:Null}" FocusVisualStyle="{x:Null}"
         <Label Content="阈值下限:" HorizontalAlignment="Left" VerticalAlignment="Top"
                Margin="10,150,0,0"/>
         <uc:MyNumUpDown Margin="75,150,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                        Height="25"/>
+                        Height="25"  Width="80"
+                         MaxValue="255" MinValue="0"
+                         DecimalPlaces="0" OffsetValue="1"
+                        NumericValue="20"
+                         DefaultValue="20" x:Name="numThdMin"/>
         <Label Content="阈值上限:" HorizontalAlignment="Left" VerticalAlignment="Top"
          Margin="165,150,0,0"/>
         <uc:MyNumUpDown Margin="230,150,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-                  Height="25"/>
+                  Height="25" NumericValue="40"  Width="80"
+                          MaxValue="255" MinValue="0"
+  DecimalPlaces="0" OffsetValue="1"
+  DefaultValue="40" x:Name="numThdMax"/>
+        
         <Label Style="{DynamicResource LabelStyle}" Content="轮廓筛选》》》》》》"
  HorizontalAlignment="Left" VerticalAlignment="Top"
  Margin="5,192,0,0"/>
         <Border Margin="5,219,5,5" HorizontalAlignment="Left" VerticalAlignment="Top"
   Width="312" Height="75" BorderThickness="1.5" BorderBrush="#ff6d3c"/>
         <CheckBox Style="{DynamicResource CheckBoxBasic}" HorizontalAlignment="Left"
-                  VerticalAlignment="Top" Content="是否闭合轮廓" Margin="15,230,0,0"/>
+                  VerticalAlignment="Top" Content="是否闭合轮廓" Margin="15,235,0,0"
+                  Name="chxbXldClosed"/>
+
+              <Label Content="离散点数:" HorizontalAlignment="Left" VerticalAlignment="Top"
+       Margin="165,230,0,0"/>
+      <uc:MyNumUpDown Margin="230,230,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+                Height="25" NumericValue="50"  Width="80"
+                        MaxValue="99999" MinValue="2"
+DecimalPlaces="0" OffsetValue="1"
+DefaultValue="50"    x:Name="numSamplingPoints"/>
+        
 
         <Label Content="轮廓长度:" HorizontalAlignment="Left" VerticalAlignment="Top"
-  Margin="10,255,0,0"/>
-        <uc:MyNumUpDown Margin="75,255,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-           Height="25"/>
+  Margin="10,260,0,0"/>
+        <uc:MyNumUpDown Margin="75,260,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+           Height="25" NumericValue="5" Width="80"
+                          MaxValue="99999" MinValue="0"
+  DecimalPlaces="0" OffsetValue="1"
+  DefaultValue="5" x:Name="numXldLengthMin"/>
         <Label Content="------" HorizontalAlignment="Left" VerticalAlignment="Top"
-   Margin="165,255,0,0"/>
-        <uc:MyNumUpDown Margin="230,255,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
-            Height="25"/>
+   Margin="165,260,0,0"/>
+        <uc:MyNumUpDown Margin="230,260,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"
+            Height="25" NumericValue="99999"
+         MaxValue="99999" MinValue="0"  Width="80"
+DecimalPlaces="0" OffsetValue="1"
+DefaultValue="99999" x:Name="numXldLengthMax"/>
     </Grid>
 </Page>
