@@ -36,6 +36,12 @@ namespace PositionToolsLib
         /// 轨迹工具名称
         /// </summary>
         public List<string> sizeTooDic = new List<string>();
+
+        /// <summary>
+        /// AOI工具名称
+        /// </summary>
+        public List<string> aoiTooDic = new List<string>();
+
         /// <summary>
         /// 结果缓存集合:需要显示的区域轮廓
         /// </summary>
@@ -70,9 +76,15 @@ namespace PositionToolsLib
         /// </summary>
         public Dictionary<string,double> SizeDataDic = new Dictionary<string, double>();
         /// <summary>
+        /// AOI集合
+        /// </summary>
+        public Dictionary<string, bool> AoiDataDic = new Dictionary<string, bool>();
+
+
+        /// <summary>
         ///结果缓存集合: 定位坐标结果 (像素坐标+物理坐标)
         /// </summary>
-     //   public Dictionary<string, StuTotalData> PositionAllDataDic = new Dictionary<string, StuTotalData>();
+        //   public Dictionary<string, StuTotalData> PositionAllDataDic = new Dictionary<string, StuTotalData>();
 
         /// <summary>
         /// 缓存集合复位
@@ -146,6 +158,73 @@ namespace PositionToolsLib
             }        
         }
 
+    }
+    /// <summary>
+    /// 胶水关键信息
+    /// </summary>
+    [Serializable]
+    public struct StuGlueMainInfo
+    {
+        public string Name;
+        public double Cx;
+        public double Cy;
+        public double Rc_Width;
+        public double Rc_Height;
+        public double Area;
+        public double CxDown;
+        public double CxUp;
+        public double CyDown;
+        public double CyUp;
+        public double AreaDown;
+        public double AreaUp;
+
+
+        public bool compareX()
+        {
+            return Cx >= CxDown && Cx <= CxUp;
+        }
+        public bool compareY()
+        {
+            return Cy >= CyDown && Cy <= CyUp;
+        }
+        public override string ToString()
+        {
+            string info = "";
+            info += string.Format("{0}_X_dis:{1:f3}({2:f3}-{3:f3})\n", Name, Cx, CxDown, CxUp);
+            info += string.Format("{0}_Y_dis:{1:f3}({2:f3}-{3:f3})\n", Name, Cy, CyDown, CyUp);
+            info += string.Format("{0}_Glue_area:{1:f3}({2:f3}-{3:f3})\n", Name, Area, AreaDown, AreaUp);
+            info += string.Format("{0}_Glue_length:{1:f3}\n", Name, Rc_Width);
+            info += string.Format("{0}_Glue_Width:{1:f3}\n", Name, Rc_Height);
+            return info;
+
+        }
+    }
+
+
+    [Serializable]
+    public struct CoorditionDat
+    {
+        public CoorditionDat(double row, double column)
+        {
+            Row = row;
+            Column = column;
+        }
+        public double Row;
+        public double Column;
+    }
+    /// <summary>
+    /// 胶水复检信息
+    /// </summary>
+    [Serializable]
+    public class GlueInfo
+    {
+        public List<CoorditionDat> coorditions = new List<CoorditionDat>();
+        public string toolName = "";
+        public List<double> areaList = new List<double>();
+        public List<double> rect_r1 = new List<double>();
+        public List<double> rect_c1 = new List<double>();
+        public List<double> rect_r2 = new List<double>();
+        public List<double> rect_c2 = new List<double>();
     }
     [Serializable]
     public struct StuFlagInfo

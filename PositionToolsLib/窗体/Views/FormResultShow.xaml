@@ -164,6 +164,7 @@ NumericValue="{Binding Model.NmCoorY,Mode=TwoWay}"/>
                                     <ComboBoxItem Content="定位"/>
                                     <ComboBoxItem Content="尺寸"/>
                                     <ComboBoxItem Content="轨迹"/>
+                                    <ComboBoxItem Content="AOI"/>
                                     <behaviors:Interaction.Triggers>
                                         <behaviors:EventTrigger EventName="SelectionChanged">
                                             <behaviors:InvokeCommandAction Command="{Binding OutputTypeSelectionChangedCommand}" CommandParameter="{Binding ElementName=cobxOutputTypeList,Path=SelectedValue}"/>
@@ -188,8 +189,6 @@ NumericValue="{Binding Model.NmCoorY,Mode=TwoWay}"/>
                                                     </behaviors:EventTrigger>
                                                 </behaviors:Interaction.Triggers>
                                             </ComboBox>
-
-
                                             <Label Style="{DynamicResource LabelStyle}" Content="Y坐标：" VerticalAlignment="Top" Margin="10,40,0,0"/>
                                             <ComboBox Style="{DynamicResource  MyCbbStyle}"  HorizontalAlignment="Left" VerticalAlignment="Top"
            Margin="100,40,0,0" Height="25" Width="130"  
@@ -249,6 +248,20 @@ ItemsSource="{Binding Model.DgDataOfOutputTrajectoryList,Mode=TwoWay,UpdateSourc
                                             </DataGrid>
 
                                         </Grid>
+                                        <Grid Visibility="{Binding Model.OutputAOIEnable}">
+                                            <DataGrid   Width="auto" Name="dgOutputAoi"  Background="Transparent"
+                                     VerticalGridLinesBrush="#dddddd"   BorderThickness="1" BorderBrush="#ff6d3c"
+                                     Style="{DynamicResource datagrid}"   Grid.ColumnSpan="2"
+                                           SelectedIndex="{Binding Model.DgOutputAoiSelectIndex}"
+ItemsSource="{Binding Model.DgDataOfOutputAoiList,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" >
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="ID"  Binding="{Binding ID,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="50" ElementStyle="{StaticResource datagridtextblock}" />
+                                                    <DataGridCheckBoxColumn Header="启用" Binding="{Binding IsUse,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="80" ElementStyle="{StaticResource datagridcheckbox}"/>
+                                                    <DataGridTextColumn Header="工具名称"  Binding="{Binding ToolName,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}" Width="120" ElementStyle="{StaticResource datagridtextblock}" />
+                                                </DataGrid.Columns>
+
+                                            </DataGrid>
+                                        </Grid>
                                     </Grid>
                                 </GroupBox>
 
@@ -284,6 +297,8 @@ Margin="180,660,25,25" Width="120"  attach:ButtonAttach.ButtonCornerRadius="3" H
                                     <DataGridTextColumn Header="角度"  Binding="{Binding Angle,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
                                     <DataGridTextColumn Header="半径"  Binding="{Binding Radius,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
                                     <DataGridTextColumn Header="尺寸"  Binding="{Binding Distance,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    <DataGridTextColumn Header="AOI"  Binding="{Binding AoiFlag,Mode=TwoWay}" Width="90" ElementStyle="{StaticResource datagridtextblock}" />
+                                    
                                 </DataGrid.Columns>
 
                             </DataGrid>

@@ -9,10 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="imgs\保存.png" />
+    <None Remove="imgs\删除.png" />
+    <None Remove="imgs\新建.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
     <ProjectReference Include="..\ExternalFunctionLib\ExternalFunctionLib.csproj" />
     <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
-    <ProjectReference Include="..\GlueDetectionLib\GlueDetectionLib.csproj" />
     <ProjectReference Include="..\MainFormLib\MainFormLib.csproj" />
     <ProjectReference Include="..\PositionToolsLib\PositionToolsLib.csproj" />
     <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />
@@ -26,6 +31,18 @@
     <Reference Include="halcondotnet">
       <HintPath>..\ROIGenerateLib\dll\halcondotnet.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="imgs\保存.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\新建.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

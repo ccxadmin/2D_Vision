@@ -10,19 +10,19 @@ using MainFormLib.Models;
 using MainFormLib.Views;
 using VisionShowLib.UserControls;
 
-using GlueBaseTool = GlueDetectionLib.工具.BaseTool;
-using GlueDataManage = GlueDetectionLib.DataManage;
-using GlueBaseParam = GlueDetectionLib.参数.BaseParam;
-using GlueRunResult = GlueDetectionLib.工具.RunResult;
-using GlueTcpSendTool = GlueDetectionLib.工具.TcpSendTool;
-using GlueTcpRecvTool = GlueDetectionLib.工具.TcpRecvTool;
+//using GlueBaseTool = GlueDetectionLib.工具.BaseTool;
+//using GlueDataManage = GlueDetectionLib.DataManage;
+//using GlueBaseParam = GlueDetectionLib.参数.BaseParam;
+//using GlueRunResult = GlueDetectionLib.工具.RunResult;
+//using GlueTcpSendTool = GlueDetectionLib.工具.TcpSendTool;
+//using GlueTcpRecvTool = GlueDetectionLib.工具.TcpRecvTool;
 
-using PosBaseTool = PositionToolsLib.工具.BaseTool;
-using PosDataManage = PositionToolsLib.DataManage;
-using PosBaseParam = PositionToolsLib.参数.BaseParam;
-using PosRunResult = PositionToolsLib.工具.RunResult;
-using PosTcpSendTool = PositionToolsLib.工具.TcpSendTool;
-using PosTcpRecvTool = PositionToolsLib.工具.TcpRecvTool;
+using BaseTool = PositionToolsLib.工具.BaseTool;
+using DataManage = PositionToolsLib.DataManage;
+using BaseParam = PositionToolsLib.参数.BaseParam;
+using RunResult = PositionToolsLib.工具.RunResult;
+using TcpSendTool = PositionToolsLib.工具.TcpSendTool;
+using TcpRecvTool = PositionToolsLib.工具.TcpRecvTool;
 
 using System.Diagnostics;
 using PositionToolsLib.窗体.Views;
@@ -34,7 +34,6 @@ using System.IO;
 using OSLog;
 using FilesRAW.Common;
 using System.Windows;
-using GlueDetectionLib;
 using FunctionLib.Cam;
 using PositionToolsLib;
 using FunctionLib.Location;
@@ -43,9 +42,9 @@ using System.Threading;
 using System.Collections.ObjectModel;
 
 using PositionToolsLib.工具;
-using GlueDetectionLib.工具;
+
 using System.Threading.Channels;
-using GlueDetectionLib.参数;
+
 using static VisionShowLib.UserControls.VisionShowTool;
 using System.Windows.Input;
 using Microsoft.Win32;
@@ -89,10 +88,11 @@ namespace MainFormLib.ViewModels
         bool ContinueRunFlag = false;//连续运行标志
         /*-----------------------------------------定位工具---------------------------------------*/
         EumModelType currModelType = EumModelType.ProductModel_1;
-        int toolindexofPosition = 0;
+        int toolindex = 0;
         Stopwatch stopwatch = new Stopwatch();
+       
         //工程文件
-        private ProjectOfPosition projectOfPos = new ProjectOfPosition();
+        private Project Project = new Project();
         //区域
         List<StuWindowHobjectToPaint> objs = new List<StuWindowHobjectToPaint>();
         //文本
@@ -101,10 +101,10 @@ namespace MainFormLib.ViewModels
         private HTuple hv_HomMat2D = null;//坐标系变换矩阵
         /*-----------------------------------------胶水工具---------------------------------------*/
         //工程文件
-        private ProjectOfGlue projectOfGlue = new ProjectOfGlue();
-        int toolindexofGlueAOI = 0;
+        //private ProjectOfGlue projectOfGlue = new ProjectOfGlue();
+        //int toolindexofGlueAOI = 0;
         List<GlueRecheckDat> datas = new List<GlueRecheckDat>();//发送给运控的数据
-        StuCoordinateData positionSharpData = new StuCoordinateData(0, 0, 0);
+        //StuCoordinateData positionSharpData = new StuCoordinateData(0, 0, 0);//参考点
         /*-----------------------------------------其他工具---------------------------------------*/
         public Action<string,string> AppenTxtAction = null;
         public Action<string> ClearTxtAction = null;
@@ -147,15 +147,15 @@ namespace MainFormLib.ViewModels
         public CommandBase NinePointsCalibFormClickCommand { get; set; }
         public CommandBase ModelTypeSelectionChangedCommand { get; set; }
         public CommandBase PosToolBarBtnClickCommand { get; set; }
-        public CommandBase GlueToolBarBtnClickCommand { get; set; }     
+         
         public CommandBase PosMenuClickCommand { get; set; }
-        public CommandBase GlueMenuClickCommand { get; set; }
+     
         public CommandBase ToolsOfPosDoubleClickCommand { get; set; }
-        public CommandBase ToolsOfGlueDoubleClickCommand { get; set; }
+
         public CommandBase ToolsOfPosMouseUpCommand { get; set; }
-        public CommandBase ToolsOfGlueMouseUpCommand { get; set; }
+      
         public CommandBase ToolsOfPosition_ContextMenuCommand { get; set; }
-        public CommandBase ToolsOfGlue_ContextMenuCommand { get; set; }
+     
         public CommandBase ClearTextCommand { get; set; }
         public CommandBase ScanClearTextCommand { get; set; }      
         public CommandBase NewRecipeClickCommand { get; set; }
@@ -233,43 +233,24 @@ namespace MainFormLib.ViewModels
             PosToolBarBtnClickCommand.DoExecute = new Action<object>((o) => PosToolBarBtn_Click(o));
             PosToolBarBtnClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            GlueToolBarBtnClickCommand = new CommandBase();
-            GlueToolBarBtnClickCommand.DoExecute = new Action<object>((o) => GlueToolBarBtn_Click(o));
-            GlueToolBarBtnClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
+           
             PosMenuClickCommand = new CommandBase();
             PosMenuClickCommand.DoExecute = new Action<object>((o) => PosMenu_Click(o));
             PosMenuClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            GlueMenuClickCommand = new CommandBase();
-            GlueMenuClickCommand.DoExecute = new Action<object>((o) => GlueMenu_Click(o));
-            GlueMenuClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
+         
             ToolsOfPosDoubleClickCommand = new CommandBase();
             ToolsOfPosDoubleClickCommand.DoExecute = new Action<object>((o) => ListViewToolsOfPosition_DoubleClick(o));
             ToolsOfPosDoubleClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            ToolsOfGlueDoubleClickCommand = new CommandBase();
-            ToolsOfGlueDoubleClickCommand.DoExecute = new Action<object>((o) => ListViewToolsOfGlue_DoubleClick(o));
-            ToolsOfGlueDoubleClickCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
-
+          
             ToolsOfPosMouseUpCommand = new CommandBase();
             ToolsOfPosMouseUpCommand.DoExecute = new Action<object>((o) => ListViewToolsOfPosition_MouseUp());
             ToolsOfPosMouseUpCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
-            ToolsOfGlueMouseUpCommand = new CommandBase();
-            ToolsOfGlueMouseUpCommand.DoExecute = new Action<object>((o) => ListViewToolsOfGlue_MouseUp());
-            ToolsOfGlueMouseUpCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
-
             ToolsOfPosition_ContextMenuCommand = new CommandBase();
             ToolsOfPosition_ContextMenuCommand.DoExecute = new Action<object>((o) => ToolsOfPosition_ContextMenuClick(o));
             ToolsOfPosition_ContextMenuCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
-
-            ToolsOfGlue_ContextMenuCommand = new CommandBase();
-            ToolsOfGlue_ContextMenuCommand.DoExecute = new Action<object>((o) => ToolsOfGlue_ContextMenuClick(o));
-            ToolsOfGlue_ContextMenuCommand.DoCanExecute = new Func<object, bool>((o) => { return true; });
 
 
             ClearTextCommand = new CommandBase();
@@ -476,6 +457,7 @@ namespace MainFormLib.ViewModels
         /// <param name="o"></param>
         void cobxOutputTypeList_SelectedIndexChanged(object o)
         {
+            if (Model.OutputTypeSelectIndex == -1) return;
             if (outputType == (EumOutputType)Model.OutputTypeSelectIndex)//如果无切换则不重载
                 return;
             outputType = (EumOutputType)Model.OutputTypeSelectIndex;
@@ -500,6 +482,11 @@ namespace MainFormLib.ViewModels
             {
                 LoadPositionFlow("Size", "尺寸测量1");
             }
+            else if (outputType == EumOutputType.AOI)
+            {
+                LoadPositionFlow("AOI", "胶水AOI");
+            }
+
             //切换重新加载相机曝光增益参数
             if (usingCamType == EumUsingCamType.Frame)
             {
@@ -508,7 +495,7 @@ namespace MainFormLib.ViewModels
                 LoadCamParam();
             }
             Appentxt("输出类型手动切换完成");
-            if (!PosBaseTool.ObjectValided(this.GrabImg))
+            if (!BaseTool.ObjectValided(this.GrabImg))
                 return;
             ShowTool.ClearAllOverLays();
             ShowTool.DispImage(this.GrabImg);
@@ -541,7 +528,7 @@ namespace MainFormLib.ViewModels
                 LoadCamParam();
             }
             Appentxt("模板手动切换完成");
-            if (!PosBaseTool.ObjectValided(this.GrabImg))
+            if (!BaseTool.ObjectValided(this.GrabImg))
                 return;
             ShowTool.ClearAllOverLays();
             ShowTool.DispImage(this.GrabImg);          
@@ -575,18 +562,18 @@ namespace MainFormLib.ViewModels
                         try
                         {
                             ResetNumOfPos();
-                            this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>(path);                       
-                            projectOfPos.GetNum();
-                            projectOfPos.toolNamesList = new List<string>();
-                            if (projectOfPos.dataManage == null)
-                                projectOfPos.dataManage = new PosDataManage();
-                            Dictionary<string, PosBaseTool> tem = new Dictionary<string, PosBaseTool>();
+                            this.Project = GeneralUse.ReadSerializationFile<Project>(path);                       
+                            Project.GetNum();
+                            Project.toolNamesList = new List<string>();
+                            if (Project.dataManage == null)
+                                Project.dataManage = new DataManage();
+                            Dictionary<string, BaseTool> tem = new Dictionary<string, BaseTool>();
 
-                            foreach (var s in projectOfPos.toolsDic)
+                            foreach (var s in Project.toolsDic)
                             {
-                                projectOfPos.toolNamesList.Add(s.Value.GetToolName());
+                                Project.toolNamesList.Add(s.Value.GetToolName());
                                 tem.Add(s.Value.GetToolName(), s.Value);
-                                s.Value.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
+                                s.Value.OnGetManageHandle = new BaseTool.GetManageHandle(GetManageOfPos);
                                 if (s.Value.GetType() == typeof(ImageCorrectTool)||
                                      s.Value.GetType() == typeof(DistancePPTool)||
                                     s.Value.GetType() == typeof(DistancePLTool)||
@@ -597,7 +584,7 @@ namespace MainFormLib.ViewModels
                                 s.Value.SetCalibFilePath(NineCalibFile);
                               
                             }
-                            projectOfPos.toolsDic = tem;
+                            Project.toolsDic = tem;
                             ShowTestFlowOfPosition();
                         }
                         catch (Exception er)
@@ -619,12 +606,12 @@ namespace MainFormLib.ViewModels
                            saveToUsePath + "\\Config");
                     try
                     {
-                        projectOfPos.Refresh();
+                        Project.Refresh();
                         if (outputType == EumOutputType.Location)
                         {
-                            GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
+                            GeneralUse.WriteSerializationFile<Project>(saveToUsePath + "\\"
                            + firstName + "\\" + secondName + ".proj",
-                           projectOfPos);
+                           Project);
 
                             GeneralUse.WriteValue("定位检测", "模板类型", secondName, "config",
                                           saveToUsePath + "\\" + firstName);
@@ -632,16 +619,23 @@ namespace MainFormLib.ViewModels
                         else if (outputType == EumOutputType.Trajectory)
                         {
                             secondName = "轨迹识别1";
-                            GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
+                            GeneralUse.WriteSerializationFile<Project>(saveToUsePath + "\\"
                              + firstName + "\\" + secondName + ".proj",
-                             projectOfPos);
+                             Project);
                         }
                         else if (outputType == EumOutputType.Size)
                         {
                             secondName = "尺寸测量1";
-                            GeneralUse.WriteSerializationFile<ProjectOfPosition>(saveToUsePath + "\\"
+                            GeneralUse.WriteSerializationFile<Project>(saveToUsePath + "\\"
                              + firstName + "\\" + secondName + ".proj",
-                             projectOfPos);
+                             Project);
+                        }
+                        else if (outputType == EumOutputType.AOI)
+                        {
+                            secondName = "胶水AOI";
+                            GeneralUse.WriteSerializationFile<Project>(saveToUsePath + "\\"
+                             + firstName + "\\" + secondName + ".proj",
+                             Project);
                         }
                     }
                     catch (Exception er)
@@ -662,14 +656,14 @@ namespace MainFormLib.ViewModels
                     if (MessageBox.Show("清空流程？", "提醒", MessageBoxButton.OKCancel, MessageBoxImage.Question)
                == MessageBoxResult.OK)
                     {
-                        toolindexofPosition = 0;
-                        projectOfPos.TcpRecvName = "";
-                        projectOfPos.TcpSendName = "";
-                        projectOfPos.toolNamesList.Clear();
-                        projectOfPos.toolsDic.Clear();
-                        projectOfPos.dataManage?.ResetBuf();//重载后清除数据缓存
+                        toolindex = 0;
+                        Project.TcpRecvName = "";
+                        Project.TcpSendName = "";
+                        Project.toolNamesList.Clear();
+                        Project.toolsDic.Clear();
+                        Project.dataManage?.ResetBuf();//重载后清除数据缓存
                         ResetNumOfPos();
-                        projectOfPos.GetNum();
+                        Project.GetNum();
                         Model.ToolsOfPositionList.Clear();
                     }
                     break;
@@ -744,102 +738,7 @@ namespace MainFormLib.ViewModels
             foreach (var item in Model.ToolsOfGlueList)
                 item.ContextMenuVisib = Visibility.Visible;
         }
-        /// <summary>
-        /// 胶水检测工具栏按钮事件
-        /// </summary>
-        /// <param name="o"></param>
-        void GlueToolBarBtn_Click(object o)
-        {
-            Button b = (Button)o;
-            switch (b.ToolTip)
-            {
-                case "打开流程":
-                    #region 打开流程
-                    // Configure open file dialog box
-                    var dialog = new Microsoft.Win32.OpenFileDialog();
-                    dialog.FileName = "Open Project"; // Default file name
-                    dialog.DefaultExt = ".proj"; // Default file extension
-                    dialog.Filter = "Open Project (.proj)|*.proj"; // Filter files by extension
-                    dialog.InitialDirectory = saveToUsePath;
-                    // Show open file dialog box
-                    bool? result = dialog.ShowDialog();
-
-                    // Process open file dialog box results
-                    if (result == true)
-                    {
-                        // Open document
-                        string path = dialog.FileName;
-                        try
-                        {
-                            ResetNumOfGlue();
-                            this.projectOfGlue = GeneralUse.ReadSerializationFile<ProjectOfGlue>(path);
-                            projectOfGlue.GetNum();
-                            projectOfGlue.toolNamesList = new List<string>();
-                            if (projectOfGlue.dataManage == null)
-                                projectOfGlue.dataManage = new GlueDataManage();
-                            Dictionary<string, GlueBaseTool> tem = new Dictionary<string, GlueBaseTool>();
-
-                            foreach (var s in projectOfGlue.toolsDic)
-                            {
-                                projectOfGlue.toolNamesList.Add(s.Value.GetToolName());
-                                tem.Add(s.Value.GetToolName(), s.Value);
-                                s.Value.OnGetManageHandle = new GlueBaseTool.GetManageHandle(GetManageOfGlue);
-                              
-                            }
-                            projectOfGlue.toolsDic = tem;
-                            ShowTestFlowOfGlue();
-                        }
-                        catch (Exception er)
-                        {
-                            MessageBox.Show("胶水检测流程读取失败，异常信息:" + er.Message);
-                        }
-                    }
-                    #endregion
-                    break;
-                case "保存流程":
-                    #region 保存流程
-                    //文件夹名称
-                    string firstName = "AOI";       
-                    if (!Directory.Exists(saveToUsePath + "\\" + firstName))
-                        Directory.CreateDirectory(saveToUsePath + "\\" + firstName);
-
-                    try
-                    {
-                        projectOfGlue.Refresh();
-                        GeneralUse.WriteSerializationFile<ProjectOfGlue>(saveToUsePath + "\\"
-                            + firstName + "\\" + "胶水AOI.proj",
-                            projectOfGlue);
-                    }
-                    catch (Exception er)
-                    {
-                        MessageBox.Show("胶水检测流程保存失败，异常信息:" + er.Message);
-                    }
-                    #endregion
-                    break;
-                case "运行流程":
-                    if (CurrCam != null)
-                        if (CurrCam.IsGrabing)
-                            btnStopGrab_Click();  //如果已在采集中则先停止采集
-                    Task.Run(delegate ()
-                    { return RunTestFlowOfGlue(); });
-                    break;
-                case "清空流程":
-                    if (MessageBox.Show("清空流程？", "提醒", MessageBoxButton.OKCancel, MessageBoxImage.Question)
-               == MessageBoxResult.OK)
-                    {
-                        toolindexofGlueAOI = -1;
-                        projectOfGlue.toolNamesList.Clear();
-                        projectOfGlue.toolsDic.Clear();
-                        projectOfGlue.dataManage?.ResetBuf();//重载后清除数据缓存
-                        ResetNumOfGlue();
-                        projectOfGlue.GetNum();
-                        Model.ToolsOfGlueList.Clear();
-                    }
-                    break;
-              
-            }
-
-        }
+      
 
         /// <summary>
         /// 视觉检测菜单栏按钮事件（新增视觉检测工具）
@@ -847,125 +746,140 @@ namespace MainFormLib.ViewModels
         /// <param name="o"></param>
         void PosMenu_Click(object o)
         {
-            PosBaseTool tool = null;
+            BaseTool tool = null;
             string tip = o.ToString();
             if (tip == "Tcp接收")
-                if (projectOfPos.toolNamesList.Exists(t => t.Contains("Tcp接收")))
+                if (Project.toolNamesList.Exists(t => t.Contains("Tcp接收")))
                 {
                     Appentxt("流程中存在TCP接收工具，无需重复添加");
                     return;
                 }
             if (tip == "Tcp发送")
-                if (projectOfPos.toolNamesList.Exists(t => t.Contains("Tcp发送")))
+                if (Project.toolNamesList.Exists(t => t.Contains("Tcp发送")))
                 {
                     Appentxt("流程中存在Tcp发送工具，无需重复添加");
                     return;
                 }
-            toolindexofPosition++;
+            toolindex++;
 
-            projectOfPos.SetNum();
+            Project.SetNum();
             switch (tip)
             {
                 case "颜色转换":
-                    tool = new PositionToolsLib.工具.ColorConvertTool();
+                    tool = new ColorConvertTool();
 
                     break;
                 case "膨胀":
-                    tool = new PositionToolsLib.工具.DilationTool();
+                    tool = new DilationTool();
 
                     break;
                 case "腐蚀":
-                    tool = new PositionToolsLib.工具.ErosionTool();
+                    tool = new ErosionTool();
 
                     break;
                 case "开运算":
-                    tool = new PositionToolsLib.工具.OpeningTool();
+                    tool = new OpeningTool();
 
                     break;
                 case "闭运算":
-                    tool = new PositionToolsLib.工具.ClosingTool();
+                    tool = new ClosingTool();
 
                     break;
                 case "二值化":
-                    tool = new PositionToolsLib.工具.BinaryzationTool();
+                    tool = new BinaryzationTool();
 
                     break;
                 case "模板匹配":
-                    tool = new PositionToolsLib.工具.MatchTool();
+                    tool = new MatchTool();
 
                     break;
                 case "查找直线":
-                    tool = new PositionToolsLib.工具.FindLineTool();
+                    tool = new FindLineTool();
 
                     break;
                 case "拟合直线":
-                    tool = new PositionToolsLib.工具.FitLineTool();
+                    tool = new FitLineTool();
 
                     break;
                 case "直线偏移":
-                    tool = new PositionToolsLib.工具.LineOffsetTool();
+                    tool = new LineOffsetTool();
 
                     break;
                 case "平行直线":
-                    tool = new PositionToolsLib.工具.CalParallelLineTool();
+                    tool = new CalParallelLineTool();
 
                     break;
                 case "直线中心":
-                    tool = new PositionToolsLib.工具.LineCentreTool();
+                    tool = new LineCentreTool();
 
                     break;
                 case "直线交点":
-                    tool = new PositionToolsLib.工具.LineIntersectionTool();
+                    tool = new LineIntersectionTool();
 
                     break;
                 case "查找圆":
-                    tool = new PositionToolsLib.工具.FindCircleTool();
+                    tool = new FindCircleTool();
 
                     break;
                 case "Blob中心":
-                    tool = new PositionToolsLib.工具.BlobTool();
+                    tool = new BlobTool();
 
                     break;
                 case "坐标换算":
-                    tool = new PositionToolsLib.工具.CoordConvertTool();
+                    tool = new CoordConvertTool();
 
                     break;
                 case "角度换算":
-                    tool = new PositionToolsLib.工具.AngleConvertTool();
+                    tool = new AngleConvertTool();
 
                     break;
                 case "畸变校正":
-                    tool = new PositionToolsLib.工具.ImageCorrectTool();
+                    tool = new ImageCorrectTool();
 
                     break;
                 case "点点距离":
-                    tool = new PositionToolsLib.工具.DistancePPTool();
+                    tool = new DistancePPTool();
                     break;
                 case "点线距离":
-                    tool = new PositionToolsLib.工具.DistancePLTool();
+                    tool = new DistancePLTool();
                     break;
                 case "线线距离":
-                    tool = new PositionToolsLib.工具.DistanceLLTool();
+                    tool = new DistanceLLTool();
+                    break;
+                case "漏胶":
+                    tool = new GlueMissTool();
+                    break;
+                case "偏位":
+                    tool = new GlueOffsetTool();
+
+                    break;
+                case "断胶":
+                    tool = new GlueGapTool();
+
+                    break;
+                case "胶宽":
+                    tool = new GlueCaliperWidthTool();
+
                     break;
                 case "轨迹提取":
-                    tool = new PositionToolsLib.工具.TrajectoryExtractTool();
+                    tool = new TrajectoryExtractTool();
 
                     break;
                 case "结果显示":
-                    tool = new PositionToolsLib.工具.ResultShowTool();
+                    tool = new ResultShowTool();
 
                     break;
 
                 case "Tcp接收":
-                    tool = new PosTcpRecvTool();
+                    tool = new TcpRecvTool();
 
                     break;
                 case "Tcp发送":
-                    tool = new PosTcpSendTool();
+                    tool = new TcpSendTool();
 
                     break;
             }
-            tool.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
+            tool.OnGetManageHandle = new BaseTool.GetManageHandle(GetManageOfPos);
             if (tool.GetType() != typeof(ImageCorrectTool)&&
                 tool.GetType() != typeof(DistancePPTool)&&
                 tool.GetType() != typeof(DistancePLTool)&&
@@ -974,105 +888,16 @@ namespace MainFormLib.ViewModels
                 tool.SetMatrix(hv_HomMat2D);
                 tool.SetCalibFilePath(NineCalibFile);
             }
-            projectOfPos.toolNamesList.Add(tool.GetToolName());
-            projectOfPos.toolsDic.Add(tool.GetToolName(), tool);
+            Project.toolNamesList.Add(tool.GetToolName());
+            Project.toolsDic.Add(tool.GetToolName(), tool);
             Model.ToolsOfPositionList.Add(new
-                ListViewToolsData(toolindexofPosition,
+                ListViewToolsData(toolindex,
                 tool.GetToolName(),
                 "--", tool.remark));
-            projectOfPos.GetNum();
+            Project.GetNum();
         }
-        /// <summary>
-        /// 胶水检测菜单栏按钮事件（新增胶水检测工具）
-        /// </summary>
-        /// <param name="o"></param>
-        void GlueMenu_Click(object o)
-        {
-            GlueBaseTool tool = null;
-            string tip = o.ToString();
-            if (tip == "Tcp接收")
-                if (projectOfGlue.toolNamesList.Exists(t => t.Contains("Tcp接收")))
-                {
-                    Appentxt("流程中存在TCP接收工具，无需重复添加");
-                    return;
-                }
-            if (tip == "Tcp发送")
-                if (projectOfGlue.toolNamesList.Exists(t => t.Contains("Tcp发送")))
-                {
-                    Appentxt("流程中存在Tcp发送工具，无需重复添加");
-                    return;
-                }
-            toolindexofGlueAOI++;
-
-            projectOfGlue.SetNum();
-            switch (tip)
-            {
-                case "颜色转换":
-                    tool = new GlueDetectionLib.工具.ColorConvertTool();
-
-                    break;
-                case "膨胀":
-                    tool = new GlueDetectionLib.工具.DilationTool();
-
-                    break;
-                case "腐蚀":
-                    tool = new GlueDetectionLib.工具.ErosionTool();
-
-                    break;
-                case "开运算":
-                    tool = new GlueDetectionLib.工具.OpeningTool();
-
-                    break;
-                case "闭运算":
-                    tool = new GlueDetectionLib.工具.ClosingTool();
-
-                    break;
-                case "二值化":
-                    tool = new GlueDetectionLib.工具.BinaryzationTool();
-
-                    break;
-                case "模板匹配":
-                    tool = new GlueDetectionLib.工具.MatchTool();
-
-                    break;
-                case "漏胶":
-                    tool = new GlueDetectionLib.工具.GlueMissTool();
-
-                    break;
-                case "偏位":
-                    tool = new GlueDetectionLib.工具.GlueOffsetTool();
-
-                    break;
-                case "断胶":
-                    tool = new GlueDetectionLib.工具.GlueGapTool();
-
-                    break;
-                case "胶宽":
-                    tool = new GlueDetectionLib.工具.GlueCaliperWidthTool();
-
-                    break;
-                case "结果显示":
-                    tool = new GlueDetectionLib.工具.ResultShowTool();
-
-                    break;
-                case "Tcp接收":
-                    tool = new GlueTcpRecvTool();
-
-                    break;
-                case "Tcp发送":
-                    tool = new GlueTcpSendTool();
-
-                    break;
-            }
-            tool.OnGetManageHandle = new GlueBaseTool.GetManageHandle(GetManageOfGlue);
-            projectOfGlue.toolNamesList.Add(tool.GetToolName());
-            projectOfGlue.toolsDic.Add(tool.GetToolName(), tool);
-            Model.ToolsOfGlueList.Add(new
-                ListViewToolsData(toolindexofGlueAOI,
-                tool.GetToolName(),
-                "--", tool.remark));
-            projectOfGlue.GetNum();
-        }
+       
+      
         /// <summary>
         /// 视觉检测工具流程鼠标单击事件
         /// </summary>
@@ -1097,29 +922,7 @@ namespace MainFormLib.ViewModels
                     Model.ToolsOfPositionList[index].MenuItemEnable = EumMenuItemEnable.all;
             }
         }
-        /// <summary>
-        /// 胶水检测工具流程鼠标单击事件
-        /// </summary>
-        void ListViewToolsOfGlue_MouseUp()
-        {
-            int index = Model.ToolsOfGlueSelectIndex;
-            Console.WriteLine(index);
-            if (index < 0 ||
-               index >= Model.ToolsOfGlueList.Count)
-                return;
-            if (Model.ToolsOfGlueList.Count == 1)
-                Model.ToolsOfGlueList[index].MenuItemEnable = EumMenuItemEnable.none;
-            else
-            {
-
-                if (index == 0)
-                    Model.ToolsOfGlueList[index].MenuItemEnable = EumMenuItemEnable.first;
-                else if (index == Model.ToolsOfGlueList.Count - 1)
-                    Model.ToolsOfGlueList[index].MenuItemEnable = EumMenuItemEnable.last;
-                else
-                    Model.ToolsOfGlueList[index].MenuItemEnable = EumMenuItemEnable.all;
-            }
-        }
+       
         /// <summary>
         /// 视觉检测工具流程鼠标双击事件
         /// </summary>
@@ -1131,46 +934,46 @@ namespace MainFormLib.ViewModels
                index >= Model.ToolsOfPositionList.Count)
                 return;
             string name = Model.ToolsOfPositionList[index].ToolName;
-            string toolName = projectOfPos.toolNamesList[index];
-            PosBaseTool tool = projectOfPos.toolsDic[toolName];
+            string toolName = Project.toolNamesList[index];
+            BaseTool tool = Project.toolsDic[toolName];
             if (toolName.Contains("颜色转换"))
             {
-                FormColorConvert f = new PositionToolsLib.窗体.Views.FormColorConvert(tool);
+                FormColorConvert f = new FormColorConvert(tool);
                 ColorConvertViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 ColorConvertViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("膨胀"))
             {
-                FormDilation f = new PositionToolsLib.窗体.Views.FormDilation(tool);
+                FormDilation f = new FormDilation(tool);
                 DilationViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 DilationViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("腐蚀"))
             {
-                FormErosion f = new PositionToolsLib.窗体.Views.FormErosion(tool);
+                FormErosion f = new FormErosion(tool);
                 ErosionViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 ErosionViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("开运算"))
             {
-                FormOpening f = new PositionToolsLib.窗体.Views.FormOpening(tool);
+                FormOpening f = new FormOpening(tool);
                 OpeningViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 OpeningViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("闭运算"))
             {
-                FormClosing f = new PositionToolsLib.窗体.Views.FormClosing(tool);
+                FormClosing f = new FormClosing(tool);
                 ClosingViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 ClosingViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("二值化"))
             {
-                FormBinaryzation f = new PositionToolsLib.窗体.Views.FormBinaryzation(tool);
+                FormBinaryzation f = new FormBinaryzation(tool);
                 BinaryzationViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 BinaryzationViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
@@ -1178,110 +981,112 @@ namespace MainFormLib.ViewModels
             else if (toolName.Contains("模板匹配"))
             {
                 string firstName = outputType.ToString();
-               (tool.GetParam() as PositionToolsLib.参数.MatchParam).RootFolder = saveToUsePath+"\\"+ firstName+"\\"+ currModelType.ToString();
-                FormMatch f = new PositionToolsLib.窗体.Views.FormMatch(tool);
+                (tool.GetParam() as MatchParam).RootFolder = saveToUsePath + "\\" + firstName;
+                if (outputType == EumOutputType.Location)
+                    (tool.GetParam() as MatchParam).RootFolder = saveToUsePath + "\\" + firstName + "\\" + currModelType.ToString();
+                FormMatch f = new FormMatch(tool);
                 MatchViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 MatchViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("查找直线"))
             {
-                FormFindLine f = new PositionToolsLib.窗体.Views.FormFindLine(tool);
+                FormFindLine f = new FormFindLine(tool);
                 FindLineViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 FindLineViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("拟合直线"))
             {
-                FormFitLine f = new PositionToolsLib.窗体.Views.FormFitLine(tool);
+                FormFitLine f = new FormFitLine(tool);
                 FitLineViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 FitLineViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("直线偏移"))
             {
-                FormLineOffset f = new PositionToolsLib.窗体.Views.FormLineOffset(tool);
+                FormLineOffset f = new FormLineOffset(tool);
                 LineOffsetViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 LineOffsetViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("平行直线"))
             {
-                FormCalParallelLine f = new PositionToolsLib.窗体.Views.FormCalParallelLine(tool);
+                FormCalParallelLine f = new FormCalParallelLine(tool);
                 CalParallelLineViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 CalParallelLineViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("直线中心"))
             {
-                FormLineCentre f = new PositionToolsLib.窗体.Views.FormLineCentre(tool);
+                FormLineCentre f = new FormLineCentre(tool);
                 LineCentreViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 LineCentreViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("直线交点"))
             {
-                FormLineIntersection f = new PositionToolsLib.窗体.Views.FormLineIntersection(tool);
+                FormLineIntersection f = new FormLineIntersection(tool);
                 LineIntersectionViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 LineIntersectionViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("查找圆"))
             {
-                FormFindCircle f = new PositionToolsLib.窗体.Views.FormFindCircle(tool);
+                FormFindCircle f = new FormFindCircle(tool);
                 FindCircleViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 FindCircleViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("Blob中心"))
             {
-                FormBlob f = new PositionToolsLib.窗体.Views.FormBlob(tool);
+                FormBlob f = new FormBlob(tool);
                 BlobViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 BlobViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("坐标换算"))
             {
-                FormCoordConvert f = new PositionToolsLib.窗体.Views.FormCoordConvert(tool);
+                FormCoordConvert f = new FormCoordConvert(tool);
                 CoordConvertViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 CoordConvertViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("角度换算"))
             {
-                FormAngleConvert f = new PositionToolsLib.窗体.Views.FormAngleConvert(tool);
+                FormAngleConvert f = new FormAngleConvert(tool);
                 AngleConvertViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 AngleConvertViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("畸变校正"))
             {
-                FormImageCorrect f = new PositionToolsLib.窗体.Views.FormImageCorrect(tool);
+                FormImageCorrect f = new FormImageCorrect(tool);
                 ImageCorrectViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 ImageCorrectViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("点点距离"))
             {
-                FormDistancePP f = new PositionToolsLib.窗体.Views.FormDistancePP(tool);
-               DistancePPViewModel.This.getPixelRatioHandle
-                     += OnGetPixelRatio;
+                FormDistancePP f = new FormDistancePP(tool);
+                DistancePPViewModel.This.getPixelRatioHandle
+                      += OnGetPixelRatio;
                 DistancePPViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 DistancePPViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("点线距离"))
             {
-                FormDistancePL f = new PositionToolsLib.窗体.Views.FormDistancePL(tool);
-               DistancePLViewModel.This.getPixelRatioHandle
-                     += OnGetPixelRatio;
+                FormDistancePL f = new FormDistancePL(tool);
+                DistancePLViewModel.This.getPixelRatioHandle
+                      += OnGetPixelRatio;
                 DistancePLViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 DistancePLViewModel.This.OnSaveManageHandle = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("线线距离"))
             {
-                FormDistanceLL f = new PositionToolsLib.窗体.Views.FormDistanceLL(tool);
+                FormDistanceLL f = new FormDistanceLL(tool);
                 DistanceLLViewModel.This.getPixelRatioHandle
                     += OnGetPixelRatio;
                 DistanceLLViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
@@ -1290,9 +1095,57 @@ namespace MainFormLib.ViewModels
             }
             else if (toolName.Contains("轨迹提取"))
             {
-                FormTrajectoryExtract f = new PositionToolsLib.窗体.Views.FormTrajectoryExtract(tool);
+                FormTrajectoryExtract f = new FormTrajectoryExtract(tool);
                 TrajectoryExtractViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 TrajectoryExtractViewModel.This.OnSaveManageHandle = SaveManageOfPos;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("漏胶"))
+            {
+                FormGlueMiss f =
+                    new FormGlueMiss(tool);
+                GlueMissViewModel.This.getPixelRatioHandle
+                    += OnGetPixelRatio;
+                GlueMissViewModel.This.OnSaveParamHandle
+                     += OnSaveParamEventOfPosition;
+                GlueMissViewModel.This.OnSaveManageHandle
+                    = SaveManageOfPos;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("偏位"))
+            {
+                FormGlueOffset f =
+                    new FormGlueOffset(tool);
+                GlueOffsetViewModel.This.getPixelRatioHandle
+                    += OnGetPixelRatio;
+                GlueOffsetViewModel.This.OnSaveParamHandle
+                     += OnSaveParamEventOfPosition;
+                GlueOffsetViewModel.This.OnSaveManageHandle
+                    = SaveManageOfPos;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("断胶"))
+            {
+                FormGlueGap f =
+                     new FormGlueGap(tool);
+                GlueGapViewModel.This.getPixelRatioHandle
+                  += OnGetPixelRatio;
+                GlueGapViewModel.This.OnSaveParamHandle
+                     += OnSaveParamEventOfPosition;
+                GlueGapViewModel.This.OnSaveManageHandle
+                    = SaveManageOfPos;
+                f.ShowDialog();
+            }
+            else if (toolName.Contains("胶宽"))
+            {
+                FormGlueCaliperWidth f =
+                     new FormGlueCaliperWidth(tool);
+                GlueCaliperWidthViewModel.This.getPixelRatioHandle
+                    += OnGetPixelRatio;
+                GlueCaliperWidthViewModel.This.OnSaveParamHandle
+                     += OnSaveParamEventOfPosition;
+                GlueCaliperWidthViewModel.This.OnSaveManageHandle
+                     = SaveManageOfPos;
                 f.ShowDialog();
             }
             else if (toolName.Contains("结果显示"))
@@ -1317,171 +1170,7 @@ namespace MainFormLib.ViewModels
                 f.ShowDialog();
             }
         }
-        /// <summary>
-        /// 胶水检测工具流程鼠标双击事件
-        /// </summary>
-        /// <param name="o"></param>
-        void ListViewToolsOfGlue_DoubleClick(object o)
-        {
-            int index = Model.ToolsOfGlueSelectIndex;
-            if (index < 0 ||
-               index >= Model.ToolsOfGlueList.Count)
-                return;
-            string name = Model.ToolsOfGlueList[index].ToolName;
-            string toolName = projectOfGlue.toolNamesList[index];
-            GlueBaseTool tool = projectOfGlue.toolsDic[toolName];
-            if (toolName.Contains("颜色转换"))
-            {
-                GlueDetectionLib.窗体.Views.FormColorConvert f = 
-                    new GlueDetectionLib.窗体.Views.FormColorConvert(tool);
-                GlueDetectionLib.窗体.ViewModels.ColorConvertViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.ColorConvertViewModel.This.OnSaveManageHandle
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("膨胀"))
-            {
-                GlueDetectionLib.窗体.Views.FormDilation f =
-                    new GlueDetectionLib.窗体.Views.FormDilation(tool);
-                GlueDetectionLib.窗体.ViewModels.DilationViewModel.This.OnSaveParamHandle
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.DilationViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("腐蚀"))
-            {
-                GlueDetectionLib.窗体.Views.FormErosion f =
-                    new GlueDetectionLib.窗体.Views.FormErosion(tool);
-                GlueDetectionLib.窗体.ViewModels.ErosionViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.ErosionViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("开运算"))
-            {
-                GlueDetectionLib.窗体.Views.FormOpening f =
-                    new GlueDetectionLib.窗体.Views.FormOpening(tool);
-                GlueDetectionLib.窗体.ViewModels.OpeningViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.OpeningViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("闭运算"))
-            {
-                GlueDetectionLib.窗体.Views.FormClosing f =
-                    new GlueDetectionLib.窗体.Views.FormClosing(tool);
-                GlueDetectionLib.窗体.ViewModels.ClosingViewModel.This.OnSaveParamHandle
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.ClosingViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("二值化"))
-            {
-                GlueDetectionLib.窗体.Views.FormBinaryzation f =
-                    new GlueDetectionLib.窗体.Views.FormBinaryzation(tool);
-                GlueDetectionLib.窗体.ViewModels.BinaryzationViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.BinaryzationViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("模板匹配"))
-            {
-                if (!Directory.Exists(saveToUsePath + "\\AOI"))
-                    Directory.CreateDirectory(saveToUsePath + "\\AOI");
-                (tool.GetParam() as GlueDetectionLib.参数.MatchParam).RootFolder = saveToUsePath + "\\AOI" ;
-                GlueDetectionLib.窗体.Views.FormMatch f =
-                    new GlueDetectionLib.窗体.Views.FormMatch(tool);
-                GlueDetectionLib.窗体.ViewModels.MatchViewModel.This.OnSaveParamHandle
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.MatchViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("漏胶"))
-            {
-                GlueDetectionLib.窗体.Views.FormGlueMiss f = 
-                    new GlueDetectionLib.窗体.Views.FormGlueMiss(tool);
-                GlueDetectionLib.窗体.ViewModels.GlueMissViewModel.This.getPixelRatioHandle 
-                    += OnGetPixelRatio;
-                GlueDetectionLib.窗体.ViewModels.GlueMissViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.GlueMissViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("偏位"))
-            {
-                GlueDetectionLib.窗体.Views.FormGlueOffset f =
-                    new GlueDetectionLib.窗体.Views.FormGlueOffset(tool);
-                GlueDetectionLib.窗体.ViewModels.GlueOffsetViewModel.This.getPixelRatioHandle
-                   += OnGetPixelRatio;
-                GlueDetectionLib.窗体.ViewModels.GlueOffsetViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.GlueOffsetViewModel.This.OnSaveManageHandle
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("断胶"))
-            {
-                GlueDetectionLib.窗体.Views.FormGlueGap f =
-                    new GlueDetectionLib.窗体.Views.FormGlueGap(tool);
-                GlueDetectionLib.窗体.ViewModels.GlueGapViewModel.This.getPixelRatioHandle
-                 += OnGetPixelRatio;
-                GlueDetectionLib.窗体.ViewModels.GlueGapViewModel.This.OnSaveParamHandle 
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.GlueGapViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("胶宽"))
-            {
-                GlueDetectionLib.窗体.Views.FormGlueCaliperWidth f = 
-                    new GlueDetectionLib.窗体.Views.FormGlueCaliperWidth(tool);
-                GlueDetectionLib.窗体.ViewModels.GlueCaliperWidthViewModel .This.getPixelRatioHandle
-                    += OnGetPixelRatio;
-                GlueDetectionLib.窗体.ViewModels.GlueCaliperWidthViewModel.This.OnSaveParamHandle
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.GlueCaliperWidthViewModel.This.OnSaveManageHandle 
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }      
-            else if (toolName.Contains("结果显示"))
-            {
-                GlueDetectionLib.窗体.Views.FormResultShow f = 
-                    new GlueDetectionLib.窗体.Views.FormResultShow(tool);
-                GlueDetectionLib.窗体.ViewModels.ResultShowViewModel.This.OnSaveParamHandle
-                    += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.ResultShowViewModel.This.OnSaveManageHandle
-                    = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("Tcp接收"))
-            {
-                GlueDetectionLib.窗体.Views.FormTcpRecv f =
-                         new GlueDetectionLib.窗体.Views.FormTcpRecv(tool);
-                GlueDetectionLib.窗体.ViewModels.TcpRecvViewModel.
-                         This.OnSaveParamHandle += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.TcpRecvViewModel.
-                           This.OnSaveManageHandle = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-            else if (toolName.Contains("Tcp发送"))
-            {
-                GlueDetectionLib.窗体.Views.FormTcpSend f =
-                       new GlueDetectionLib.窗体.Views.FormTcpSend(tool);
-                GlueDetectionLib.窗体.ViewModels.TcpSendViewModel.
-                        This.OnSaveParamHandle += OnSaveParamEventOfGlue;
-                GlueDetectionLib.窗体.ViewModels.TcpSendViewModel.
-                           This.OnSaveManageHandle = SaveManageOfGlue;
-                f.ShowDialog();
-            }
-        }
+      
         /// <summary>
         /// 视觉检测右键菜单栏
         /// </summary>
@@ -1494,15 +1183,15 @@ namespace MainFormLib.ViewModels
                index >= Model.ToolsOfPositionList.Count)
                 return;
 
-            string toolName = projectOfPos.toolNamesList[index];
+            string toolName = Project.toolNamesList[index];
             if (operateName.Equals("上移"))
             {
                 ListViewToolsData temData = Model.ToolsOfPositionList[index];
                 Model.ToolsOfPositionList.Insert(index - 1, temData);
                 Model.ToolsOfPositionList.RemoveAt(index + 1);
 
-                projectOfPos.toolNamesList.Insert(index - 1, toolName);
-                projectOfPos.toolNamesList.RemoveAt(index + 1);
+                Project.toolNamesList.Insert(index - 1, toolName);
+                Project.toolNamesList.RemoveAt(index + 1);
 
             }
             else if (operateName.Equals("下移"))
@@ -1511,39 +1200,39 @@ namespace MainFormLib.ViewModels
                 Model.ToolsOfPositionList.Insert(index + 2, temData);
                 Model.ToolsOfPositionList.RemoveAt(index);
 
-                projectOfPos.toolNamesList.Insert(index + 2, toolName);
-                projectOfPos.toolNamesList.RemoveAt(index);
+                Project.toolNamesList.Insert(index + 2, toolName);
+                Project.toolNamesList.RemoveAt(index);
 
             }
             else if (operateName.Equals("删除"))
             {
                 Model.ToolsOfPositionList.RemoveAt(index);
-                if (projectOfPos.dataManage.resultFlagDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.resultFlagDic.Remove(toolName);
-                if (projectOfPos.dataManage.imageBufDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.imageBufDic.Remove(toolName);
-                if (projectOfPos.dataManage.matrixBufDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.matrixBufDic.Remove(toolName);
-                if (projectOfPos.dataManage.enumerableTooDic.Contains(toolName))
-                    projectOfPos.dataManage.enumerableTooDic.Remove(toolName);
-                if (projectOfPos.dataManage.trajectoryTooDic.Contains(toolName))
-                    projectOfPos.dataManage.trajectoryTooDic.Remove(toolName);
-                if (projectOfPos.dataManage.sizeTooDic.Contains(toolName))
-                    projectOfPos.dataManage.sizeTooDic.Remove(toolName);
-                if (projectOfPos.dataManage.resultBufDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.resultBufDic.Remove(toolName);
-                if (projectOfPos.dataManage.resultInfoDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.resultInfoDic.Remove(toolName);
-                if (projectOfPos.dataManage.LineDataDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.LineDataDic.Remove(toolName);
-                if (projectOfPos.dataManage.PositionDataDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.PositionDataDic.Remove(toolName);
-                if (projectOfPos.dataManage.TrajectoryDataDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.TrajectoryDataDic.Remove(toolName);
-                if (projectOfPos.dataManage.SizeDataDic.ContainsKey(toolName))
-                    projectOfPos.dataManage.SizeDataDic.Remove(toolName);
-                projectOfPos.toolsDic.Remove(projectOfPos.toolNamesList[index]);
-                projectOfPos.toolNamesList.RemoveAt(index);
+                if (Project.dataManage.resultFlagDic.ContainsKey(toolName))
+                    Project.dataManage.resultFlagDic.Remove(toolName);
+                if (Project.dataManage.imageBufDic.ContainsKey(toolName))
+                    Project.dataManage.imageBufDic.Remove(toolName);
+                if (Project.dataManage.matrixBufDic.ContainsKey(toolName))
+                    Project.dataManage.matrixBufDic.Remove(toolName);
+                if (Project.dataManage.enumerableTooDic.Contains(toolName))
+                    Project.dataManage.enumerableTooDic.Remove(toolName);
+                if (Project.dataManage.trajectoryTooDic.Contains(toolName))
+                    Project.dataManage.trajectoryTooDic.Remove(toolName);
+                if (Project.dataManage.sizeTooDic.Contains(toolName))
+                    Project.dataManage.sizeTooDic.Remove(toolName);
+                if (Project.dataManage.resultBufDic.ContainsKey(toolName))
+                    Project.dataManage.resultBufDic.Remove(toolName);
+                if (Project.dataManage.resultInfoDic.ContainsKey(toolName))
+                    Project.dataManage.resultInfoDic.Remove(toolName);
+                if (Project.dataManage.LineDataDic.ContainsKey(toolName))
+                    Project.dataManage.LineDataDic.Remove(toolName);
+                if (Project.dataManage.PositionDataDic.ContainsKey(toolName))
+                    Project.dataManage.PositionDataDic.Remove(toolName);
+                if (Project.dataManage.TrajectoryDataDic.ContainsKey(toolName))
+                    Project.dataManage.TrajectoryDataDic.Remove(toolName);
+                if (Project.dataManage.SizeDataDic.ContainsKey(toolName))
+                    Project.dataManage.SizeDataDic.Remove(toolName);
+                Project.toolsDic.Remove(Project.toolNamesList[index]);
+                Project.toolNamesList.RemoveAt(index);
 
             }
             else if (operateName.Equals("修改备注"))
@@ -1557,82 +1246,13 @@ namespace MainFormLib.ViewModels
 
                     Model.ToolsOfPositionList[index].ToolNotes = remark;
 
-                    if (projectOfPos.toolsDic.ContainsKey(toolName))
-                        projectOfPos.toolsDic[toolName].remark = remark;
+                    if (Project.toolsDic.ContainsKey(toolName))
+                        Project.toolsDic[toolName].remark = remark;
 
                 }
             }
         }
-        /// <summary>
-        /// 胶水检测右键菜单栏
-        /// </summary>
-        /// <param name="o"></param>
-        void ToolsOfGlue_ContextMenuClick(object o)
-        {
-            string operateName = ((MenuItem)o).Header.ToString();
-            int index = Model.ToolsOfGlueSelectIndex;
-            if (index < 0 ||
-               index >= Model.ToolsOfGlueList.Count)
-                return;
-
-            string toolName = projectOfGlue.toolNamesList[index];
-            if (operateName.Equals("上移"))
-            {
-                ListViewToolsData temData = Model.ToolsOfGlueList[index];
-                Model.ToolsOfGlueList.Insert(index - 1, temData);
-                Model.ToolsOfGlueList.RemoveAt(index + 1);
-
-                projectOfGlue.toolNamesList.Insert(index - 1, toolName);
-                projectOfGlue.toolNamesList.RemoveAt(index + 1);
-
-            }
-            else if (operateName.Equals("下移"))
-            {
-                ListViewToolsData temData = Model.ToolsOfGlueList[index];
-                Model.ToolsOfGlueList.Insert(index + 2, temData);
-                Model.ToolsOfGlueList.RemoveAt(index);
-
-                projectOfGlue.toolNamesList.Insert(index + 2, toolName);
-                projectOfGlue.toolNamesList.RemoveAt(index);
-
-            }
-            else if (operateName.Equals("删除"))
-            {
-                Model.ToolsOfGlueList.RemoveAt(index);
-                if (projectOfGlue.dataManage.resultFlagDic.ContainsKey(toolName))
-                    projectOfGlue.dataManage.resultFlagDic.Remove(toolName);
-                if (projectOfGlue.dataManage.imageBufDic.ContainsKey(toolName))
-                    projectOfGlue.dataManage.imageBufDic.Remove(toolName);
-                if (projectOfGlue.dataManage.matrixBufDic.ContainsKey(toolName))
-                    projectOfGlue.dataManage.matrixBufDic.Remove(toolName);
-                if (projectOfGlue.dataManage.enumerableTooDic.Contains(toolName))
-                    projectOfGlue.dataManage.enumerableTooDic.Remove(toolName);
-                if (projectOfGlue.dataManage.resultBufDic.ContainsKey(toolName))
-                    projectOfGlue.dataManage.resultBufDic.Remove(toolName);
-                if (projectOfGlue.dataManage.resultInfoDic.ContainsKey(toolName))
-                    projectOfGlue.dataManage.resultInfoDic.Remove(toolName);
-           
-                projectOfGlue.toolsDic.Remove(projectOfGlue.toolNamesList[index]);
-                projectOfGlue.toolNamesList.RemoveAt(index);
-
-            }
-            else if (operateName.Equals("修改备注"))
-            {
-
-                FormRemarks f = new FormRemarks();
-                f.Topmost = true;
-                if (f.ShowDialog().Value)
-                {
-                    string remark = f.remarks;
-
-                    Model.ToolsOfGlueList[index].ToolNotes = remark;
-
-                    if (projectOfGlue.toolsDic.ContainsKey(toolName))
-                        projectOfGlue.toolsDic[toolName].remark = remark;
-
-                }
-            }
-        }
+      
         /// <summary>
         /// 鼠标双击获取图像像素坐标点及灰度值
         /// </summary>
@@ -2319,13 +1939,13 @@ namespace MainFormLib.ViewModels
         #endregion
 
         #region--------------视觉检测---------------
-        public PosDataManage GetManageOfPos()
+        public DataManage GetManageOfPos()
         {
-            return this.projectOfPos.dataManage;
+            return this.Project.dataManage;
         }
-        void SaveManageOfPos(PosDataManage manage)
+        void SaveManageOfPos(DataManage manage)
         {
-            this.projectOfPos.dataManage = manage;
+            this.Project.dataManage = manage;
         }
        
         /// <summary>
@@ -2333,22 +1953,22 @@ namespace MainFormLib.ViewModels
         /// </summary>
         /// <param name="toolName"></param>
         /// <param name="par"></param>
-        void OnSaveParamEventOfPosition(string toolName, PosBaseParam par)
+        void OnSaveParamEventOfPosition(string toolName, BaseParam par)
         {
-            if (projectOfPos.toolNamesList.Contains(toolName))
+            if (Project.toolNamesList.Contains(toolName))
             {
-                PosBaseTool tool = projectOfPos.toolsDic[toolName];
+                BaseTool tool = Project.toolsDic[toolName];
                 tool.SetParam(par);
-                projectOfPos.toolsDic[toolName] = tool;       
-                if (tool.GetType() == typeof(PosTcpRecvTool))
+                Project.toolsDic[toolName] = tool;       
+                if (tool.GetType() == typeof(TcpRecvTool))
                 {
-                    if (projectOfPos.TcpRecvName== ((PosTcpRecvTool)tool).CommDevName)return;
+                    if (Project.TcpRecvName== ((TcpRecvTool)tool).CommDevName)return;
 
                         //如果存在先注销事件
-                     if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfPos.TcpRecvName)))
+                     if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(Project.TcpRecvName)))
                     {
                         int index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpRecvName));
+                                       FindIndex(t => t.m_Name.Equals(Project.TcpRecvName));
 
                         //先清除旧的事件订阅
                         if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
@@ -2365,9 +1985,9 @@ namespace MainFormLib.ViewModels
                           
                     }
                     //重新订阅事件
-                    projectOfPos.TcpRecvName = ((PosTcpRecvTool)tool).CommDevName;
+                    Project.TcpRecvName = ((TcpRecvTool)tool).CommDevName;
                     int e_index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpRecvName));
+                                       FindIndex(t => t.m_Name.Equals(Project.TcpRecvName));
                     if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
                     {
                         ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
@@ -2382,15 +2002,15 @@ namespace MainFormLib.ViewModels
 
 
                 }
-                else if (tool.GetType() == typeof(PosTcpSendTool))
+                else if (tool.GetType() == typeof(TcpSendTool))
                 {
-                    if (projectOfPos.TcpSendName == ((PosTcpSendTool)tool).CommDevName) return;
-                    if (projectOfPos.TcpSendName == projectOfPos.TcpRecvName) return;
+                    if (Project.TcpSendName == ((TcpSendTool)tool).CommDevName) return;
+                    if (Project.TcpSendName == Project.TcpRecvName) return;
                     //如果存在先注销事件
-                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfPos.TcpSendName)))
+                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(Project.TcpSendName)))
                     {                      
                         int index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpSendName));
+                                       FindIndex(t => t.m_Name.Equals(Project.TcpSendName));
 
                         //先清除旧的事件订阅
                         if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
@@ -2405,9 +2025,9 @@ namespace MainFormLib.ViewModels
 
                     }
                     //重新订阅事件
-                    projectOfPos.TcpSendName = ((PosTcpSendTool)tool).CommDevName;
+                    Project.TcpSendName = ((TcpSendTool)tool).CommDevName;
                     int e_index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfPos.TcpSendName));
+                                       FindIndex(t => t.m_Name.Equals(Project.TcpSendName));
                     if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
                     {
                         ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
@@ -2424,114 +2044,7 @@ namespace MainFormLib.ViewModels
             }
         }
         #endregion
-
-        #region--------------胶水AOI---------------
-
-        public GlueDataManage GetManageOfGlue()
-        {
-            return this.projectOfGlue.dataManage;
-        }
-
-        public void SaveManageOfGlue(GlueDataManage data)
-        {
-            this.projectOfGlue.dataManage = data;
-        }
-        /// <summary>
-        /// 胶水检测参数保存
-        /// </summary>
-        /// <param name="toolName"></param>
-        /// <param name="par"></param>
-        void OnSaveParamEventOfGlue(string toolName, GlueBaseParam par)
-        {
-            if (projectOfGlue.toolNamesList.Contains(toolName))
-            {
-                GlueBaseTool tool = projectOfGlue.toolsDic[toolName];
-                tool.SetParam(par);
-                projectOfGlue.toolsDic[toolName] = tool;
-                if (tool.GetType() == typeof(PosTcpRecvTool))
-                {
-                    if (projectOfGlue.TcpRecvName == ((GlueTcpRecvTool)tool).CommDevName) return;
-
-                    //如果存在先注销事件
-                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfGlue.TcpRecvName)))
-                    {
-                        int index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpRecvName));
-
-                        //先清除旧的事件订阅
-                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
-                        {
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpServer_ReceiveData;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
-                        }
-                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
-                        {
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpClient_ReceiveData;
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
-                        }
-
-                    }
-                    //重新订阅事件
-                    projectOfGlue.TcpRecvName = ((GlueTcpRecvTool)tool).CommDevName;
-                    int e_index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpRecvName));
-                    if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
-                    {
-                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += GlueTcpServer_RemoteConnect;
-                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).ReceiveData += GlueTcpServer_ReceiveData;
-                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpServer_RemoteClose;
-                    }
-                    else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
-                    {
-                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).ReceiveData += GlueTcpClient_ReceiveData;
-                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpClient_RemoteClose;
-                    }
-
-
-                }
-                else if (tool.GetType() == typeof(GlueTcpSendTool))
-                {
-                    if (projectOfGlue.TcpSendName == ((GlueTcpSendTool)tool).CommDevName) return;
-                    if (projectOfGlue.TcpSendName == projectOfGlue.TcpRecvName) return;
-                    //如果存在先注销事件
-                    if (CommDeviceController.g_CommDeviceList.Exists(t => t.m_Name.Equals(projectOfGlue.TcpSendName)))
-                    {
-                        int index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpSendName));
-
-                        //先清除旧的事件订阅
-                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
-                        {
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
-                        }
-                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
-                        {
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
-                        }
-
-                    }
-                    //重新订阅事件
-                    projectOfGlue.TcpSendName = ((GlueTcpSendTool)tool).CommDevName;
-                    int e_index = CommDeviceController.g_CommDeviceList.
-                                       FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpSendName));
-                    if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
-                    {
-                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
-                        ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpServer_RemoteClose;
-                    }
-                    else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
-                    {
-                        ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += PosTcpClient_RemoteClose;
-                    }
-
-
-                }
-            }
-        }
-        #endregion
-
+   
         #region--------------配方---------------
         /// <summary>
         /// 新建配方
@@ -2612,13 +2125,13 @@ namespace MainFormLib.ViewModels
                 ResetNumOfPos();
                 #region 需要先注销视觉检测TCP
              
-                foreach (var item in this.projectOfPos.toolsDic)
+                foreach (var item in this.Project.toolsDic)
                 {
-                    if (item.Value.GetType() == typeof(PosTcpRecvTool))
+                    if (item.Value.GetType() == typeof(TcpRecvTool))
                     {
-                        projectOfPos.TcpRecvName = ((PosTcpRecvTool)item.Value).CommDevName;
+                        Project.TcpRecvName = ((TcpRecvTool)item.Value).CommDevName;
                         int index = CommDeviceController.g_CommDeviceList.
-                                              FindIndex(t => t.m_Name == projectOfPos.TcpRecvName);
+                                              FindIndex(t => t.m_Name == Project.TcpRecvName);
                         if (index < 0) continue;
 
                         if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
@@ -2635,15 +2148,15 @@ namespace MainFormLib.ViewModels
 
                         }
                     }
-                    else if (item.Value.GetType() == typeof(PosTcpSendTool))
+                    else if (item.Value.GetType() == typeof(TcpSendTool))
                     {
                      
-                        projectOfPos.TcpSendName = ((PosTcpSendTool)item.Value).CommDevName;
+                        Project.TcpSendName = ((TcpSendTool)item.Value).CommDevName;
                         //输出与输入是同一个TCP
-                        if (projectOfPos.TcpSendName == projectOfPos.TcpRecvName) continue;
+                        if (Project.TcpSendName == Project.TcpRecvName) continue;
 
                         int index = CommDeviceController.g_CommDeviceList.
-                                              FindIndex(t => t.m_Name == projectOfPos.TcpSendName);
+                                              FindIndex(t => t.m_Name == Project.TcpSendName);
                         if (index < 0) continue;
 
                         //先清除旧的事件订阅
@@ -2659,20 +2172,20 @@ namespace MainFormLib.ViewModels
                     }
                 }
                 #endregion
-                this.projectOfPos = GeneralUse.ReadSerializationFile<ProjectOfPosition>
+                this.Project = GeneralUse.ReadSerializationFile<Project>
                     (saveToUsePath + "\\" + firstName + "\\" + secondName + ".proj");
            
-                projectOfPos.GetNum();
-                projectOfPos.toolNamesList = new List<string>();
-                if (projectOfPos.dataManage == null)
-                    projectOfPos.dataManage = new PosDataManage();
-                Dictionary<string, PosBaseTool> tem = new Dictionary<string, PosBaseTool>();
+                Project.GetNum();
+                Project.toolNamesList = new List<string>();
+                if (Project.dataManage == null)
+                    Project.dataManage = new DataManage();
+                Dictionary<string, BaseTool> tem = new Dictionary<string, BaseTool>();
 
-                foreach (var s in projectOfPos.toolsDic)
+                foreach (var s in Project.toolsDic)
                 {
-                    projectOfPos.toolNamesList.Add(s.Value.GetToolName());
+                    Project.toolNamesList.Add(s.Value.GetToolName());
                     tem.Add(s.Value.GetToolName(), s.Value);
-                    s.Value.OnGetManageHandle = new PosBaseTool.GetManageHandle(GetManageOfPos);
+                    s.Value.OnGetManageHandle = new BaseTool.GetManageHandle(GetManageOfPos);
                     if (s.Value.GetType() == typeof(ImageCorrectTool)||
                         s.Value.GetType() == typeof(DistancePPTool)||
                          s.Value.GetType() == typeof(DistancePLTool)||
@@ -2682,24 +2195,24 @@ namespace MainFormLib.ViewModels
                     s.Value.SetCalibFilePath(NineCalibFile);
 
                 }
-                projectOfPos.toolsDic = tem;
+                Project.toolsDic = tem;
                 ShowTestFlowOfPosition();
                 //添加图像到缓存集合
-                if (PosBaseTool.ObjectValided(this.GrabImg))
-                    if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
-                        projectOfPos.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
+                if (BaseTool.ObjectValided(this.GrabImg))
+                    if (!Project.dataManage.imageBufDic.ContainsKey("原始图像"))
+                        Project.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
                     else
-                        projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+                        Project.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
 
                 #region 后订阅+视觉检测TCP
               
-                foreach (var item in this.projectOfPos.toolsDic)
+                foreach (var item in this.Project.toolsDic)
                 {
-                    if (item.Value.GetType() == typeof(PosTcpRecvTool))
+                    if (item.Value.GetType() == typeof(TcpRecvTool))
                     {
-                        projectOfPos.TcpRecvName = ((PosTcpRecvTool)item.Value).CommDevName;
+                        Project.TcpRecvName = ((TcpRecvTool)item.Value).CommDevName;
                         int index = CommDeviceController.g_CommDeviceList.
-                                              FindIndex(t => t.m_Name == projectOfPos.TcpRecvName);
+                                              FindIndex(t => t.m_Name == Project.TcpRecvName);
                         if (index < 0) continue;
 
                         if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
@@ -2716,15 +2229,15 @@ namespace MainFormLib.ViewModels
 
                         }
                     }
-                    else if (item.Value.GetType() == typeof(PosTcpSendTool))
+                    else if (item.Value.GetType() == typeof(TcpSendTool))
                     {
                         //重新订阅事件
-                        projectOfPos.TcpSendName = ((PosTcpSendTool)item.Value).CommDevName;
+                        Project.TcpSendName = ((TcpSendTool)item.Value).CommDevName;
                         //输出与输入是同一个TCP
-                        if (projectOfPos.TcpSendName == projectOfPos.TcpRecvName) continue;
+                        if (Project.TcpSendName == Project.TcpRecvName) continue;
 
                         int e_index = CommDeviceController.g_CommDeviceList.
-                                           FindIndex(t => t.m_Name.Equals(projectOfPos.TcpSendName));
+                                           FindIndex(t => t.m_Name.Equals(Project.TcpSendName));
                         if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
                         {
                             ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += PosTcpServer_RemoteConnect;
@@ -2749,144 +2262,7 @@ namespace MainFormLib.ViewModels
             return true;
         }
 
-        /// <summary>
-        /// 加载胶水检测流程
-        /// </summary>
-        /// <returns></returns>
-        bool LoadGlueAoiFlow()
-        {
-
-            try
-            {
-
-                ResetNumOfGlue();
-                #region 需要先注销胶水检测TCP
-
-                foreach (var item in this.projectOfGlue.toolsDic)
-                {
-                    if (item.Value.GetType() == typeof(GlueTcpRecvTool))
-                    {
-                        projectOfGlue.TcpRecvName = ((GlueTcpRecvTool)item.Value).CommDevName;
-                        int index = CommDeviceController.g_CommDeviceList.
-                                              FindIndex(t => t.m_Name == projectOfGlue.TcpRecvName);
-                        if (index < 0) continue;
-
-                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
-                        {
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpServer_ReceiveData;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
-
-                        }
-                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
-                        {
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData -= GlueTcpClient_ReceiveData;
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
-
-                        }
-                    }
-                    else if (item.Value.GetType() == typeof(GlueTcpSendTool))
-                    {
-
-                        projectOfGlue.TcpSendName = ((GlueTcpSendTool)item.Value).CommDevName;
-                        //输出与输入是同一个TCP
-                        if (projectOfGlue.TcpSendName == projectOfGlue.TcpRecvName) continue;
-
-                        int index = CommDeviceController.g_CommDeviceList.
-                                              FindIndex(t => t.m_Name == projectOfGlue.TcpSendName);
-                        if (index < 0) continue;
-
-                        //先清除旧的事件订阅
-                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == (CommDevType.TcpServer))
-                        {
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect -= GlueTcpServer_RemoteConnect;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpServer_RemoteClose;
-                        }
-                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
-                        {
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose -= GlueTcpClient_RemoteClose;
-                        }
-                    }
-                }
-                #endregion
-                this.projectOfGlue = GeneralUse.ReadSerializationFile<ProjectOfGlue>
-                    (saveToUsePath + "\\" + "AOI" + "\\" + "胶水AOI.proj");
-                projectOfGlue.GetNum();
-                projectOfGlue.toolNamesList = new List<string>();
-                if (projectOfGlue.dataManage == null)
-                    projectOfGlue.dataManage = new GlueDataManage();
-                Dictionary<string, GlueBaseTool> tem = new Dictionary<string, GlueBaseTool>();
-
-                foreach (var s in projectOfGlue.toolsDic)
-                {
-                    projectOfGlue.toolNamesList.Add(s.Value.GetToolName());
-                    tem.Add(s.Value.GetToolName(), s.Value);
-                    s.Value.OnGetManageHandle = new GlueBaseTool.GetManageHandle(GetManageOfGlue);
-                }
-                projectOfGlue.toolsDic = tem;
-                ShowTestFlowOfGlue();
-                //添加图像到缓存集合
-                if (GlueBaseTool.ObjectValided(this.GrabImg))
-                    if (!projectOfGlue.dataManage.imageBufDic.ContainsKey("原始图像"))
-                        projectOfGlue.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
-                    else
-                        projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
-
-                #region 后订阅+胶水检测TCP
-
-                foreach (var item in this.projectOfGlue.toolsDic)
-                {
-                    if (item.Value.GetType() == typeof(GlueTcpRecvTool))
-                    {
-                        projectOfGlue.TcpRecvName = ((GlueTcpRecvTool)item.Value).CommDevName;
-                        int index = CommDeviceController.g_CommDeviceList.
-                                              FindIndex(t => t.m_Name == projectOfGlue.TcpRecvName);
-                        if (index < 0) continue;
-
-                        if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpServer)
-                        {
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteConnect += GlueTcpServer_RemoteConnect;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData += GlueTcpServer_ReceiveData;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose += GlueTcpServer_RemoteClose;
-
-                        }
-                        else if (CommDeviceController.g_CommDeviceList[index].m_CommDevType == CommDevType.TcpClient)
-                        {
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).ReceiveData += GlueTcpClient_ReceiveData;
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[index].obj).RemoteClose += GlueTcpClient_RemoteClose;
-
-                        }
-                    }
-                    else if (item.Value.GetType() == typeof(GlueTcpSendTool))
-                    {
-                        //重新订阅事件
-                        projectOfGlue.TcpSendName = ((GlueTcpSendTool)item.Value).CommDevName;
-                        //输出与输入是同一个TCP
-                        if (projectOfGlue.TcpSendName == projectOfGlue.TcpRecvName) continue;
-
-                        int e_index = CommDeviceController.g_CommDeviceList.
-                                           FindIndex(t => t.m_Name.Equals(projectOfGlue.TcpSendName));
-                        if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == (CommDevType.TcpServer))
-                        {
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteConnect += GlueTcpServer_RemoteConnect;
-                            ((TcpSocketServer)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpServer_RemoteClose;
-                        }
-                        else if (CommDeviceController.g_CommDeviceList[e_index].m_CommDevType == CommDevType.TcpClient)
-                        {
-                            ((TcpSocketClient)CommDeviceController.g_CommDeviceList[e_index].obj).RemoteClose += GlueTcpClient_RemoteClose;
-                        }
-                    }
-
-                }
-                #endregion
-            }
-            catch (Exception er)
-            {
-                Appentxt("胶水检测流程加载失败，异常信息:" + er.Message);
-                return false;
-            }
-            return true;
-        }
+       
         /// <summary>
         /// 加载配方
         /// </summary>
@@ -2962,11 +2338,15 @@ namespace MainFormLib.ViewModels
                 {
                     secondName = "尺寸测量1";
                 }
+                else if (outputType == EumOutputType.AOI)
+                {
+                    secondName = "胶水AOI";
+                }
                 LoadPositionFlow(firstName,secondName);//加载视觉检测流程
-                LoadGlueAoiFlow();//加载胶水检测流程
+              
                 Appentxt(string.Format("当前加载配方：{0}，输出类型：{1},流程名称：{2}", 
                     currRecipeName, firstName, secondName));
-                if (PosBaseTool.ObjectValided(this.GrabImg))
+                if (BaseTool.ObjectValided(this.GrabImg))
                 {
                     ShowTool.ClearAllOverLays();
                     ShowTool.DispImage(this.GrabImg);
@@ -3252,7 +2632,7 @@ namespace MainFormLib.ViewModels
         /// </summary>
         void LoadCommDev()
         {
-            //if (projectOfPos.toolNamesList.Exists(t => t.Contains("Tcp接收")))
+            //if (Project.toolNamesList.Exists(t => t.Contains("Tcp接收")))
             {
 
                 string path = rootFolder + "\\CommDev";
@@ -3280,7 +2660,7 @@ namespace MainFormLib.ViewModels
             if (File.Exists(NineCalibFile))
                 HOperatorSet.ReadTuple(NineCalibFile, out hv_HomMat2D);
             if(hv_HomMat2D!=null&& hv_HomMat2D.Length>0)
-                foreach (var s in projectOfPos.toolsDic)
+                foreach (var s in Project.toolsDic)
                 {
                     if (s.Value.GetType() == typeof(ImageCorrectTool)||
                         s.Value.GetType() == typeof(DistancePPTool)||
@@ -3301,17 +2681,17 @@ namespace MainFormLib.ViewModels
             infos.Clear();
             List<string> InfoList = new List<string>();
             dynamic data = null;
-            if (!PosBaseTool.ObjectValided(this.GrabImg))
+            if (!BaseTool.ObjectValided(this.GrabImg))
             {
                 Appentxt("图像为空");
                 return null;
             }
-            if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
-                projectOfPos.dataManage.imageBufDic.Add("原始图像", null);
-            if (PosBaseTool.ObjectValided(projectOfPos.dataManage.imageBufDic["原始图像"]))
-                projectOfPos.dataManage.imageBufDic["原始图像"].Dispose();
-            projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
-            int count = projectOfPos.toolNamesList.Count;
+            if (!Project.dataManage.imageBufDic.ContainsKey("原始图像"))
+                Project.dataManage.imageBufDic.Add("原始图像", null);
+            if (BaseTool.ObjectValided(Project.dataManage.imageBufDic["原始图像"]))
+                Project.dataManage.imageBufDic["原始图像"].Dispose();
+            Project.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+            int count = Project.toolNamesList.Count;
             if (count <= 0)
             {
                 Appentxt("流程为空");
@@ -3323,8 +2703,8 @@ namespace MainFormLib.ViewModels
             //工具循环运行
             for (int i = 0; i < count; i++)
             {
-                string name = projectOfPos.toolNamesList[i];
-                PosRunResult rlt = projectOfPos.toolsDic[name].Run();
+                string name = Project.toolNamesList[i];
+                RunResult rlt = Project.toolsDic[name].Run();
                 ctime += rlt.runTime;
                 //UpdateStatusOfPosition(i, rlt.runFlag);
                 if (!rlt.runFlag)
@@ -3340,21 +2720,21 @@ namespace MainFormLib.ViewModels
                
             InfoList.Add(string.Format("CT:{0}ms", ctime));
            
-            if (projectOfPos.toolNamesList.Exists(t => t.Contains("结果显示")))
+            if (Project.toolNamesList.Exists(t => t.Contains("结果显示")))
             {
-                int index = projectOfPos.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                PosBaseTool tool = projectOfPos.toolsDic[projectOfPos.toolNamesList[index]];
+                int index = Project.toolNamesList.FindIndex(t => t.Contains("结果显示"));
+                BaseTool tool = Project.toolsDic[Project.toolNamesList[index]];
                 ShowTool.ClearAllOverLays();
-                ShowTool.DispImage((tool.GetParam() as PositionToolsLib.参数.ResultShowParam).OutputImg);
-                ShowTool.DispRegion((tool.GetParam() as PositionToolsLib.参数.ResultShowParam).ResultRegion, "green");
-                ShowTool.AddregionBuffer((tool.GetParam() as PositionToolsLib.参数.ResultShowParam).ResultRegion, "green");
+                ShowTool.DispImage((tool.GetParam() as ResultShowParam).OutputImg);
+                ShowTool.DispRegion((tool.GetParam() as ResultShowParam).ResultRegion, "green");
+                ShowTool.AddregionBuffer((tool.GetParam() as ResultShowParam).ResultRegion, "green");
                 objs.Add(new StuWindowHobjectToPaint
                 {
                     color = "green",
-                    obj = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).ResultRegion.Clone()
+                    obj = (tool.GetParam() as ResultShowParam).ResultRegion.Clone()
                 });
                 EumOutputType output = 
-                    (EumOutputType)((int)(tool.GetParam() as PositionToolsLib.参数.ResultShowParam).OutputType);
+                    (EumOutputType)((int)(tool.GetParam() as ResultShowParam).OutputType);
                 if(outputType!= output)
                 {
                     Appentxt(string.Format("结果显示工具输出类型不符，当前需要将其设置为:{0}",
@@ -3363,13 +2743,13 @@ namespace MainFormLib.ViewModels
                 }
                 if (outputType == EumOutputType.Location)
                 {
-                    data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).CoordinateData;
+                    data = (tool.GetParam() as ResultShowParam).CoordinateData;
                     InfoList.Add(string.Format("Pos_x:{0:f3}\nPos_y:{1:f3}\nPos_ang:{2:f3}",
                       data.x, data.y, data.angle));
                 }
                 else if (outputType == EumOutputType.Trajectory)
                 {
-                    data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).TrajectoryDataList;
+                    data = (tool.GetParam() as ResultShowParam).TrajectoryDataList;
                     foreach (var s in data)
                         InfoList.Add(string.Format("Pos_id:{0},Pos_x:{1:f3},Pos_y:{2:f3},Pos_r:{3:f3}\n",
                                 s.ID, s.X, s.Y, s.Radius));
@@ -3377,7 +2757,7 @@ namespace MainFormLib.ViewModels
                 }
                 else if (outputType == EumOutputType.Size)
                 {
-                    data = (tool.GetParam() as PositionToolsLib.参数.ResultShowParam).Distances;
+                    data = (tool.GetParam() as ResultShowParam).Distances;
                     int id = 1;
                     foreach (var s in data)
                     {
@@ -3387,7 +2767,15 @@ namespace MainFormLib.ViewModels
                     }
                        
                 }
-            
+                else if (outputType == EumOutputType.AOI)
+                {
+                    data = (tool.GetParam() as ResultShowParam).AoiResultFlag;
+                    int id = 1;
+                    InfoList.Add(string.Format("AOI_id:{0},Result:{1}\n",
+                               id, data));
+                   
+
+                }
             }
             else
             {
@@ -3401,28 +2789,37 @@ namespace MainFormLib.ViewModels
             }
 
             #region------显示检测区域----
-            if (projectOfPos.toolNamesList.Exists(t => t.Contains("结果显示")))
+            if (Project.toolNamesList.Exists(t => t.Contains("结果显示")))
             {
-                int index = projectOfPos.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                PosBaseTool tool = projectOfPos.toolsDic[projectOfPos.toolNamesList[index]];
-                if ((tool as PositionToolsLib.工具.ResultShowTool).isShowInspectRegion)
+                int index = Project.toolNamesList.FindIndex(t => t.Contains("结果显示"));
+                BaseTool tool = Project.toolsDic[Project.toolNamesList[index]];
+                if ((tool as ResultShowTool).isShowInspectRegion)
                 {
                     for (int j = 0; j < count; j++)
                     {
-                        string name = projectOfPos.toolNamesList[j];
+                        string name = Project.toolNamesList[j];
                         HObject inspectROI = null;
                         if (name.Contains("模板匹配"))
-                            inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.MatchParam).InspectROI;
+                            inspectROI = (Project.toolsDic[name].GetParam() as MatchParam).InspectROI;
                         else if (name.Contains("查找直线"))
-                            inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.FindLineParam).ResultInspectROI;
+                            inspectROI = (Project.toolsDic[name].GetParam() as FindLineParam).ResultInspectROI;
                         else if (name.Contains("查找圆"))
-                            inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.FindCircleParam).ResultInspectROI;
+                            inspectROI = (Project.toolsDic[name].GetParam() as FindCircleParam).ResultInspectROI;
                         else if (name.Contains("Blob"))
-                            inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.BlobParam).ResultInspectROI;
+                            inspectROI = (Project.toolsDic[name].GetParam() as BlobParam).ResultInspectROI;
                         else if (name.Contains("轨迹提取"))
-                            inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.TrajectoryExtractParam).TrajectoryTool.param.ResultInspectROI;
-                        
-                        if (PosBaseTool.ObjectValided(inspectROI))
+                            inspectROI = (Project.toolsDic[name].GetParam() as TrajectoryExtractParam).TrajectoryTool.param.ResultInspectROI;
+                        else if (name.Contains("漏胶"))
+                            inspectROI = (Project.toolsDic[name].GetParam() as GlueMissParam).ResultInspectROI;
+                        else if (name.Contains("偏位"))
+                            inspectROI = (Project.toolsDic[name].GetParam() as GlueOffsetParam).ResultInspectROI;
+                        else if (name.Contains("断胶"))
+                            inspectROI = (Project.toolsDic[name].GetParam() as GlueGapParam).ResultInspectROI;
+                        else if (name.Contains("胶宽"))
+                            inspectROI = (Project.toolsDic[name].GetParam() as GlueCaliperWidthParam).ResultInspectRegions;
+
+
+                        if (BaseTool.ObjectValided(inspectROI))
                         {
                             ShowTool.DispRegion(inspectROI, "blue");
                             ShowTool.AddregionBuffer(inspectROI, "blue");
@@ -3440,20 +2837,29 @@ namespace MainFormLib.ViewModels
             {
                 for (int j = 0; j < count; j++)
                 {
-                    string name = projectOfPos.toolNamesList[j];
+                    string name = Project.toolNamesList[j];
                     HObject inspectROI = null;
                     if (name.Contains("模板匹配"))
-                        inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.MatchParam).InspectROI;
+                        inspectROI = (Project.toolsDic[name].GetParam() as PositionToolsLib.参数.MatchParam).InspectROI;
                     else if (name.Contains("查找直线"))
-                        inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.FindLineParam).ResultInspectROI;
+                        inspectROI = (Project.toolsDic[name].GetParam() as PositionToolsLib.参数.FindLineParam).ResultInspectROI;
                     else if (name.Contains("查找圆"))
-                        inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.FindCircleParam).ResultInspectROI;
+                        inspectROI = (Project.toolsDic[name].GetParam() as PositionToolsLib.参数.FindCircleParam).ResultInspectROI;
                     else if (name.Contains("Blob"))
-                        inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.BlobParam).ResultInspectROI;
+                        inspectROI = (Project.toolsDic[name].GetParam() as PositionToolsLib.参数.BlobParam).ResultInspectROI;
                     else if (name.Contains("轨迹提取"))
-                        inspectROI = (projectOfPos.toolsDic[name].GetParam() as PositionToolsLib.参数.TrajectoryExtractParam).TrajectoryTool.param.ResultInspectROI;
+                        inspectROI = (Project.toolsDic[name].GetParam() as PositionToolsLib.参数.TrajectoryExtractParam).TrajectoryTool.param.ResultInspectROI;
+                    else if (name.Contains("漏胶"))
+                        inspectROI = (Project.toolsDic[name].GetParam() as GlueMissParam).ResultInspectROI;
+                    else if (name.Contains("偏位"))
+                        inspectROI = (Project.toolsDic[name].GetParam() as GlueOffsetParam).ResultInspectROI;
+                    else if (name.Contains("断胶"))
+                        inspectROI = (Project.toolsDic[name].GetParam() as GlueGapParam).ResultInspectROI;
+                    else if (name.Contains("胶宽"))
+                        inspectROI = (Project.toolsDic[name].GetParam() as GlueCaliperWidthParam).ResultInspectRegions;
 
-                    if (PosBaseTool.ObjectValided(inspectROI))
+
+                    if (BaseTool.ObjectValided(inspectROI))
                     {
                         ShowTool.DispRegion(inspectROI, "blue");
                         ShowTool.AddregionBuffer(inspectROI, "blue");
@@ -3470,7 +2876,7 @@ namespace MainFormLib.ViewModels
             #region-----计算最终结果---
             bool totalResult = true;//最终结果
             int cindex = 0;
-            foreach (var s in projectOfPos.dataManage.resultFlagDic)
+            foreach (var s in Project.dataManage.resultFlagDic)
             {
                 totalResult = totalResult && s.Value;
                 UpdateStatusOfPosition(cindex, s.Value);
@@ -3513,13 +2919,13 @@ namespace MainFormLib.ViewModels
             string content = "";
             foreach (var s in InfoList)
                 content += s + "\n";
-            if (projectOfPos.toolNamesList.Exists(t => t.Contains("结果显示")))
+            if (Project.toolNamesList.Exists(t => t.Contains("结果显示")))
             {
-                int index = projectOfPos.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                PosBaseTool tool = projectOfPos.toolsDic[projectOfPos.toolNamesList[index]];
+                int index = Project.toolNamesList.FindIndex(t => t.Contains("结果显示"));
+                BaseTool tool = Project.toolsDic[Project.toolNamesList[index]];
 
-                double row = (tool as PositionToolsLib.工具.ResultShowTool).inforCoorY;
-                double col = (tool as PositionToolsLib.工具.ResultShowTool).inforCoorX;
+                double row = (tool as ResultShowTool).inforCoorY;
+                double col = (tool as ResultShowTool).inforCoorX;
 
                 ShowTool.DispMessage(content, row, col, "green", 25);
                 ShowTool.AddTextBuffer(content, row, col, "green", 25);
@@ -3548,7 +2954,7 @@ namespace MainFormLib.ViewModels
 
             if (!totalResult)
                 if (outputType == EumOutputType.Location)
-                    data = new PositionToolsLib.StuCoordinateData(0, 0, 0);
+                    data = new StuCoordinateData(0, 0, 0);
                 else if (outputType == EumOutputType.Trajectory)
                     data = null;
                 else if (outputType == EumOutputType.Size)
@@ -3642,530 +3048,7 @@ namespace MainFormLib.ViewModels
             infoData.Rc_Height = height;
             return infoData;
         }
-        /// <summary>
-        /// 运行胶水检测流程
-        /// </summary>
-        /// <returns></returns>
-        bool RunTestFlowOfGlue()
-        {
-            List<string> infoList = new List<string>();
-            List<string> GlueInfoList = new List<string>();
-            objs.Clear();
-            infos.Clear();
-            datas.Clear();
-            long ctime = 0;
-            if (!GlueBaseTool.ObjectValided(this.GrabImg))
-            {
-                Appentxt("图像为空");
-                return false;
-            }
-            if (!projectOfGlue.dataManage.imageBufDic.ContainsKey("原始图像"))
-                projectOfGlue.dataManage.imageBufDic.Add("原始图像", null);
-            if (GlueBaseTool.ObjectValided(projectOfGlue.dataManage.imageBufDic["原始图像"]))
-                projectOfGlue.dataManage.imageBufDic["原始图像"].Dispose();
-            projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
-            int count = projectOfGlue.toolNamesList.Count;
-            if (count <= 0)
-            {
-                Appentxt("流程为空");
-                return false;
-            }
-            infoList.Add(string.Format("Channel:{0}", "unknow"));
-            infoList.Add(string.Format("SN:{0}", "default"));
-            //检测工具循环运行
-            for (int i = 0; i < count; i++)
-            {
-                string name = projectOfGlue.toolNamesList[i];
-                GlueRunResult rlt = projectOfGlue.toolsDic[name].Run();
-                ctime += rlt.runTime;
-
-                if (!rlt.runFlag)
-                {
-                    Appentxt(string.Format("工具：{0}，运行失败，异常信息：{1}", name, rlt.errInfo));
-                    //break;
-                    UpdateStatusOfGlue(i, false);
-                   
-                }
-                else
-                {
-                    Appentxt(string.Format("工具：{0}，运行完成，时长：{1}ms", name, rlt.runTime));
-                    UpdateStatusOfGlue(i, true);
-                }
-                   
-
-            }
-            infoList.Add(string.Format("CT:{0}ms", ctime));
-
-            if (projectOfGlue.toolNamesList.Exists(t => t.Contains("结果显示")))
-            {
-                int index = projectOfGlue.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                GlueBaseTool tool = projectOfGlue.toolsDic[projectOfGlue.toolNamesList[index]];
-                ShowTool.ClearAllOverLays();
-                ShowTool.DispImage((tool.GetParam() as GlueDetectionLib.参数.ResultShowParam).OutputImg);
-                ShowTool.DispRegion((tool.GetParam() as GlueDetectionLib.参数.ResultShowParam).ResultRegion, "green");
-                ShowTool.AddregionBuffer((tool.GetParam() as GlueDetectionLib.参数.ResultShowParam).ResultRegion, "green");
-                objs.Add(new StuWindowHobjectToPaint
-                {
-                    color = "green",
-                    obj = (tool.GetParam() as GlueDetectionLib.参数.ResultShowParam).ResultRegion
-                });
-            }
-            else
-            {
-                string toolName = projectOfGlue.toolNamesList[count - 1];
-                GlueBaseTool tool = projectOfGlue.toolsDic[toolName];
-                ShowTool.ClearAllOverLays();
-                ShowTool.DispConcatedObj(tool.GetParam().InputImg, EumCommonColors.green);
-                ShowTool.AddConcatedObjBuffer(tool.GetParam().InputImg, EumCommonColors.green);
-                if (projectOfGlue.dataManage.resultBufDic.ContainsKey(toolName))
-                {
-                    ShowTool.DispRegion(projectOfGlue.dataManage.resultBufDic[toolName], "green");
-                    ShowTool.AddregionBuffer(projectOfGlue.dataManage.resultBufDic[toolName], "green");
-
-                    objs.Add(new StuWindowHobjectToPaint
-                    {
-                        color = "green",
-                        obj = projectOfGlue.dataManage.resultBufDic[toolName]
-                    });
-                }
-
-            }
-
-            #region----显示胶水-----
-
-            int glueMissIndex = 0;
-            List<bool> glueMissList = new List<bool>();
-            List<bool> glueOffsetList = new List<bool>();
-            List<bool> glueGapList = new List<bool>();
-            List<bool> glueCaliperList = new List<bool>();
-            HOperatorSet.GetImageSize(this.GrabImg, out HTuple width, out HTuple height);
-            int ratio = (int)(width.D / 1000);
-            int size = ratio * 75;
-            if (size < 75)
-                size = 75;
-            for (int i = 0; i < count; i++)
-            {
-                string name = projectOfGlue.toolNamesList[i];
-                GlueBaseTool tool = projectOfGlue.toolsDic[name];
-                //漏胶
-                if (tool is GlueMissTool)
-                {
-                    glueMissIndex++;
-                    double CxDown = (tool.GetParam() as GlueMissParam).OffsetXDisMin;
-                    double CxUp = (tool.GetParam() as GlueMissParam).OffsetXDisMax;
-                    double CyDown = (tool.GetParam() as GlueMissParam).OffsetYDisMin;
-                    double CyUp = (tool.GetParam() as GlueMissParam).OffsetYDisMax;
-                    StuGlueMainInfo infoData = new StuGlueMainInfo();
-                    if ((tool as GlueMissTool).glueInfo.areaList.Count > 0)
-                    {
-                        CoorditionDat coor = (tool as GlueMissTool).glueInfo.coorditions[0];
-                        double area = (tool as GlueMissTool).glueInfo.areaList[0];
-                        ShowTool.DispMessage("R" + glueMissIndex,
-                            coor.Row, coor.Column, "red", 16);
-                        ShowTool.AddTextBuffer("R" + glueMissIndex,
-                            coor.Row, coor.Column, "red", 16);
-
-                        infos.Add(new StuWindowInfoToPaint
-                        {
-                            size = size / 4,
-                            color = "red",
-                            Info = "R" + glueMissIndex,
-                            coorditionDat = new CoorditionDat(coor.Row, coor.Column)
-                        });
-                        //不在此处显示，找个地方单独显示
-                        // infoList.Add(string.Format("R" + glueMissIndex + "_Glue_Area:{0:f3}", area));
-
-                        HOperatorSet.GenCrossContourXld(out HObject rcorss,
-                                      coor.Row,
-                                       coor.Column, 10, 0);
-                        ShowTool.DispRegion(rcorss, "red");
-                        ShowTool.AddregionBuffer(rcorss, "red");
-                        objs.Add(new StuWindowHobjectToPaint
-                        {
-                            color = "red",
-                            obj = rcorss
-                        });
-
-                        infoData = CalGlueMainInfo(coor.Row, coor.Column,
-                             positionSharpData.y, positionSharpData.x,
-                             (tool as GlueMissTool).glueInfo.rect_r1[0],
-                             (tool as GlueMissTool).glueInfo.rect_c1[0],
-                             (tool as GlueMissTool).glueInfo.rect_r2[0],
-                             (tool as GlueMissTool).glueInfo.rect_c2[0]
-                             );
-
-                        infoData.Name = "R" + glueMissIndex;
-                        infoData.Area = area;
-
-                        infoData.AreaDown = (tool.GetParam() as GlueMissParam).AreaMin;
-                        infoData.AreaUp = (tool.GetParam() as GlueMissParam).AreaMax;
-                        infoData.CxDown = CxDown;
-                        infoData.CxUp = CxUp;
-                        infoData.CyDown = CyDown;
-                        infoData.CyUp = CyUp;
-                        GlueInfoList.Add(infoData.ToString());
-                        datas.Add(new GlueRecheckDat(infoData.Cx, infoData.Cy, infoData.Area));
-                    }
-                    else
-                    { //不在此处显示，找个地方单独显示
-                        //infoList.Add(string.Format("R" + glueMissIndex + "_Glue_Area:{0}", 0));
-                    }
-
-                    bool testFlag = false;
-                    if (projectOfGlue.dataManage.resultFlagDic.ContainsKey(tool.GetToolName()))
-                        testFlag = projectOfGlue.dataManage.resultFlagDic[tool.GetToolName()];
-                    bool runFlag = (tool.GetParam() as GlueMissParam).GlueMissRunStatus;
-                    bool temFlag = infoData.compareX() && infoData.compareY();
-                    glueMissList.Add(testFlag && runFlag && temFlag);
-                }
-
-                //偏位
-                else if (tool is GlueOffsetTool)
-                {
-
-                    bool testFlag = false;
-                    if (projectOfGlue.dataManage.resultFlagDic.ContainsKey(tool.GetToolName()))
-                        testFlag = projectOfGlue.dataManage.resultFlagDic[tool.GetToolName()];
-                    bool runFlag = (tool.GetParam() as GlueOffsetParam).GlueOffsetRunStatus;
-
-                    glueOffsetList.Add(testFlag && runFlag);
-                }
-                //缺胶
-                else if (tool is GlueGapTool)
-                {
-                    bool testFlag = false;
-                    if (projectOfGlue.dataManage.resultFlagDic.ContainsKey(tool.GetToolName()))
-                        testFlag = projectOfGlue.dataManage.resultFlagDic[tool.GetToolName()];
-                    bool runFlag = (tool.GetParam() as GlueGapParam).GlueLossRunStatus;
-
-                    glueGapList.Add(testFlag && runFlag);
-                }
-                //胶宽
-                else if (tool is GlueCaliperWidthTool)
-                {
-                    bool testFlag = false;
-                    if (projectOfGlue.dataManage.resultFlagDic.ContainsKey(tool.GetToolName()))
-                        testFlag = projectOfGlue.dataManage.resultFlagDic[tool.GetToolName()];
-                    bool runFlag = (tool.GetParam() as GlueCaliperWidthParam).GlueWidthRunStatus;
-
-                    glueCaliperList.Add(testFlag && runFlag);
-                }
-            }
-            #endregion
-
-            #region----显示检测区域
-            if (projectOfGlue.toolNamesList.Exists(t => t.Contains("结果显示")))
-            {
-                int index = projectOfGlue.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                GlueBaseTool tool = projectOfGlue.toolsDic[projectOfGlue.toolNamesList[index]];
-                if ((tool as GlueDetectionLib.工具.ResultShowTool).isShowInspectRegion)
-                {
-                    for (int j = 0; j < count; j++)
-                    {
-                        string name = projectOfGlue.toolNamesList[j];
-                        HObject inspectROI = null;
-                        if (name.Contains("模板匹配"))
-                            inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueDetectionLib.参数.MatchParam).InspectROI;
-                        else if (name.Contains("漏胶"))
-                            inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueMissParam).ResultInspectROI;
-                        else if (name.Contains("断胶"))
-                            inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueGapParam).ResultInspectROI;
-                        else if (name.Contains("胶宽"))
-                            inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueCaliperWidthParam).ResultInspectRegions;
-                        else if (name.Contains("偏位"))
-                            inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueOffsetParam).ResultInspectROI;
-
-                        if (GlueBaseTool.ObjectValided(inspectROI))
-                        {
-                            ShowTool.DispRegion(inspectROI, "blue");
-                            ShowTool.AddregionBuffer(inspectROI, "blue");
-                            objs.Add(new StuWindowHobjectToPaint
-                            {
-                                color = "blue",
-                                obj = inspectROI
-                            });
-                        }
-                    }
-                }
-            }
-            //默认显示
-            else
-            {
-                for (int j = 0; j < count; j++)
-                {
-                    string name = projectOfGlue.toolNamesList[j];
-                    HObject inspectROI = null;
-                    if (name.Contains("模板匹配"))
-                        inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueDetectionLib.参数. MatchParam).InspectROI;
-                    else if (name.Contains("漏胶"))
-                        inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueMissParam).ResultInspectROI;
-                    else if (name.Contains("断胶"))
-                        inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueGapParam).ResultInspectROI;
-                    else if (name.Contains("胶宽"))
-                        inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueCaliperWidthParam).ResultInspectRegions;
-                    else if (name.Contains("偏位"))
-                        inspectROI = (projectOfGlue.toolsDic[name].GetParam() as GlueOffsetParam).ResultInspectROI;
-
-                    if (GlueBaseTool.ObjectValided(inspectROI))
-                    {
-                        ShowTool.DispRegion(inspectROI, "blue");
-                        ShowTool.AddregionBuffer(inspectROI, "blue");
-                        objs.Add(new StuWindowHobjectToPaint
-                        {
-                            color = "blue",
-                            obj = inspectROI
-                        });
-                    }
-                }
-            }
-
-            #endregion
-
-            #region-----基础信息-----
-            string content = "";
-            foreach (var s in infoList)
-                content += s + "\n";
-            if (projectOfGlue.toolNamesList.Exists(t => t.Contains("结果显示")))
-            {
-                int index = projectOfGlue.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                GlueBaseTool tool = projectOfGlue.toolsDic[projectOfGlue.toolNamesList[index]];
-                ShowTool.DispMessage(content,
-                     (tool as GlueDetectionLib.工具. ResultShowTool).inforCoorY,
-                    (tool as GlueDetectionLib.工具.ResultShowTool).inforCoorX, "green", 25);
-                ShowTool.AddTextBuffer(content,
-                     (tool as GlueDetectionLib.工具.ResultShowTool).inforCoorY,
-                    (tool as GlueDetectionLib.工具.ResultShowTool).inforCoorX, "green", 25);
-
-                infos.Add(new StuWindowInfoToPaint
-                {
-                    size = size / 2,
-                    color = "green",
-                    Info = content,
-                    //coorditionDat = new CoorditionDat(
-                    //    (tool as ResultShowTool).inforCoorY,
-                    //     (tool as ResultShowTool).inforCoorX)
-                    coorditionDat = new CoorditionDat(size * 2, 10)
-
-                });
-            }
-            else
-            {
-                ShowTool.DispMessage(content, 300, 10, "green", 25);
-                ShowTool.AddTextBuffer(content, 300, 10, "green", 25);
-                infos.Add(new StuWindowInfoToPaint
-                {
-                    size = size / 2,
-                    color = "green",
-                    Info = content,
-                    coorditionDat = new CoorditionDat(300, 10)
-                });
-            }
-            #endregion
-
-            #region----胶水信息----
-
-            for (int i = 0; i < GlueInfoList.Count; i++)
-            {
-                if (projectOfGlue.toolNamesList.Exists(t => t.Contains("结果显示")))
-                {
-                    int index = projectOfGlue.toolNamesList.FindIndex(t => t.Contains("结果显示"));
-                    GlueBaseTool tool = projectOfGlue.toolsDic[projectOfGlue.toolNamesList[index]];
-                    if ((tool as GlueDetectionLib.工具.ResultShowTool).GlueInfoDic != null)
-                        if ((tool as GlueDetectionLib.工具.ResultShowTool).GlueInfoDic.Count > 0)
-                        {
-                            int currX, currY;
-                            if ((tool as GlueDetectionLib.工具.ResultShowTool).GlueInfoDic.ContainsKey("R" + (1 + i)))
-                            {
-                                currX = (int)(tool as GlueDetectionLib.工具.ResultShowTool).GlueInfoDic["R" + (1 + i)].Column;
-                                currY = (int)(tool as GlueDetectionLib.工具.ResultShowTool).GlueInfoDic["R" + (1 + i)].Row;
-
-                            }
-                            else
-                            {
-                                currX = 10 + i * 500;
-                                currY = 2000 + i * 0;
-                            }
-
-                            ShowTool.DispMessage(GlueInfoList[i], currY, currX, "green", 12);
-                            ShowTool.AddTextBuffer(GlueInfoList[i], currY, currX, "green", 12);
-                            if (i % 2 == 0)
-                                infos.Add(new StuWindowInfoToPaint
-                                {
-                                    size = size / 4,
-                                    color = "green",
-                                    Info = GlueInfoList[i],
-                                    coorditionDat = new CoorditionDat(size * 9, 10 + (size * 3 + 100) * i)
-                                });
-                            else
-                                infos.Add(new StuWindowInfoToPaint
-                                {
-                                    size = size / 4,
-                                    color = "green",
-                                    Info = GlueInfoList[i],
-                                    coorditionDat = new CoorditionDat(size * 10, 10 + (size * 3 + 100) * i)
-                                });
-
-                        }
-                        else
-                        {
-                            int currX = 10 + i * 500;
-                            int currY = 2000 + i * 0;
-                            ShowTool.DispMessage(GlueInfoList[i], currY, currX, "green", 12);
-                            ShowTool.AddTextBuffer(GlueInfoList[i], currY, currX, "green", 12);
-                            if (i % 2 == 0)
-                                infos.Add(new StuWindowInfoToPaint
-                                {
-                                    size = size / 4,
-                                    color = "green",
-                                    Info = GlueInfoList[i],
-                                    //coorditionDat = new CoorditionDat(currY, currX)
-                                    coorditionDat = new CoorditionDat(size * 9, 10 + (size * 3 + 100) * i)
-                                });
-                            else
-                                infos.Add(new StuWindowInfoToPaint
-                                {
-                                    size = size / 4,
-                                    color = "green",
-                                    Info = GlueInfoList[i],
-                                    coorditionDat = new CoorditionDat(size * 10, 10 + (size * 3 + 100) * i)
-                                });
-                        }
-                    else
-                    {
-                        int currX = 10 + i * 500;
-                        int currY = 2000 + i * 0;
-                        ShowTool.DispMessage(GlueInfoList[i], currY, currX, "green", 12);
-                        ShowTool.AddTextBuffer(GlueInfoList[i], currY, currX, "green", 12);
-                        if (i % 2 == 0)
-                            infos.Add(new StuWindowInfoToPaint
-                            {
-                                size = size / 4,
-                                color = "green",
-                                Info = GlueInfoList[i],
-                                //coorditionDat = new CoorditionDat(currY, currX)
-                                coorditionDat = new CoorditionDat(size * 9, 10 + (size * 3 + 100) * i)
-                            });
-                        else
-                            infos.Add(new StuWindowInfoToPaint
-                            {
-                                size = size / 4,
-                                color = "green",
-                                Info = GlueInfoList[i],
-                                coorditionDat = new CoorditionDat(size * 10, 10 + (size * 3 + 100) * i)
-                            });
-                    }
-                }
-                else
-                {
-                    int currX = 10 + i * 500;
-                    int currY = 2000 + i * 0;
-                    ShowTool.DispMessage(GlueInfoList[i], currY, currX, "green", 12);
-                    ShowTool.AddTextBuffer(GlueInfoList[i], currY, currX, "green", 12);
-                    if (i % 2 == 0)
-                        infos.Add(new StuWindowInfoToPaint
-                        {
-                            size = size / 4,
-                            color = "green",
-                            Info = GlueInfoList[i],
-                            //coorditionDat = new CoorditionDat(currY, currX)
-                            coorditionDat = new CoorditionDat(size * 9, 10 + (size * 3 + 100) * i)
-                        });
-                    else
-                        infos.Add(new StuWindowInfoToPaint
-                        {
-                            size = size / 4,
-                            color = "green",
-                            Info = GlueInfoList[i],
-                            coorditionDat = new CoorditionDat(size * 10, 10 + (size * 3 + 100) * i)
-                        });
-                }
-
-            }
-
-
-            #endregion
-
-            #region---胶水最终结果信息--
-            bool totalResult = true;//最终结果
-          
-            string contentGlue = "";
-            for (int i = 0; i < glueMissList.Count; i++)
-            {
-                bool flag2 = true;
-                bool flag3 = true;
-                bool flag4 = true;
-                bool flag1 = glueMissList[i];
-                if (glueOffsetList.Count > i)
-                    flag2 = glueOffsetList[i];
-                if (glueGapList.Count > i)
-                    flag3 = glueGapList[i];
-                if (glueCaliperList.Count > i)
-                    flag4 = glueCaliperList[i];
-                bool totalFlag = flag1 && flag2 && flag3 && flag4;
-                totalResult = totalResult && totalFlag;
-              
-                contentGlue += string.Format("R{0}:{1}\n", i + 1, totalFlag ? "OK" : "NG");
-            }
-            //HOperatorSet.GetImageSize(this.GrabImg, out HTuple width, out HTuple height);
-            ShowTool.DispMessage(contentGlue, 10, width - 500, "green", 16);
-            ShowTool.AddTextBuffer(contentGlue, 10, width - 500, "green", 16);
-            infos.Add(new StuWindowInfoToPaint
-            {
-                size = size / 4,
-                color = "green",
-                Info = contentGlue,
-                coorditionDat = new CoorditionDat(10, width - 500)
-            });
-            #endregion
-
-            #region----显示十字光标-----
-            //十字参考坐标系
-            HOperatorSet.GenCrossContourXld(out HObject corss,
-                positionSharpData.y,
-                positionSharpData.x, 1000, 0);
-            ShowTool.DispRegion(corss, "red");
-            ShowTool.AddregionBuffer(corss, "red");
-            objs.Add(new StuWindowHobjectToPaint
-            {
-                color = "red",
-                obj = corss
-            });
-            #endregion
-
-            #region-------最终结果显示----
-            //最终结果显示
-            if (totalResult)
-            {
-                ShowTool.DispMessage("OK", 10, 10, "green", 50);
-                ShowTool.AddTextBuffer("OK", 10, 10, "green", 50);
-                infos.Add(new StuWindowInfoToPaint
-                {
-                    size = size,
-                    color = "green",
-                    Info = "OK",
-                    coorditionDat = new CoorditionDat(10, 10)
-
-                });
-            }
-            else
-            {
-                ShowTool.DispMessage("NG", 10, 10, "red", 50);
-                ShowTool.AddTextBuffer("NG", 10, 10, "red", 50);
-                infos.Add(new StuWindowInfoToPaint
-                {
-                    size = size,
-                    color = "red",
-                    Info = "NG",
-                    coorditionDat = new CoorditionDat(10, 10)
-
-                });
-            }
-            #endregion
-
-            return totalResult;
-
-
-        }
+      
             /// <summary>
             /// 更新工具运行状态
             /// </summary>
@@ -4181,107 +3064,64 @@ namespace MainFormLib.ViewModels
             Model.ToolsOfPositionList[index].ToolStatus= flag ? "OK" : "NG";      
         }
 
-        void UpdateStatusOfGlue(int index, bool flag)
-        {
-            if (index < 0 ||
-               index >= Model.ToolsOfGlueList.Count)
-                return;
-
-            Model.ToolsOfGlueList[index].ToolStatus = flag ? "OK" : "NG";
-
-        }
+   
         /// <summary>
         /// 复位视觉检测工具编号
         /// </summary>
         private void ResetNumOfPos()
         {
-            PositionToolsLib.工具.AngleConvertTool.inum = 0;
-            PositionToolsLib.工具.BinaryzationTool.inum = 0;
-            PositionToolsLib.工具.BlobTool.inum = 0;
-            PositionToolsLib.工具.CalParallelLineTool.inum = 0;
-            PositionToolsLib.工具.ClosingTool.inum = 0;
-            PositionToolsLib.工具.ColorConvertTool.inum = 0;
-            PositionToolsLib.工具.CoordConvertTool.inum = 0;
-            PositionToolsLib.工具.DilationTool.inum = 0;
-            PositionToolsLib.工具.DistanceLLTool.inum = 0;
-            PositionToolsLib.工具.DistancePLTool.inum = 0;
-            PositionToolsLib.工具.DistancePPTool.inum = 0;
-            PositionToolsLib.工具.ErosionTool.inum = 0;
-            PositionToolsLib.工具.FindCircleTool.inum = 0;
-            PositionToolsLib.工具.FindLineTool.inum = 0;
-            PositionToolsLib.工具.FitLineTool.inum = 0;
-            PositionToolsLib.工具.ImageCorrectTool.inum = 0;
-            PositionToolsLib.工具.LineCentreTool.inum = 0;
-            PositionToolsLib.工具.LineIntersectionTool.inum = 0;
-            PositionToolsLib.工具.LineOffsetTool.inum = 0;
-            PositionToolsLib.工具.MatchTool.inum = 0;
-            PositionToolsLib.工具.OpeningTool.inum = 0;
-            PositionToolsLib.工具.ResultShowTool.inum = 0;
-            PositionToolsLib.工具.TcpRecvTool.inum = 0;
-            PositionToolsLib.工具.TcpSendTool.inum = 0;
-            PositionToolsLib.工具.TrajectoryExtractTool.inum = 0;
+            AngleConvertTool.inum = 0;
+           BinaryzationTool.inum = 0;
+            BlobTool.inum = 0;
+            CalParallelLineTool.inum = 0;
+            ClosingTool.inum = 0;
+            ColorConvertTool.inum = 0;
+            CoordConvertTool.inum = 0;
+            DilationTool.inum = 0;
+            DistanceLLTool.inum = 0;
+            DistancePLTool.inum = 0;
+            DistancePPTool.inum = 0;
+            ErosionTool.inum = 0;
+            FindCircleTool.inum = 0;
+            FindLineTool.inum = 0;
+            FitLineTool.inum = 0;
+            GlueCaliperWidthTool.inum = 0;
+            GlueGapTool.inum = 0;
+            GlueMissTool.inum = 0;
+            GlueOffsetTool.inum = 0;
+            ImageCorrectTool.inum = 0;
+            LineCentreTool.inum = 0;
+            LineIntersectionTool.inum = 0;
+            LineOffsetTool.inum = 0;
+            MatchTool.inum = 0;
+            OpeningTool.inum = 0;
+            ResultShowTool.inum = 0;
+            TcpRecvTool.inum = 0;
+            TcpSendTool.inum = 0;
+            TrajectoryExtractTool.inum = 0;
 
         }
-        /// <summary>
-        /// 复位AOI检测工具编号
-        /// </summary>
-        private void ResetNumOfGlue()
-        {
-            GlueDetectionLib.工具.BinaryzationTool.inum = 0;        
-            GlueDetectionLib.工具.ClosingTool.inum = 0;
-            GlueDetectionLib.工具.ColorConvertTool.inum = 0;
-            GlueDetectionLib.工具.DilationTool.inum = 0;
-            GlueDetectionLib.工具.ErosionTool.inum = 0;
-            GlueDetectionLib.工具.GlueCaliperWidthTool.inum = 0;
-            GlueDetectionLib.工具.GlueGapTool.inum = 0;
-            GlueDetectionLib.工具.GlueMissTool.inum = 0;
-            GlueDetectionLib.工具.GlueOffsetTool.inum = 0;
-            GlueDetectionLib.工具.MatchTool.inum = 0;
-            GlueDetectionLib.工具.OpeningTool.inum = 0;
-            GlueDetectionLib.工具.ResultShowTool.inum = 0;
-            GlueDetectionLib.工具.TcpRecvTool.inum = 0;
-            GlueDetectionLib.工具.TcpSendTool.inum = 0;
-        }
+      
         /// <summary>
         /// 显示视觉检测流程
         /// </summary>
         private void ShowTestFlowOfPosition()
         {
-            projectOfPos.dataManage?.ResetBuf();//重载后清除数据缓存
+            Project.dataManage?.ResetBuf();//重载后清除数据缓存
             Model.ToolsOfPositionList.Clear();
-            toolindexofPosition = 0;
-            if (this.projectOfPos == null) return;
-            if (this.projectOfPos.toolsDic.Count <= 0) return;
+            toolindex = 0;
+            if (this.Project == null) return;
+            if (this.Project.toolsDic.Count <= 0) return;
 
-            foreach (var s in projectOfPos.toolNamesList)
+            foreach (var s in Project.toolNamesList)
             {
-                toolindexofPosition++;
+                toolindex++;
                 Model.ToolsOfPositionList.Add(new
-                ListViewToolsData(toolindexofPosition,
-                           s, "--", projectOfPos.toolsDic[s].remark));
+                ListViewToolsData(toolindex,
+                           s, "--", Project.toolsDic[s].remark));
             }
         }
-        /// <summary>
-        /// 显示胶水检测流程
-        /// </summary>
-        private void ShowTestFlowOfGlue()
-        {
-            projectOfGlue.dataManage.ResetBuf();//重载后清除数据缓存
-            Model.ToolsOfGlueList.Clear();
-            toolindexofGlueAOI = 0;
-            if (this.projectOfGlue == null) return;
-            if (this.projectOfGlue.toolsDic.Count <= 0) return;
-
-            foreach (var s in projectOfGlue.toolNamesList)
-            {
-                toolindexofGlueAOI++;
-                Model.ToolsOfGlueList.Add(new
-               ListViewToolsData(toolindexofGlueAOI,
-                          s, "--", projectOfGlue.toolsDic[s].remark));
-            }
-
-          
-        }
+      
         /// <summary>
         /// 富文本信息清除
         /// </summary>
@@ -4373,7 +3213,7 @@ namespace MainFormLib.ViewModels
         void Create_Physical_coorsys()
         {
             if (hv_HomMat2D == null || hv_HomMat2D.Length < 1 ||
-                !PosBaseTool.ObjectValided(GrabImg)) return;
+                !BaseTool.ObjectValided(GrabImg)) return;
             // Task.Run(() =>
             //{
             List<HObject> temArrowList =
@@ -5960,18 +4800,13 @@ namespace MainFormLib.ViewModels
             GeneralUse.WriteValue("图像旋转", "角度", ImageRotation, "config", rootFolder + "\\Config");
             Appentxt(string.Format("图像旋转{0}度", ImageRotation));
 
+           
             //添加图像到缓存集合
-            if (GlueBaseTool.ObjectValided(this.GrabImg))
-                if (!projectOfGlue.dataManage.imageBufDic.ContainsKey("原始图像"))
-                    projectOfGlue.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
+            if (BaseTool.ObjectValided(this.GrabImg))
+                if (!Project.dataManage.imageBufDic.ContainsKey("原始图像"))
+                    Project.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
                 else
-                    projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
-            //添加图像到缓存集合
-            if (PosBaseTool.ObjectValided(this.GrabImg))
-                if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
-                    projectOfPos.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
-                else
-                    projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+                    Project.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
 
         }
         /// <summary>
@@ -5990,17 +4825,12 @@ namespace MainFormLib.ViewModels
             GrabImg.Dispose();
             GrabImg = ShowTool.D_HImage;
             //添加图像到缓存集合
-            if (GlueBaseTool.ObjectValided(this.GrabImg))
-                if (!projectOfGlue.dataManage.imageBufDic.ContainsKey("原始图像"))
-                    projectOfGlue.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
+           
+            if (BaseTool.ObjectValided(this.GrabImg))
+                if (!Project.dataManage.imageBufDic.ContainsKey("原始图像"))
+                    Project.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
                 else
-                    projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
-            //添加图像到缓存集合
-            if (PosBaseTool.ObjectValided(this.GrabImg))
-                if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
-                    projectOfPos.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
-                else
-                    projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+                    Project.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
             HOperatorSet.GetImageSize(GrabImg, out HTuple width, out HTuple height);
             imageWidth = width.I;
             imageHeight = height.I;
@@ -6073,18 +4903,13 @@ namespace MainFormLib.ViewModels
 
             //彩色转换       
             Rgb2Gray(!isColorPalette);
+           
             //添加图像到缓存集合
-            if (GlueBaseTool.ObjectValided(this.GrabImg))
-                if (!projectOfGlue.dataManage.imageBufDic.ContainsKey("原始图像"))
-                    projectOfGlue.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
+            if (BaseTool.ObjectValided(this.GrabImg))
+                if (!Project.dataManage.imageBufDic.ContainsKey("原始图像"))
+                    Project.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
                 else
-                    projectOfGlue.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
-            //添加图像到缓存集合
-            if (PosBaseTool.ObjectValided(this.GrabImg))
-                if (!projectOfPos.dataManage.imageBufDic.ContainsKey("原始图像"))
-                    projectOfPos.dataManage.imageBufDic.Add("原始图像", this.GrabImg.Clone());
-                else
-                    projectOfPos.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
+                    Project.dataManage.imageBufDic["原始图像"] = this.GrabImg.Clone();
             if (workstatus == EunmCamWorkStatus.Freestyle) //自由模式只采图不做检测
             {
                 //if (!CurrCam.IsAlive) return;
@@ -6099,14 +4924,13 @@ namespace MainFormLib.ViewModels
                 Appentxt(string.Format("相机当前工作状态：{0}",
                          Enum.GetName(typeof(EunmCamWorkStatus), workstatus)));
                 object obj = null;
-                if (workstatus != EunmCamWorkStatus.AOI&&
-                      workstatus != EunmCamWorkStatus.AutoFocus)
+                if ( workstatus != EunmCamWorkStatus.AutoFocus)
                 {
                      obj = RunTestFlowOfPosition();
                     if (obj == null)
                     {
                         virtualConnect.WriteData("流程异常ERR");
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData(string.Format("流程异常ERR"));
@@ -6140,7 +4964,7 @@ namespace MainFormLib.ViewModels
                         //sendToRobCmdMsg(string.Format("{0},{1},{2}", "NP", i.ToString(), "NG"));//发送模板匹配NG
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "NP", 
                             DgPixelPointIndexer.ToString(), "NG"));//发送模板匹配NG
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData(string.Format("{0},{1},{2}", "NP",
@@ -6159,7 +4983,7 @@ namespace MainFormLib.ViewModels
                         // sendToRobCmdMsg(string.Format("{0},{1},{2}", "NP", i.ToString(), "OK"));//发送模板匹配OK
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "NP", 
                             DgPixelPointIndexer.ToString(), "OK"));//发送模板匹配OK
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData(string.Format("{0},{1},{2}", "NP",
@@ -6191,7 +5015,7 @@ namespace MainFormLib.ViewModels
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "C",
                             DgRotatePointIndexer.ToString(), "NG"));//发送模板匹配NG   
                         // MessageBox.Show("定位失败，无法获取像素坐标点");
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData(string.Format("{0},{1},{2}", "C",
@@ -6208,7 +5032,7 @@ namespace MainFormLib.ViewModels
                         //sendToRobCmdMsg(string.Format("{0},{1},{2}", "C", k.ToString(), "OK"));//发送模板匹配OK
                         virtualConnect.WriteData(string.Format("{0},{1},{2}", "C",
                             DgRotatePointIndexer.ToString(), "OK"));//发送模板匹配OK
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData(string.Format("{0},{1},{2}", "C",
@@ -6225,7 +5049,7 @@ namespace MainFormLib.ViewModels
                     if (data.x == 0 && data.y == 0 && data.angle == 0)
                     {
                         virtualConnect.WriteData("NG");//发送模板匹配NG
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData("NG");
@@ -6253,7 +5077,7 @@ namespace MainFormLib.ViewModels
                         double offsetY = _Ry.D - _Ry2.D;
                         //  double distance = Math.Sqrt(Math.Pow(_Rx- _Rx2,2)+ Math.Pow(_Ry - _Ry2, 2));
                         virtualConnect.WriteData(string.Format("offsetX:{0:f3};offsetY:{1:f3}", offsetX, offsetY));//发送偏差数据
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData(string.Format("offsetX:{0:f3};offsetY:{1:f3}", offsetX, offsetY));
@@ -6273,7 +5097,7 @@ namespace MainFormLib.ViewModels
                                data.x, data.y, data.angle);
                     Appentxt(buff);                   
                     virtualConnect.WriteData(buff.Replace("[发送特征点位数据]", ""));
-                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    TcpSendTool tool = GetToolToSendOfPos();
                     if (tool != null)
                     {
                         tool.SendData(buff.Replace("[发送特征点位数据]", ""));
@@ -6296,7 +5120,7 @@ namespace MainFormLib.ViewModels
                     Appentxt(buff);                 
                     virtualConnect.WriteData(buff.Replace("[发送特征点位数据]", ""));
 
-                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    TcpSendTool tool = GetToolToSendOfPos();
                     if (tool != null)
                     {
                         tool.SendData(buff.Replace("[发送特征点位数据]", ""));
@@ -6316,7 +5140,7 @@ namespace MainFormLib.ViewModels
                               data.x, data.y, data.angle);
                     Appentxt(buff);
                     virtualConnect.WriteData(buff.Replace("[发送特征点位数据]", ""));
-                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    TcpSendTool tool = GetToolToSendOfPos();
                     if (tool != null)
                     {
                         tool.SendData(buff.Replace("[发送特征点位数据]", ""));
@@ -6342,16 +5166,21 @@ namespace MainFormLib.ViewModels
                 }
                 else if (workstatus == EunmCamWorkStatus.AOI) //胶水AOI检测
                 {
-
-                    Appentxt("图像采集完成，开始胶水AOI检测");
-                    bool resultFlag = RunTestFlowOfGlue();
-                    Appentxt("胶水AOI检测完成，结果：" + (resultFlag ? "OK" : "NG"));
-                    virtualConnect.WriteData(resultFlag ? "OK" : "NG");//发送胶水AOI检测结果
-                    GlueTcpSendTool tool = GetToolToSendOfGlue();
+                    bool  rlt = (bool)obj;//AOI
+                    string buff = "[发送AOI检测数据]";
+                    int id = 1;
+                    buff += string.Format("id:{0},result:{1};",
+                                  id, rlt);
+                    Appentxt(buff);
+                    virtualConnect.WriteData(buff.Replace("[发送AOI检测数据]", ""));
+                    TcpSendTool tool = GetToolToSendOfPos();
                     if (tool != null)
                     {
-                        tool.SendData(resultFlag ? "OK" : "NG");
+                        tool.SendData(buff.Replace("[发送AOI检测数据]", ""));
                     }
+                    stopwatch.Stop();
+                    int spend = (int)stopwatch.ElapsedMilliseconds;
+                    ShowTool.DetectionTime = spend;
                 }         
                 else if (workstatus == EunmCamWorkStatus.Trajectory)
                 {
@@ -6364,7 +5193,7 @@ namespace MainFormLib.ViewModels
                                    s.ID,s.X, s.Y, s.Radius);
                     Appentxt(buff);
                     virtualConnect.WriteData(buff.Replace("[发送轨迹点位数据]", ""));
-                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    TcpSendTool tool = GetToolToSendOfPos();
                     if (tool != null)
                     {
                         tool.SendData(buff.Replace("[发送轨迹点位数据]", ""));
@@ -6378,7 +5207,7 @@ namespace MainFormLib.ViewModels
                     List<double> datas = (List<double>)obj;//尺寸集合
                     Create_Physical_coorsys();
 
-                    string buff = "[发尺寸测量数据]";
+                    string buff = "[发送尺寸测量数据]";
                     int id = 1;
                     foreach (var s in datas)
                     {
@@ -6387,11 +5216,11 @@ namespace MainFormLib.ViewModels
                         id++;
                     }                     
                     Appentxt(buff);
-                    virtualConnect.WriteData(buff.Replace("[发尺寸测量数据]", ""));
-                    PosTcpSendTool tool = GetToolToSendOfPos();
+                    virtualConnect.WriteData(buff.Replace("[发送尺寸测量数据]", ""));
+                    TcpSendTool tool = GetToolToSendOfPos();
                     if (tool != null)
                     {
-                        tool.SendData(buff.Replace("[发尺寸测量数据]", ""));
+                        tool.SendData(buff.Replace("[发送尺寸测量数据]", ""));
                     }
                     stopwatch.Stop();
                     int spend = (int)stopwatch.ElapsedMilliseconds;
@@ -6412,40 +5241,22 @@ namespace MainFormLib.ViewModels
         /// 获取视觉检测TCP发送工具
         /// </summary>
         /// <returns></returns>
-        PosTcpSendTool GetToolToSendOfPos()
+        TcpSendTool GetToolToSendOfPos()
         {
-            //string name = this.projectOfPos.TcpSendName;
-            int index = this.projectOfPos.toolNamesList.FindIndex(t => t.Contains("Tcp发送"));
+            //string name = this.Project.TcpSendName;
+            int index = this.Project.toolNamesList.FindIndex(t => t.Contains("Tcp发送"));
 
             if (index < 0) return null;
-            string name = this.projectOfPos.toolNamesList[index];
-            if (this.projectOfPos.toolNamesList.Contains(name))
+            string name = this.Project.toolNamesList[index];
+            if (this.Project.toolNamesList.Contains(name))
             {
-                PosBaseTool tool = this.projectOfPos.toolsDic[name];
-                if (tool.GetType() == typeof(PosTcpSendTool))
-                    return (PosTcpSendTool)tool;
+               BaseTool tool = this.Project.toolsDic[name];
+                if (tool.GetType() == typeof(TcpSendTool))
+                    return (TcpSendTool)tool;
             }
             return null;
         }
-        /// <summary>
-        /// 获取视觉检测TCP发送工具
-        /// </summary>
-        /// <returns></returns>
-        GlueTcpSendTool GetToolToSendOfGlue()
-        {
-            //string name = this.projectOfGlue.TcpSendName;
-            int index = this.projectOfGlue.toolNamesList.FindIndex(t => t.Contains("Tcp发送"));
-
-            if (index < 0) return null;
-            string name = this.projectOfGlue.toolNamesList[index];
-            if (this.projectOfGlue.toolNamesList.Contains(name))
-            {
-                GlueBaseTool tool = this.projectOfGlue.toolsDic[name];
-                if (tool.GetType() == typeof(GlueTcpSendTool))
-                    return (GlueTcpSendTool)tool;
-            }
-            return null;
-        }
+       
         /// <summary>
         /// 流程处理
         /// </summary>
@@ -6488,11 +5299,11 @@ namespace MainFormLib.ViewModels
                                 this.caliModel.DgRobotPointDataList.Clear();
                             });
                             NinePointStatusDic.Clear();
-                            if (this.projectOfPos.toolsDic.Count > 0 &&
+                            if (this.Project.toolsDic.Count > 0 &&
                                     CurrCam.IsAlive)
                             {
                                 virtualConnect.WriteData("NP,S,OK");   //准备OK
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData("NP,S,OK");
@@ -6502,7 +5313,7 @@ namespace MainFormLib.ViewModels
                             else
                             {
                                 virtualConnect.WriteData("NP,S,NG");  //未准备好
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData("NP,S,NG");
@@ -6531,7 +5342,7 @@ namespace MainFormLib.ViewModels
                             })).ContinueWith(t =>
                             {
                                 virtualConnect.WriteData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
@@ -6558,7 +5369,7 @@ namespace MainFormLib.ViewModels
                                 //TCPInfoAddText(string.Format("当前已经标记过第{0}点位", key));
                                 virtualConnect.WriteData(string.Format("{0},{1},{2}", tempdataArray[0],
                                     tempdataArray[1], "NG"));
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData(string.Format("{0},{1},{2}", tempdataArray[0],
@@ -6617,11 +5428,11 @@ namespace MainFormLib.ViewModels
                                 this.caliModel.DgRotatePointDataList.Clear();
                                 RotatoStatusDic.Clear();
                             });
-                            if (this.projectOfPos.toolsDic.Count > 0 &&
+                            if (this.Project.toolsDic.Count > 0 &&
                                     CurrCam.IsAlive)
                             {
                                 virtualConnect.WriteData("C,S,OK");   //准备OK
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData("C,S,OK");
@@ -6633,7 +5444,7 @@ namespace MainFormLib.ViewModels
                             else
                             {
                                 virtualConnect.WriteData("C,S,NG");  //未准备好
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData("C,S,NG");
@@ -6663,7 +5474,7 @@ namespace MainFormLib.ViewModels
                             })).ContinueWith(t =>
                             {
                                 virtualConnect.WriteData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
@@ -6685,7 +5496,7 @@ namespace MainFormLib.ViewModels
                                 //CPInfoAddText(string.Format("当前旋转已经标记过第{0}点位", key));
                                 virtualConnect.WriteData(string.Format("{0},{1},{2}", tempdataArray[0],
                                     tempdataArray[1], "NG"));
-                                PosTcpSendTool tool = GetToolToSendOfPos();
+                                TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
                                     tool.SendData(string.Format("{0},{1},{2}", tempdataArray[0],
@@ -6712,7 +5523,7 @@ namespace MainFormLib.ViewModels
                     }
                     if (currModelType != EumModelType.CaliBoardModel)
                         SwitchModelType(EumModelType.CaliBoardModel);
-                    if (this.projectOfPos.toolsDic.Count > 0 &&
+                    if (this.Project.toolsDic.Count > 0 &&
                                   CurrCam.IsAlive)
                     {
                         Appentxt("标定准备好,开始偏差校验");
@@ -6723,7 +5534,7 @@ namespace MainFormLib.ViewModels
                     else
                     {
                         virtualConnect.WriteData("NG");  //未准备好
-                        PosTcpSendTool tool = GetToolToSendOfPos();
+                        TcpSendTool tool = GetToolToSendOfPos();
                         if (tool != null)
                         {
                             tool.SendData("NG");
@@ -6832,8 +5643,14 @@ namespace MainFormLib.ViewModels
                 }
                 else if (strData.Equals("AOI"))//胶水外观检测请求
                 {
+                    if (outputType != EumOutputType.AOI)
+                    {
+                        Appentxt("当前输出结果类型不符，AOI");
+                        virtualConnect.WriteData("当前输出结果类型不符，应当为AOI");
+                        return;
+                    }
                     stopwatch.Restart();
-                 
+
                     Appentxt("开始胶水AOI外观检测");
                     OneGrab(EunmCamWorkStatus.AOI);
                    
@@ -6968,106 +5785,7 @@ namespace MainFormLib.ViewModels
             }
             Monitor.Exit(locker);
         }
-        /// <summary>
-        /// 远程连接
-        /// </summary>
-        private void GlueTcpServer_RemoteConnect(string key)
-        {
-
-            Appentxt(string.Format("Glue客户端[{0}]上线", key));
-
-        }
-        /// <summary>
-        /// 远程关闭
-        /// </summary>
-        /// <param name="key"></param>
-        private void GlueTcpServer_RemoteClose(string key)
-        {
-            Appentxt(string.Format("Glue客户端[{0}]下线", key));
-
-        }
-
-        /// <summary>
-        /// 远程关闭
-        /// </summary>
-        /// <param name="key"></param>
-        private void GlueTcpClient_RemoteClose(string key)
-        {
-            Appentxt(string.Format("Glue服务端[{0}]断开连接", key));
-        }
-
-        /// <summary>
-        /// 数据接收
-        /// </summary>
-        /// <param name="remote"></param>
-        /// <param name="buffer"></param>
-        /// <param name="count"></param>
-        private void GlueTcpServer_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
-        {
-            if (!ContinueRunFlag)
-            {
-                Appentxt("请开启连续运行");
-                return;
-            }
-            if (buffer == null || count <= 0 || buffer.Length < count)
-                return;
-            string buf = "";
-            string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            if (!strData.Contains("AOI")) return;//只处理AOI流程
-            buf += "[Glue：" + remote.ToString() + "]";
-            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
-            buf += strData;
-            Appentxt(buf);
-
-            Monitor.Enter(locker);
-            try
-            {
-                FlowHandle(strData);
-            }
-            catch (Exception er)
-            {
-                Appentxt(er.Message);
-                Monitor.Exit(locker);
-            }
-            Monitor.Exit(locker);
-        }
-        /// <summary>
-        /// 数据接收
-        /// </summary>
-        /// <param name="remote"></param>
-        /// <param name="buffer"></param>
-        /// <param name="count"></param>
-        private void GlueTcpClient_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
-        {
-            if (!ContinueRunFlag)
-            {
-                Appentxt("请开启连续运行");
-                return;
-            }
-            if (buffer == null || count <= 0 || buffer.Length < count)
-                return;
-            string buf = "";
-            string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            if (!strData.Contains("AOI")) return;//只处理AOI流程
-            buf += "[Glue：" + remote.ToString() + "]";
-            buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
-            buf += strData;
-            Appentxt(buf);
-
-            Monitor.Enter(locker);
-            try
-            {
-                FlowHandle(strData);
-            }
-            catch (Exception er)
-            {
-                Appentxt(er.Message);
-                Monitor.Exit(locker);
-            }
-            Monitor.Exit(locker);
-        }
+        
         #endregion
 
     }

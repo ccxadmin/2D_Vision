@@ -89,6 +89,7 @@ namespace PositionToolsLib.参数
                 this.trajectoryNameList = value;
             }
         }
+
         List<OutputTypeOfSize> sizeNameList
                             = new List<OutputTypeOfSize>();
         /// <summary>
@@ -103,6 +104,22 @@ namespace PositionToolsLib.参数
                 this.sizeNameList = value;
             }
         }
+
+        List<OutputTypeOfAoi> aoiNameList
+                            = new List<OutputTypeOfAoi>();
+        /// <summary>
+        /// AOI工具名称集合
+        /// </summary>
+        [Description("AOI工具名称集合"), DefaultValue(null)]
+        public List<OutputTypeOfAoi> AoiNameList
+        {
+            get => this.aoiNameList;
+            set
+            {
+                this.aoiNameList = value;
+            }
+        }
+
 
         List<DataOfResultShow> resultShowDataList = new List<DataOfResultShow>();
         /// <summary>
@@ -190,7 +207,20 @@ namespace PositionToolsLib.参数
                 distances = value;
             }
         }
-        
+
+        private bool aoiResultFlag = false;
+        /// <summary>
+        /// AOI：输出类型AOI
+        /// </summary>
+        [Description("AOI"), DefaultValue(false)]
+        public bool AoiResultFlag
+        {
+            get => aoiResultFlag;
+            set
+            {
+                aoiResultFlag = value;
+            }
+        }
 
         //Run status value define----1
         bool resultShowStatus = false;

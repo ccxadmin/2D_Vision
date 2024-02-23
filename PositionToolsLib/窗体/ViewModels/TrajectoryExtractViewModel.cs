@@ -1058,7 +1058,12 @@ namespace PositionToolsLib.窗体.ViewModels
             {
                 bool transFlag = baseTool.Transformation_POINT_INV(points[i].X, points[i].Y,
                     out HTuple Cx, out HTuple Cy);//转像素
-
+                if (!transFlag)
+                {
+                    ShowTool.DispAlarmMessage("标定异常无法转换坐标", 500, 20, 30);
+                    return;
+                }
+                    
                 HOperatorSet.GenCrossContourXld(out HObject cross, Cy.D,
                     Cx.D, 10, 0);
                 ShowTool.DispRegion(cross, (i == index) ? "red" : "green");

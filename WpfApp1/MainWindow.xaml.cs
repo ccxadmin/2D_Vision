@@ -21,13 +21,10 @@ using System.Collections.ObjectModel;
 using CommunicationTools.Views;
 using CommunicationTools.Models;
 using FilesRAW.Common;
-using GlueDetectionLib.窗体.Views;
-using GlueDetectionLib.窗体;
-using GlueDetectionLib.窗体.ViewModels;
-using GlueDetectionLib.工具;
+
 using PositionToolsLib.窗体.Views;
 using MainFormLib.Views;
-using GlueDetectionLib.参数;
+
 using System.Windows.Interop;
 using MainFormLib.ViewModels;
 using MainFormLib.Models;
@@ -52,13 +49,7 @@ namespace WpfApp1
             f.VerticalAlignment = VerticalAlignment.Stretch;     
             panel0.Children.Add(f);
 
-            f2 = MainFormLib.Views.UCVision.CreateInstance("camStationName_2");
-            f2.Margin = new Thickness(1);
-            f2.Width = this.panel0.Width;
-            f2.Height = this.panel0.Height;
-            f2.HorizontalAlignment = HorizontalAlignment.Stretch;
-            f2.VerticalAlignment = VerticalAlignment.Stretch;
-            panel1.Children.Add(f2);
+       
         }
         /// <summary>
         /// 装载winform控件，主动释放方式内存泄漏

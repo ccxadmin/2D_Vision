@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ControlShareResources;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace WpfApp1
     /// <summary>
     /// Window1.xaml 的交互逻辑
     /// </summary>
-    public partial class Window1 : Window
+    public partial class Window1: WindowEx
     {
         public Window1()
         {

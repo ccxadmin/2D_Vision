@@ -52,9 +52,7 @@ Height="700" Width="1000">
                 <Style TargetType="MenuItem" x:Key="PosMenuItem">
                     <EventSetter Event="Click" Handler="PosMenuItem_Click"/>
                 </Style>
-                <Style TargetType="MenuItem" x:Key="GlueMenuItem">
-                    <EventSetter Event="Click" Handler="GlueMenuItem_Click"/>
-                </Style>
+              
             </Grid.Resources>
             <Rectangle Stroke="#ff6d3c"  StrokeThickness="1.5" Margin="0"/>
 
@@ -684,6 +682,8 @@ VerticalAlignment="Top" Width="160" Height="25" Margin="0,7,0,7"
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="auto"/>
                                         <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="auto"/>
                                         <RowDefinition Height="*"/>
                                     </Grid.RowDefinitions>
 
@@ -861,7 +861,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                     <Menu Grid.Row="1"   Margin="1" 
                                               Style="{DynamicResource WD.DefaultMenu}"
                                                IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                        <MenuItem Header="前处理"  Margin="0,3"
+                                        <MenuItem Header="前处理>>"  Margin="0,3"
                                          IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"             
                                                       Style="{DynamicResource WD.DefaultMenuItem}" >
                                             <MenuItem Header="颜色转换" Style="{DynamicResource WD.DefaultMenuItem}"
@@ -884,7 +884,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                            CommandParameter="二值化"/>
                                         </MenuItem>
                                         <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                        <MenuItem Header="定位"  Margin="0,3" 
+                                        <MenuItem Header="定位>>"  Margin="0,3" 
                                                  IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"     
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
                                             <MenuItem Header="模板匹配" Style="{DynamicResource WD.DefaultMenuItem}"
@@ -919,7 +919,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
 
                                         </MenuItem>
                                         <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                        <MenuItem Header="映射"  Margin="0,3" 
+                                        <MenuItem Header="映射>>"  Margin="0,3" 
                                                    IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"   
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
                                             <MenuItem Header="坐标换算" Style="{DynamicResource WD.DefaultMenuItem}"
@@ -934,7 +934,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
 
                                         </MenuItem>
                                         <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                        <MenuItem Header="几何距离"  Margin="0,3" 
+                                        <MenuItem Header="几何距离>>"  Margin="0,3" 
                                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"      
                                                       Style="{DynamicResource WD.DefaultMenuItem}">
                                             <MenuItem Header="点点距离" Style="{DynamicResource WD.DefaultMenuItem}"
@@ -947,36 +947,69 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                             Command="{Binding PosMenuClickCommand}"
                                                             CommandParameter="线线距离"/>
                                         </MenuItem>
-                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                       
+                       
+                                    </Menu>
+                                    <Menu Grid.Row="2"   Margin="1" 
+            Style="{DynamicResource WD.DefaultMenu}"
+             IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
+                                       
                                         <MenuItem Header="轨迹提取"  Margin="0,3" 
-                                                IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"      
-                                                      Style="{DynamicResource WD.DefaultMenuItem}"
-                                                       Command="{Binding PosMenuClickCommand}"
-                                                       CommandParameter="轨迹提取">
-
+         IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"      
+               Style="{DynamicResource WD.DefaultMenuItem}"
+                Command="{Binding PosMenuClickCommand}"
+                CommandParameter="轨迹提取">
+                                         
                                         </MenuItem>
                                         <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                        <MenuItem Header="结果显示"  Margin="0,3" 
-                                                      IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
-                                                      Style="{DynamicResource WD.DefaultMenuItem}"
-                                                       Command="{Binding PosMenuClickCommand}"
-                                                       CommandParameter="结果显示">
+                                        <MenuItem Header="AOI>>"  Margin="0,3" 
+                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
+                                         Style="{DynamicResource WD.DefaultMenuItem}">
+                                            <MenuItem Header="胶水检测"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
+                                                <MenuItem Header="漏胶" Style="{DynamicResource WD.DefaultMenuItem}"
+                                              Command="{Binding PosMenuClickCommand}"
+CommandParameter="漏胶"                                                 />
+                                                <MenuItem Header="偏位" Style="{DynamicResource WD.DefaultMenuItem}"
+                                               Command="{Binding PosMenuClickCommand}"
+CommandParameter="偏位"                                                 />
+                                                <MenuItem Header="断胶" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                Command="{Binding PosMenuClickCommand}"
+CommandParameter="断胶"                                                  />
+                                                <MenuItem Header="胶宽" Style="{DynamicResource WD.DefaultMenuItem}"
+                                                Command="{Binding PosMenuClickCommand}"
+CommandParameter="胶宽"                                                  />
+                                            </MenuItem>
+                                        </MenuItem>
 
-                                        </MenuItem>
-                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                        <MenuItem Header="通讯"  Margin="0,3" 
-                                              IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
-                                                      Style="{DynamicResource WD.DefaultMenuItem}">
-                                            <MenuItem Header="Tcp接收" Style="{DynamicResource WD.DefaultMenuItem}"
-             Command="{Binding PosMenuClickCommand}"
-             CommandParameter="Tcp接收"/>
-                                            <MenuItem Header="Tcp发送" Style="{DynamicResource WD.DefaultMenuItem}"
-              Command="{Binding PosMenuClickCommand}"
-              CommandParameter="Tcp发送"/>
-                                        </MenuItem>
 
                                     </Menu>
-                                    <ListView Grid.Row="2"  Margin="1" 
+                                    <Menu Grid.Row="3"   Margin="1" 
+            Style="{DynamicResource WD.DefaultMenu}"
+             IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
+
+                                      
+                                        <MenuItem Header="结果显示"  Margin="0,3" 
+                                         IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
+                                         Style="{DynamicResource WD.DefaultMenuItem}"
+                                          Command="{Binding PosMenuClickCommand}"
+                                          CommandParameter="结果显示">
+
+                                        </MenuItem>
+                                        <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
+                                        <MenuItem Header="通讯>>"  Margin="0,3" 
+                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
+                                         Style="{DynamicResource WD.DefaultMenuItem}">
+                                            <MenuItem Header="Tcp接收" Style="{DynamicResource WD.DefaultMenuItem}"
+Command="{Binding PosMenuClickCommand}"
+CommandParameter="Tcp接收"/>
+                                            <MenuItem Header="Tcp发送" Style="{DynamicResource WD.DefaultMenuItem}"
+ Command="{Binding PosMenuClickCommand}"
+ CommandParameter="Tcp发送"/>
+                                        </MenuItem>
+
+
+                                    </Menu>
+                                    <ListView Grid.Row="4"  Margin="1" 
                                              Style="{DynamicResource ListViewStyle}" 
                                                   IsEnabled="{Binding Model.PosListViewEnable}"
                                                   x:Name="listViewToolsOfPosition"  
@@ -1069,264 +1102,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-                <TabItem Style="{DynamicResource TabItemStyle}" Header="胶水AOI">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                                 VerticalScrollBarVisibility="Auto" >
-
-                        <GroupBox  Style="{DynamicResource GroupBoxStyle}" Header="检测流程" >
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                <ToolBarTray Height="35" Grid.Row="0" Margin="1"  IsEnabled="{Binding Model.GlueToolBarEnable}">
-                                    <ToolBar Height="35" Band="0" BandIndex="0" Background="Transparent" Padding="0">
-                                        <Button Margin="2" Background="Transparent"   ToolTip="打开流程"
-                                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
-                                                Command="{Binding GlueToolBarBtnClickCommand}"                                               
-  CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/打开文件.png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsEnabled" Value="True">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/打开项目.png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                        <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                        <Button Margin="2" Background="Transparent"   ToolTip="保存流程"
-                                                IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
-                                                Command="{Binding GlueToolBarBtnClickCommand}"                         
-CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/保存 (1).png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsEnabled" Value="True">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/保存项目.png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                        <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                        <Button Margin="2" Background="Transparent"   ToolTip="运行流程"
-     IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
-                                                Command="{Binding GlueToolBarBtnClickCommand}"                         
-CommandParameter="{Binding RelativeSource={RelativeSource Self}}"            >
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/试运行 (2).png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsEnabled" Value="True">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/试运行.png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                        <Separator BorderBrush="#ff6d3c" BorderThickness="1"/>
-                                        <Button Margin="2" Background="Transparent"   ToolTip="清空流程" Cursor=""
-                              IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
-                                                Command="{Binding GlueToolBarBtnClickCommand}"                         
-CommandParameter="{Binding RelativeSource={RelativeSource Self}}">
-                                            <Button.Style>
-                                                <Style TargetType="Button">
-                                                    <Style.Triggers>
-                                                        <Trigger Property="IsEnabled" Value="False">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/清空.png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                        <Trigger Property="IsEnabled" Value="True">
-                                                            <Setter Property="Content" >
-                                                                <Setter.Value>
-                                                                    <Image Source="../imgs/清空_清空.png"/>
-                                                                </Setter.Value>
-                                                            </Setter>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Button.Style>
-                                        </Button>
-                                    </ToolBar>
-                                </ToolBarTray>
-                                <Menu Grid.Row="1" Margin="1" 
-                                       Style="{DynamicResource WD.DefaultMenu}" 
-                                       IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                    <MenuItem Header="图像前处理"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}" >
-                                        <MenuItem Header="颜色转换" Style="{DynamicResource WD.DefaultMenuItem}"
-                                                     Command="{Binding GlueMenuClickCommand}"
-   CommandParameter="颜色转换"/>
-                                        <MenuItem Header="膨胀" Style="{DynamicResource WD.DefaultMenuItem}"
-                                                     Command="{Binding GlueMenuClickCommand}"
-   CommandParameter="膨胀"/>
-                                        <MenuItem Header="腐蚀" Style="{DynamicResource WD.DefaultMenuItem}"
-                                           Command="{Binding GlueMenuClickCommand}"
-CommandParameter="腐蚀" />
-                                        <MenuItem Header="开运算" Style="{DynamicResource WD.DefaultMenuItem}"
-                                           Command="{Binding GlueMenuClickCommand}"
-CommandParameter="开运算"                                                 />
-                                        <MenuItem Header="闭运算" Style="{DynamicResource WD.DefaultMenuItem}"
-                                           Command="{Binding GlueMenuClickCommand}"
-CommandParameter="闭运算"                                                  />
-                                        <MenuItem Header="二值化" Style="{DynamicResource WD.DefaultMenuItem}"
-                                            Command="{Binding GlueMenuClickCommand}"
-CommandParameter="二值化"                                                 />
-                                    </MenuItem>
-                                    <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="定位识别"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
-                                        <MenuItem Header="模板匹配" Style="{DynamicResource WD.DefaultMenuItem}"
-                                             Command="{Binding GlueMenuClickCommand}"
-CommandParameter="模板匹配"                                                 />
-                                    </MenuItem>
-                                    <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="胶水检测"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}">
-                                        <MenuItem Header="漏胶" Style="{DynamicResource WD.DefaultMenuItem}"
-                                              Command="{Binding GlueMenuClickCommand}"
-CommandParameter="漏胶"                                                 />
-                                        <MenuItem Header="偏位" Style="{DynamicResource WD.DefaultMenuItem}"
-                                               Command="{Binding GlueMenuClickCommand}"
-CommandParameter="偏位"                                                 />
-                                        <MenuItem Header="断胶" Style="{DynamicResource WD.DefaultMenuItem}"
-                                                Command="{Binding GlueMenuClickCommand}"
-CommandParameter="断胶"                                                  />
-                                        <MenuItem Header="胶宽" Style="{DynamicResource WD.DefaultMenuItem}"
-                                                Command="{Binding GlueMenuClickCommand}"
-CommandParameter="胶宽"                                                  />
-                                    </MenuItem>
-                                    <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="结果显示"  Margin="0,3" Style="{DynamicResource WD.DefaultMenuItem}"
-                            Command="{Binding GlueMenuClickCommand}"
-CommandParameter="结果显示" />
-                                    <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
-                                    <MenuItem Header="通讯"  Margin="0,3" 
-                                 IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"        
-                                         Style="{DynamicResource WD.DefaultMenuItem}">
-                                        <MenuItem Header="Tcp接收" Style="{DynamicResource WD.DefaultMenuItem}"
-Command="{Binding GlueMenuClickCommand}"
-CommandParameter="Tcp接收"/>
-                                        <MenuItem Header="Tcp发送" Style="{DynamicResource WD.DefaultMenuItem}"
- Command="{Binding GlueMenuClickCommand}"
- CommandParameter="Tcp发送"/>
-                                    </MenuItem>
-
-                                </Menu>
-                                <ListView  Grid.Row="2"
-                                        Style="{DynamicResource ListViewStyle}" 
-                                             IsEnabled="{Binding Model.GlueListViewEnable}"
-                                            x:Name="listViewToolsOfGlue"  
- SelectedIndex="{Binding Model.ToolsOfGlueSelectIndex,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-ItemsSource="{Binding Model.ToolsOfGlueList,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" >
-
-                                    <ListView.View>
-                                        <GridView>
-                                            <GridViewColumn Header="序号" Width="40" DisplayMemberBinding="{Binding Path=ID}"/>
-                                            <GridViewColumn Header="工具名称" Width="120" DisplayMemberBinding="{Binding Path=ToolName}"/>
-                                            <GridViewColumn Header="状态" Width="40" DisplayMemberBinding="{Binding Path=ToolStatus}"/>
-                                            <GridViewColumn Header="工具备注" Width="120" DisplayMemberBinding="{Binding Path=ToolNotes}"/>
-                                        </GridView>
-                                    </ListView.View>
-                                    <ListView.ItemContainerStyle>
-                                        <Style TargetType="ListViewItem">
-                                            <Setter Property="ContextMenu">
-                                                <Setter.Value>
-                                                    <ContextMenu  >
-
-                                                        <MenuItem Header="上移"  Style="{DynamicResource GlueMenuItem}"
-IsEnabled= "{Binding MenuItemEnable,   Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.first}}"    >
-                                                            <MenuItem.Icon>
-                                                                <Image Source="../images/上移.ico" />
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                        <MenuItem Header="下移"   Style="{DynamicResource GlueMenuItem}"
-IsEnabled= "{Binding MenuItemEnable,  Converter={StaticResource enumConverter}, ConverterParameter={x:Static model:EumMenuItemEnable.last}}"   
-                                        >
-                                                            <MenuItem.Icon>
-                                                                <Image Source="../images/下移.ico"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                        <MenuItem Header="删除" Style="{DynamicResource GlueMenuItem}"  >
-                                                            <MenuItem.Icon>
-                                                                <Image Source="../images/删除.png"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-                                                        <MenuItem Header="修改备注" Style="{DynamicResource GlueMenuItem}">
-
-                                                            <MenuItem.Icon>
-                                                                <Image Source="../images/备注 (1).png"/>
-                                                            </MenuItem.Icon>
-                                                        </MenuItem>
-
-
-                                                    </ContextMenu>
-                                                </Setter.Value>
-                                            </Setter>
-                                            <EventSetter Event="MouseDoubleClick" Handler="GlueListViewItem__MouseDoubleClick"/>
-                                            <EventSetter Event="MouseUp" Handler="GlueListViewItem_MouseUp"/>
-                                            <Setter Property="Background" Value="#ffffff"/>
-                                            <Setter Property="Foreground"  Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
-                                            <Style.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="true">
-                                                    <Setter Property="Background" Value="#dddddd"/>
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="true">
-                                                    <Setter Property="Background" Value="#ff6d3c"/>
-                                                    <Setter Property="Foreground" Value="#ffffff"/>
-                                                </Trigger>
-                                                <DataTrigger Binding="{Binding ToolStatus}"  Value="OK">
-                                                    <Setter Property="Foreground" Value="Green"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding ToolStatus}" Value="NG">
-                                                    <Setter Property="Foreground" Value="Red"/>
-                                                </DataTrigger>
-
-                                            </Style.Triggers>
-                                        </Style>
-                                    </ListView.ItemContainerStyle>
-                                </ListView>
-                            </Grid>
-
-                        </GroupBox>
-
-                    </ScrollViewer>
-                </TabItem>
+               
                 <TabItem Style="{DynamicResource TabItemStyle}"
                           
                          Header="配方设置">

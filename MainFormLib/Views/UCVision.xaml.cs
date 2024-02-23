@@ -99,24 +99,14 @@ namespace MainFormLib.Views
 
             viewModel.ToolsOfPosMouseUpCommand.DoExecute?.Invoke(sender);
         }
-        private void GlueListViewItem__MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            viewModel.ToolsOfGlueDoubleClickCommand.DoExecute?.Invoke(sender);
-        }
+      
 
-        private void GlueListViewItem_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-
-            viewModel.ToolsOfGlueMouseUpCommand.DoExecute?.Invoke(sender);
-        }
+      
         private void PosMenuItem_Click(object sender, RoutedEventArgs e)
         {
             viewModel.ToolsOfPosition_ContextMenuCommand.DoExecute?.Invoke(sender);
         }
-        private void GlueMenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            viewModel.ToolsOfGlue_ContextMenuCommand.DoExecute?.Invoke(sender);
-        }
+    
 
         void AppenTxt(string objName,string info)
         {

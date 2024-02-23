@@ -8,23 +8,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-using GlueBaseTool = GlueDetectionLib.工具.BaseTool;
-using GlueDataManage = GlueDetectionLib.DataManage;
-using GlueaseParam =GlueDetectionLib.参数.BaseParam;
-using GlueRunResult = GlueDetectionLib.工具.RunResult;
+//using GlueBaseTool = GlueDetectionLib.工具.BaseTool;
+//using GlueDataManage = GlueDetectionLib.DataManage;
+//using GlueaseParam =GlueDetectionLib.参数.BaseParam;
+//using GlueRunResult = GlueDetectionLib.工具.RunResult;
 
-using PosBaseTool = PositionToolsLib.工具.BaseTool;
-using PosDataManage = PositionToolsLib.DataManage;
-using PosBaseParam = PositionToolsLib.参数.BaseParam;
-using PosRunResult = PositionToolsLib.工具.RunResult;
+using BaseTool = PositionToolsLib.工具.BaseTool;
+using DataManage = PositionToolsLib.DataManage;
+using BaseParam = PositionToolsLib.参数.BaseParam;
+using RunResult = PositionToolsLib.工具.RunResult;
 using System.Windows.Data;
 using System.Globalization;
 using System.Windows;
 using HalconDotNet;
-using GlueDetectionLib;
 using FunctionLib.Cam;
 using PositionToolsLib.工具;
 using PositionToolsLib.窗体.Models;
+using PositionToolsLib;
 
 namespace MainFormLib.Models
 {
@@ -1074,7 +1074,8 @@ namespace MainFormLib.Models
     {
         Location,    //定位
         Size,       //尺寸
-        Trajectory  //轨迹
+        Trajectory,  //轨迹
+        AOI     //AOI
     }
     /// <summary>
     /// 模板类型
@@ -1181,85 +1182,25 @@ namespace MainFormLib.Models
         public bool IsUse { get; set; }
 
     }
+    
     /// <summary>
-    /// 胶水检测工程文件
+    /// 视觉检测工程文件
     /// </summary>
     [Serializable]
-    public class ProjectOfGlue
+    public class Project
     {
 
         public List<string> toolNamesList = new List<string>();
-        public Dictionary<string, GlueBaseTool> toolsDic = new Dictionary<string, GlueBaseTool>();
+        public Dictionary<string, BaseTool> toolsDic = new Dictionary<string, BaseTool>();
         [NonSerialized]
-        public GlueDataManage dataManage = new GlueDataManage();
+        public DataManage dataManage = new DataManage();
         [NonSerialized]
         int[] nums ;
         public string TcpRecvName;
         public string TcpSendName;
         public void Refresh()
         {
-            Dictionary<string, GlueBaseTool> tools = new Dictionary<string, GlueBaseTool>();
-
-            foreach (var s in toolNamesList)
-                tools.Add(s, toolsDic[s]);
-
-            toolsDic = tools;
-        }
-        public void GetNum()
-        {          
-            nums = new int[14];
-            nums[0] = GlueDetectionLib.工具.BinaryzationTool.inum;
-            nums[1] = GlueDetectionLib.工具.ClosingTool.inum;
-            nums[2] = GlueDetectionLib.工具.ColorConvertTool.inum;
-            nums[3] = GlueDetectionLib.工具.DilationTool.inum;
-            nums[4] = GlueDetectionLib.工具.ErosionTool.inum;
-            nums[5] = GlueDetectionLib.工具.GlueCaliperWidthTool.inum;
-            nums[6] = GlueDetectionLib.工具.GlueGapTool.inum;
-            nums[7] = GlueDetectionLib.工具.GlueMissTool.inum;
-            nums[8] = GlueDetectionLib.工具.GlueOffsetTool.inum;
-            nums[9] = GlueDetectionLib.工具.MatchTool.inum;
-            nums[10] = GlueDetectionLib.工具.OpeningTool.inum;
-            nums[11] = GlueDetectionLib.工具.ResultShowTool.inum;
-            nums[12] = GlueDetectionLib.工具.TcpRecvTool.inum;
-            nums[13] = GlueDetectionLib.工具.TcpSendTool.inum;
-        }
-        public void SetNum()
-        {
-            if (nums == null) return;
-            GlueDetectionLib.工具.BinaryzationTool.inum = nums[0];
-            GlueDetectionLib.工具.ClosingTool.inum = nums[1];
-            GlueDetectionLib.工具.ColorConvertTool.inum = nums[2];
-            GlueDetectionLib.工具.DilationTool.inum = nums[3];
-            GlueDetectionLib.工具.ErosionTool.inum = nums[4];
-            GlueDetectionLib.工具.GlueCaliperWidthTool.inum = nums[5];
-            GlueDetectionLib.工具.GlueGapTool.inum = nums[6];
-            GlueDetectionLib.工具.GlueMissTool.inum = nums[7];
-            GlueDetectionLib.工具.GlueOffsetTool.inum = nums[8];
-            GlueDetectionLib.工具.MatchTool.inum = nums[9];
-            GlueDetectionLib.工具.OpeningTool.inum = nums[10];
-            GlueDetectionLib.工具.ResultShowTool.inum = nums[11];
-            GlueDetectionLib.工具.TcpRecvTool.inum = nums[12] ;
-            GlueDetectionLib.工具.TcpSendTool.inum = nums[13];
-        }
-    }
-    /// <summary>
-    /// 定位检测工程文件
-    /// </summary>
-    [Serializable]
-    public class ProjectOfPosition
-    {
-
-        public List<string> toolNamesList = new List<string>();
-        public Dictionary<string, PosBaseTool> toolsDic = new Dictionary<string, PosBaseTool>();
-        [NonSerialized]
-        public PosDataManage dataManage = new PosDataManage();
-        [NonSerialized]
-        int[] nums ;
-        public string TcpRecvName;
-        public string TcpSendName;
-        public void Refresh()
-        {
-            Dictionary<string, PosBaseTool> tools = new Dictionary<string, PosBaseTool>();
+            Dictionary<string, BaseTool> tools = new Dictionary<string, BaseTool>();
 
             foreach (var s in toolNamesList)
                 tools.Add(s, toolsDic[s]);
@@ -1268,61 +1209,69 @@ namespace MainFormLib.Models
         }
         public void GetNum()
         {
-            nums = new int[25];
-            nums[0] = PositionToolsLib.工具.AngleConvertTool.inum;    
-            nums[1] = PositionToolsLib.工具.BinaryzationTool.inum ;
-            nums[2] = PositionToolsLib.工具.BlobTool.inum ;
-            nums[3] = PositionToolsLib.工具.CalParallelLineTool.inum ;
-            nums[4] = PositionToolsLib.工具.ClosingTool.inum ;
-            nums[5] = PositionToolsLib.工具.ColorConvertTool.inum ;
-            nums[6] = PositionToolsLib.工具.CoordConvertTool.inum;
-            nums[7] = PositionToolsLib.工具.DilationTool.inum ;
-            nums[8] = PositionToolsLib.工具.DistanceLLTool.inum;
-            nums[9] = PositionToolsLib.工具.DistancePLTool.inum;
-            nums[10] = PositionToolsLib.工具.DistancePPTool.inum;
-            nums[11] = PositionToolsLib.工具.ErosionTool.inum ;
-            nums[12] = PositionToolsLib.工具.FindCircleTool.inum ;
-            nums[13] = PositionToolsLib.工具.FindLineTool.inum ;
-            nums[14] = PositionToolsLib.工具.FitLineTool.inum ;
-            nums[15] = PositionToolsLib.工具.ImageCorrectTool.inum;
-            nums[16] = PositionToolsLib.工具.LineCentreTool.inum ;
-            nums[17] = PositionToolsLib.工具.LineIntersectionTool.inum ;
-            nums[18] = PositionToolsLib.工具.LineOffsetTool.inum;
-            nums[19] = PositionToolsLib.工具.MatchTool.inum ;
-            nums[20] = PositionToolsLib.工具.OpeningTool.inum ;
-            nums[21] = PositionToolsLib.工具.ResultShowTool.inum ;
-            nums[22] = PositionToolsLib.工具.TcpRecvTool.inum;
-            nums[23] = PositionToolsLib.工具.TcpSendTool.inum;
-            nums[24] = PositionToolsLib.工具.TrajectoryExtractTool.inum;
+            nums = new int[29];
+            nums[0] = AngleConvertTool.inum;    
+            nums[1] = BinaryzationTool.inum ;
+            nums[2] = BlobTool.inum ;
+            nums[3] = CalParallelLineTool.inum ;
+            nums[4] = ClosingTool.inum ;
+            nums[5] = ColorConvertTool.inum ;
+            nums[6] = CoordConvertTool.inum;
+            nums[7] = DilationTool.inum ;
+            nums[8] = DistanceLLTool.inum;
+            nums[9] =DistancePLTool.inum;
+            nums[10] = DistancePPTool.inum;
+            nums[11] = ErosionTool.inum ;
+            nums[12] = FindCircleTool.inum ;
+            nums[13] = FindLineTool.inum ;
+            nums[14] = FitLineTool.inum ;
+            nums[15] = GlueCaliperWidthTool.inum;
+            nums[16] = GlueGapTool.inum;
+            nums[17] = GlueMissTool.inum;
+            nums[18] = GlueOffsetTool.inum;
+            nums[19] = ImageCorrectTool.inum;
+            nums[20] = LineCentreTool.inum ;
+            nums[21] = LineIntersectionTool.inum ;
+            nums[22] = LineOffsetTool.inum;
+            nums[23] = MatchTool.inum ;
+            nums[24] = OpeningTool.inum ;
+            nums[25] = ResultShowTool.inum ;
+            nums[26] = TcpRecvTool.inum;
+            nums[27] = TcpSendTool.inum;
+            nums[28] = TrajectoryExtractTool.inum;
         }
         public void SetNum()
         {
             if (nums == null) return;
-            PositionToolsLib.工具.AngleConvertTool.inum = nums[0];
-            PositionToolsLib.工具.BinaryzationTool.inum = nums[1];
-            PositionToolsLib.工具.BlobTool.inum = nums[2];
-            PositionToolsLib.工具.CalParallelLineTool.inum = nums[3];
-            PositionToolsLib.工具.ClosingTool.inum = nums[4];
-            PositionToolsLib.工具.ColorConvertTool.inum = nums[5];
-            PositionToolsLib.工具.CoordConvertTool.inum = nums[6];
-            PositionToolsLib.工具.DilationTool.inum = nums[7];
-            PositionToolsLib.工具.DistanceLLTool.inum = nums[8];
-            PositionToolsLib.工具.DistancePLTool.inum = nums[9];
-            PositionToolsLib.工具.DistancePPTool.inum = nums[10];
-            PositionToolsLib.工具.ErosionTool.inum = nums[11];
-            PositionToolsLib.工具.FindCircleTool.inum = nums[12];
-            PositionToolsLib.工具.FindLineTool.inum = nums[13];
-            PositionToolsLib.工具.FitLineTool.inum = nums[14];
-            PositionToolsLib.工具.ImageCorrectTool.inum = nums[15];
-            PositionToolsLib.工具.LineCentreTool.inum = nums[16];
-            PositionToolsLib.工具.LineIntersectionTool.inum = nums[17];
-            PositionToolsLib.工具.LineOffsetTool.inum = nums[18];
-            PositionToolsLib.工具.MatchTool.inum = nums[19];
-            PositionToolsLib.工具.OpeningTool.inum = nums[20];
-            PositionToolsLib.工具.ResultShowTool.inum = nums[21];
-            PositionToolsLib.工具.TcpRecvTool.inum = nums[22];
-            PositionToolsLib.工具.TcpSendTool.inum = nums[23];
-            PositionToolsLib.工具.TrajectoryExtractTool.inum = nums[24];
+            AngleConvertTool.inum = nums[0];
+            BinaryzationTool.inum = nums[1];
+            BlobTool.inum = nums[2];
+            CalParallelLineTool.inum = nums[3];
+            ClosingTool.inum = nums[4];
+            ColorConvertTool.inum = nums[5];
+            CoordConvertTool.inum = nums[6];
+            DilationTool.inum = nums[7];
+            DistanceLLTool.inum = nums[8];
+            DistancePLTool.inum = nums[9];
+            DistancePPTool.inum = nums[10];
+            ErosionTool.inum = nums[11];
+            FindCircleTool.inum = nums[12];
+            FindLineTool.inum = nums[13];
+            FitLineTool.inum = nums[14];
+            GlueCaliperWidthTool.inum=nums[15];
+            GlueGapTool.inum=nums[16] ;
+            GlueMissTool.inum=nums[17] ;
+            GlueOffsetTool.inum=nums[18] ;
+            ImageCorrectTool.inum = nums[19];
+            LineCentreTool.inum = nums[20];
+            LineIntersectionTool.inum = nums[21];
+            LineOffsetTool.inum = nums[22];
+            MatchTool.inum = nums[23];
+            OpeningTool.inum = nums[24];
+            ResultShowTool.inum = nums[25];
+            TcpRecvTool.inum = nums[26];
+            TcpSendTool.inum = nums[27];
+            TrajectoryExtractTool.inum = nums[28];
         }
     }
 

@@ -292,6 +292,18 @@ namespace PositionToolsLib.窗体.Models
             }
         }
 
+        private Visibility outputAOIEnable;
+        public Visibility OutputAOIEnable
+        {
+            get { return this.outputAOIEnable; }
+            set
+            {
+                outputAOIEnable = value;
+                DoNotify();
+            }
+        }
+        
+
         private ObservableCollection<DgOutputTypeOfTrajectory> dgDataOfOutputTrajectoryList =
        new ObservableCollection<DgOutputTypeOfTrajectory>();
         public ObservableCollection<DgOutputTypeOfTrajectory> DgDataOfOutputTrajectoryList
@@ -337,6 +349,30 @@ namespace PositionToolsLib.窗体.Models
                 DoNotify();
             }
         }
+
+        private ObservableCollection<DgOutputTypeOfAoi> dgDataOfOutputAoiList =
+     new ObservableCollection<DgOutputTypeOfAoi>();
+        public ObservableCollection<DgOutputTypeOfAoi> DgDataOfOutputAoiList
+        {
+            get { return this.dgDataOfOutputAoiList; }
+            set
+            {
+                dgDataOfOutputAoiList = value;
+                DoNotify();
+
+            }
+        }
+        private int dgOutputAoiSelectIndex;
+        public int DgOutputAoiSelectIndex
+        {
+            get { return this.dgOutputAoiSelectIndex; }
+            set
+            {
+                dgOutputAoiSelectIndex = value;
+                DoNotify();
+            }
+        }
+
     }
 
     [Serializable]
@@ -449,6 +485,11 @@ namespace PositionToolsLib.窗体.Models
             ID = id;       
             Distance = double.Round(distance, 3);
         }
+        public DgResultOfResultShow(int id, bool flag)
+        {
+            ID = id;
+            AoiFlag = flag;
+        }
         public int ID { get; set; }
      
         public double X { get; set; }
@@ -456,6 +497,7 @@ namespace PositionToolsLib.窗体.Models
         public double Angle { get; set; }
         public double Radius { get; set; }
         public double Distance { get; set; }
+        public bool AoiFlag { get; set; }
     }
     [Serializable]
     public class DgOutputTypeOfTrajectory : NotifyBase
@@ -557,10 +599,65 @@ namespace PositionToolsLib.窗体.Models
         public string ToolName { get; set; }
 
     }
+
+    [Serializable]
+    public class DgOutputTypeOfAoi : NotifyBase
+    {
+        public DgOutputTypeOfAoi(int _id, bool _isUse,
+                        string _toolName)
+        {
+            ID = _id;
+            IsUse = _isUse;
+            ToolName = _toolName;
+
+        }
+        private int id;
+        public int ID
+        {
+            get => this.id;
+            set { this.id = value; DoNotify(); }
+        }
+        private bool isUse;
+        public bool IsUse
+        {
+            get => this.isUse;
+            set { this.isUse = value; DoNotify(); }
+        }
+        private string toolName;
+        public string ToolName
+        {
+            get => this.toolName;
+            set { this.toolName = value; DoNotify(); }
+        }
+
+    }
+
+    [Serializable]
+    public class OutputTypeOfAoi
+    {
+        public OutputTypeOfAoi(int _id, bool _isUse,
+                        string _toolName)
+        {
+            ID = _id;
+            IsUse = _isUse;
+            ToolName = _toolName;
+
+        }
+
+        public int ID { get; set; }
+
+        public bool IsUse { get; set; }
+
+        public string ToolName { get; set; }
+
+    }
+
+
     public enum EumOutputType
     {
         Location,    //定位
         Size,       //尺寸
-        Trajectory  //轨迹
+        Trajectory,  //轨迹
+        AOI
     }
 }

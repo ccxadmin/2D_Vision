@@ -156,9 +156,16 @@ namespace PositionToolsLib.工具
             if (toolParam == null) return false;
             if (toolParam.hv_HomMat2D != null && toolParam.hv_HomMat2D.Length > 0)
             {
-                HOperatorSet.HomMat2dInvert(toolParam.hv_HomMat2D, out HTuple homMat2DInvert);
-                HOperatorSet.AffineTransPoint2d(homMat2DInvert, Rx, Ry,
-                      out Px, out Py);
+                try
+                {
+                    HOperatorSet.HomMat2dInvert(toolParam.hv_HomMat2D, out HTuple homMat2DInvert);
+                    HOperatorSet.AffineTransPoint2d(homMat2DInvert, Rx, Ry,
+                          out Px, out Py);
+                }
+                 catch
+                {
+                    return false;
+                }
             }               
             else
             {

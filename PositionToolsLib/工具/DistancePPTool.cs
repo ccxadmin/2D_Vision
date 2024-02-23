@@ -99,7 +99,8 @@ namespace PositionToolsLib.工具
                     return result;
                 }
                 HTuple CamParam = (toolParam as DistancePPParam).Hv_CamParam;
-                if (CamParam == null || CamParam.Length <= 0)
+                if ((CamParam == null || CamParam.Length <= 0)&&
+                    !(toolParam as DistancePLParam).UsePixelRatio)
                 {
                     (toolParam as DistancePPParam).DistancePPRunStatus = false;
                     result.runFlag = false;
@@ -112,7 +113,8 @@ namespace PositionToolsLib.工具
                 }
 
                 HTuple CamPose = (toolParam as DistancePPParam).Hv_CamPose;
-                if (CamPose == null || CamPose.Length <= 0)
+                if ((CamPose == null || CamPose.Length <= 0)&&
+                    !(toolParam as DistancePLParam).UsePixelRatio)
                 {
                     (toolParam as DistancePPParam).DistancePPRunStatus = false;
                     result.runFlag = false;

@@ -9,7 +9,7 @@
         xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
         mc:Ignorable="d" Loaded="Window_Loaded" Style="{x:Null}"  Closing="Window_Closing"
         xmlns:convert="clr-namespace:ControlShareResources.Converter;assembly=ControlShareResources"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow"  Height="600" Width="800">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -21,51 +21,66 @@
 
 
     <Grid>
-        <TabControl Style="{DynamicResource TabControlStyle}" Margin="2">
-            <TabItem Style="{DynamicResource TabItemStyle}" Header="00000" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="0" Stroke="#dddddd" StrokeThickness="1"/>
+        <ToolBarTray x:Name="tb" Grid.Row="0" Margin="1" 
+                     Background="White"  >
+            <ToolBarTray.Style>
+                <Style TargetType="ToolBarTray">
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled"  Value="False">
+                            <Setter Property="Background" Value="#dddddd"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ToolBarTray.Style>
+
+            <ToolBar Band="0" BandIndex="0" Background="Transparent" Height="40" >
+                <attach:RichButton   Icon="imgs/新建.png" Foreground="#ff6d3c"
+               Content="新建" Margin="2" Background="Transparent" 
+                  BorderBrush="#ff6d3c"   BorderThickness="0"        
+                  Width="55"    Orientation="Horizontal">
+
+                </attach:RichButton>
+                <Separator Background="Gray" BorderBrush="#ff6d3c" BorderThickness="1"/>
+                <attach:RichButton   Icon="imgs/删除.png" Foreground="#ff6d3c"
+Content="删除" Margin="2" Background="Transparent" 
+   BorderBrush="#ff6d3c"   BorderThickness="0"        
+   Width="55"    Orientation="Horizontal" Cursor="Hand">
+
+                </attach:RichButton>
+                <Separator Background="Gray" BorderBrush="#ff6d3c" BorderThickness="1"/>
+                <attach:RichButton   Icon="imgs/保存.png" Foreground="#ff6d3c"
+Content="保存" Margin="2" Background="Transparent" 
+   BorderBrush="#ff6d3c"   BorderThickness="0"        
+   Width="55"    Orientation="Horizontal">
+
+                </attach:RichButton>
+
+            </ToolBar>
+
+
+        </ToolBarTray>
+
+        <!--<Rectangle Grid.Row="1" Stroke="#dddddd" StrokeThickness="1"/>-->
+        <TabControl Grid.Row="1"  
+                    Style="{DynamicResource TabControlStyle}" Margin="2">
+            <TabItem    Style="{DynamicResource TabItemStyle}" Header="Main" >
                 <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
                    VerticalScrollBarVisibility="Auto">-->
-                    <Grid x:Name="panel0"/>
-                <!--</ScrollViewer>-->
-            </TabItem>
-
-            <TabItem Style="{DynamicResource TabItemStyle}" Header="11111">
-                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">-->
-                    <DockPanel x:Name="panel1"/>
-                <!--</ScrollViewer>-->
-            </TabItem>
-
-            <TabItem Style="{DynamicResource TabItemStyle}" Header="22222">
-                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">-->
-                <WrapPanel x:Name="panel2">
-                    <Button Content="打开相机" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="关闭相机" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="单帧采集" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="连续采集" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="停止采集" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="切换标定" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="加载GIF" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="折叠参数" Width="120" Height=" 30" Click="Button_Click"/>
-                    <Button Content="展开参数" Width="120" Height=" 30" Click="Button_Click"/>
-                </WrapPanel>
-                <!--</ScrollViewer>-->
-            </TabItem>
-
-            <TabItem Style="{DynamicResource TabItemStyle}" Header="33333">
-                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">-->
-                    <DockPanel x:Name="panel3"/>
-                <!--</ScrollViewer>-->
-            </TabItem>
-
-            <TabItem Style="{DynamicResource TabItemStyle}" Header="44444">
-                <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
-        VerticalScrollBarVisibility="Auto">-->
-                    <DockPanel x:Name="panel4"/>
+                <Grid x:Name="panel0"/>
                 <!--</ScrollViewer>-->
             </TabItem>
         </TabControl>
+        <StatusBar Grid.Row="2" Background="#ffffff"
+                   BorderBrush="#dddddd" BorderThickness="1">
+            <StatusBarItem Content="状态：" Foreground="#ff6d3c" FontSize="16"/>
+            <StatusBarItem Content="未知"  Foreground="#ff6d3c" FontSize="16"/>
+        </StatusBar>
+
     </Grid>
 </Window>

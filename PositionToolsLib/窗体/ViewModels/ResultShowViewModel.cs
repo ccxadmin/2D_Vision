@@ -160,6 +160,7 @@ namespace PositionToolsLib.窗体.ViewModels
                 Model.OutputLocationEnable = System.Windows.Visibility.Visible;
                 Model.OutputSizeEnable = System.Windows.Visibility.Hidden;
                 Model.OutputTrajectoryEnable = System.Windows.Visibility.Hidden;
+                Model.OutputAOIEnable = System.Windows.Visibility.Hidden;
                 //X
                 foreach (var s in dataManage.PositionDataDic)
                     Model.XCoorList.Add(s.Key);
@@ -185,6 +186,7 @@ namespace PositionToolsLib.窗体.ViewModels
                 Model.OutputLocationEnable = System.Windows.Visibility.Hidden;
                 Model.OutputSizeEnable = System.Windows.Visibility.Hidden;
                 Model.OutputTrajectoryEnable = System.Windows.Visibility.Visible;
+                Model.OutputAOIEnable = System.Windows.Visibility.Hidden;
                 List<OutputTypeOfTrajectory> Names = (par as ResultShowParam).TrajectoryNameList;
                 Model.DgDataOfOutputTrajectoryList.Clear();
                 foreach (var s in Names)
@@ -192,16 +194,30 @@ namespace PositionToolsLib.窗体.ViewModels
                         (s.ID, s.IsUse, s.ToolName));
 
             }
-            else//输出类型为尺寸
+            else if (currOutputType == EumOutputType.Size)//输出类型为尺寸
             {
                 GetSizeToolNameList();
                 Model.OutputLocationEnable = System.Windows.Visibility.Hidden;
                 Model.OutputSizeEnable = System.Windows.Visibility.Visible;
                 Model.OutputTrajectoryEnable = System.Windows.Visibility.Hidden;
+                Model.OutputAOIEnable = System.Windows.Visibility.Hidden;
                 List<OutputTypeOfSize> Names = (par as ResultShowParam).SizeNameList;
                 Model.DgDataOfOutputSizeList.Clear();
                 foreach (var s in Names)
                     Model.DgDataOfOutputSizeList.Add(new DgOutputTypeOfSize
+                        (s.ID, s.IsUse, s.ToolName));
+            }
+            else//输出类型为AOI
+            {
+                GetAoiToolNameList();
+                Model.OutputLocationEnable = System.Windows.Visibility.Hidden;
+                Model.OutputSizeEnable = System.Windows.Visibility.Hidden;
+                Model.OutputTrajectoryEnable = System.Windows.Visibility.Hidden;
+                Model.OutputAOIEnable = System.Windows.Visibility.Visible;
+                List<OutputTypeOfAoi> Names = (par as ResultShowParam).AoiNameList;
+                Model.DgDataOfOutputSizeList.Clear();
+                foreach (var s in Names)
+                    Model.DgDataOfOutputAoiList.Add(new DgOutputTypeOfAoi
                         (s.ID, s.IsUse, s.ToolName));
             }
         }
@@ -271,6 +287,32 @@ namespace PositionToolsLib.窗体.ViewModels
             (par as ResultShowParam).SizeNameList = temList;
         }
 
+        /// <summary>
+        /// 获取当前Aoi工具名称
+        /// </summary>
+        void GetAoiToolNameList()
+        {
+            BaseParam par = baseTool.GetParam();
+            List<OutputTypeOfAoi> temList = new List<OutputTypeOfAoi>();
+            //DataManage.DeepCopy2<List<OutputTypeOfTrajectory>>((par as ResultShowParam).TrajectoryNameList);
+            //(par as ResultShowParam).TrajectoryNameList.Clear();
+            int index = 0;
+            foreach (var s in dataManage.aoiTooDic)
+            {
+                int n_index = (par as ResultShowParam).AoiNameList.
+                       FindIndex(t => t.ToolName == s);
+                if (n_index == -1) //不存在
+                    temList.Add(new OutputTypeOfAoi(index, false, s));
+                else
+                    temList.Add(new OutputTypeOfAoi(index,
+                          (par as ResultShowParam).AoiNameList[n_index].IsUse,
+                          s));
+                index++;
+            }
+            (par as ResultShowParam).AoiNameList = temList;
+        }
+
+
         private void 删除toolStripMenuItem_Click()
         {
             if (Model.DgDataSelectIndex >= 0)
@@ -328,6 +370,14 @@ namespace PositionToolsLib.窗体.ViewModels
                     (s.ID, s.IsUse, s.ToolName));
             (par as ResultShowParam).SizeNameList = SizeNames;
 
+            //AOI
+            List<OutputTypeOfAoi> AoiNames = (par as ResultShowParam).AoiNameList;
+            AoiNames.Clear();
+            foreach (var s in Model.DgDataOfOutputAoiList)
+                AoiNames.Add(new OutputTypeOfAoi
+                    (s.ID, s.IsUse, s.ToolName));
+            (par as ResultShowParam).AoiNameList = AoiNames;
+
             OnSaveParamHandle?.Invoke(baseTool.GetToolName(), par);
             OnSaveManageHandle?.Invoke(dataManage);
         }
@@ -369,6 +419,13 @@ namespace PositionToolsLib.窗体.ViewModels
                 SizeNames.Add(new OutputTypeOfSize
                     (s.ID, s.IsUse, s.ToolName));
             (par as ResultShowParam).SizeNameList = SizeNames;
+            //AOI
+            List<OutputTypeOfAoi> AoiNames = (par as ResultShowParam).AoiNameList;
+            AoiNames.Clear();
+            foreach (var s in Model.DgDataOfOutputAoiList)
+                AoiNames.Add(new OutputTypeOfAoi
+                    (s.ID, s.IsUse, s.ToolName));
+            (par as ResultShowParam).AoiNameList = AoiNames;
 
             RunResult rlt = baseTool.Run();
             ShowTool.ClearAllOverLays();
@@ -386,7 +443,8 @@ namespace PositionToolsLib.窗体.ViewModels
                 List<DgTrajectoryData> datas = (par as ResultShowParam).TrajectoryDataList;
                 List<double> diatances = (par as ResultShowParam).Distances;
                 List<StuFlagInfo> info = (par as ResultShowParam).ResultInfo;
-               
+                bool aoiCheckFlag = (par as ResultShowParam).AoiResultFlag;
+
                 int num = info.Count;
                 for (int i = 0; i < num; i++)
                 {
@@ -434,6 +492,18 @@ namespace PositionToolsLib.窗体.ViewModels
                         Model.DgResultOfResultShowList.Add(new DgResultOfResultShow(indx, s));
                         indx++;
                     }
+
+                }
+                else if ((par as ResultShowParam).OutputType == EumOutputType.AOI)
+                {
+
+                    int indx = 0;
+                    Model.DgResultOfResultShowList.Clear();
+                    ShowTool.DispMessage(string.Format("AOI,id:{0},result:{1}", indx, aoiCheckFlag ? "OK" : "NG"),
+                               10 + (num + indx) * 150, 10, "green", 16);
+                    ShowTool.AddTextBuffer(string.Format("AOI,id:{0},result:{1}", indx, aoiCheckFlag?"OK":"NG"),
+                               10 + (num + indx) * 150, 10, "green", 16);
+                    Model.DgResultOfResultShowList.Add(new DgResultOfResultShow(indx, aoiCheckFlag));
 
                 }
                 //HOperatorSet.GenCrossContourXld(out HObject cross, data.y, data.x, 20, data.angle);

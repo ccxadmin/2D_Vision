@@ -127,7 +127,19 @@ namespace PositionToolsLib.工具
                     }
                    (toolParam as ResultShowParam).Distances = SizeDatas;
                 }
-
+                else if(outputType == EumOutputType.AOI)
+                {
+                    List<OutputTypeOfSize> names = (toolParam as ResultShowParam).SizeNameList;
+                    bool flag = true;
+                    foreach (var s in names)
+                    {
+                        if (s.IsUse)
+                            if (dm.SizeDataDic.ContainsKey(s.ToolName))
+                                flag &= dm.AoiDataDic[s.ToolName];
+                     
+                    }
+                    (toolParam as ResultShowParam).AoiResultFlag = flag;
+                }
                 HObject emptyObj = null;
                 HOperatorSet.GenEmptyObj(out emptyObj);
                 List<StuFlagInfo> flagInfoList = new List<StuFlagInfo>();    
