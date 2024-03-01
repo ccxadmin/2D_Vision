@@ -23,6 +23,27 @@ namespace VisionShowLib.UserControls
     /* 一个vision控件对应一个图像操作和一个ROI操作*/
     public partial class VisionShowTool : UserControl
     {
+        /// <summary>
+        /// 封装创建控件时所需的信息
+        /// </summary>
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000; // Turn on WS_EX_COMPOSITED
+                return cp;
+            }
+
+        }
+        public  void SetControlDoubleBuffer()
+        {
+
+            this.GetType().GetProperty("DoubleBuffered",
+                System.Reflection.BindingFlags.Instance | 
+                System.Reflection.BindingFlags.NonPublic).SetValue(this, true, null);
+        }
+
         #region  EventHandle
 
         public EventHandler<MouseEventArgs> Disp_MouseMoveHandle;
@@ -78,6 +99,7 @@ namespace VisionShowLib.UserControls
             //HOperatorSet.SetSystem("temporary_mem_cache", "false");
             //HOperatorSet.SetSystem("clip_region", "false");
             InitializeComponent();
+            SetControlDoubleBuffer();
             SetEnable(true);
             statusStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
 

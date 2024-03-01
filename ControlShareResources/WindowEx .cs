@@ -34,6 +34,8 @@ namespace ControlShareResources
             }
         }
 
+     
+
         private Thickness _BorderMargin = new Thickness(0, 0, 0, 0);
         public Thickness BorderMargin
         {
@@ -105,7 +107,7 @@ namespace ControlShareResources
         public WindowEx()
         {
             this.DataContext = this;
-            this.ShowInTaskbar = false;
+            this.ShowInTaskbar = true;
 
             #region 窗体样式设置
             //Uri uri = new Uri("/SunCreate.Common.Controls;Component/WindowEx/WindowExResource.xaml", UriKind.Relative);

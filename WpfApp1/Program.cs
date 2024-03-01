@@ -1,36 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace WpfApp1
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+   
+
+    public partial class Program : Application
     {
-        public App()
+        public Program()
         {
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
         }
 
         private static System.Threading.Mutex m;
-        private void Application_Startup(object sender, StartupEventArgs e)
+
+        [System.STAThreadAttribute()]
+        public static void Main()
         {
             bool run;
 
             m = new System.Threading.Mutex(true, "OnlyRunOneInstance", out run);
             if (run)
             {
+                Application app = new Application();    // 定义Application对象作为整个应用程序入口  
+                MainWindow win = new MainWindow();  // 窗口实例化
+                app.Run(win);   // 调用Run方法
 
-                Application currApp = Application.Current;
-                currApp.StartupUri = new Uri("MainWindow.xaml", UriKind.RelativeOrAbsolute);
+                //Application currApp = Application.Current;
+                //currApp.StartupUri = new Uri("MainWindow.xaml", UriKind.RelativeOrAbsolute);
 
             }
             else
@@ -38,6 +40,7 @@ namespace WpfApp1
                 MessageBox.Show("程序已启动!", "提示", MessageBoxButton.OK, MessageBoxImage.Error);
                 System.Diagnostics.Process.GetCurrentProcess().Kill();
             }
+
 
         }
 

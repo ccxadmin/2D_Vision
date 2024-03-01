@@ -3,9 +3,12 @@
 
     <!-- 窗体按钮模板 -->
     <ControlTemplate x:Key="tmplWindowBtn" TargetType="{x:Type Button}">
-        <Border x:Name="bd" Width="28" Height="18" Background="Transparent"  >
+        <Border x:Name="bd" Width="28" Height="18" 
+             
+                Background="Transparent">
+               
             <Grid>
-                <Image x:Name="img" Stretch="Fill" Source="{TemplateBinding Tag}"  />
+                <Image x:Name="img" Stretch="Uniform" Source="{TemplateBinding Tag}"  />
                 <Border x:Name="bdMask" Opacity="0.3" Visibility="Collapsed" Background="#001122" Margin="1 0 1 1" CornerRadius="0 0 3 3"></Border>
             </Grid>
         </Border>
@@ -20,44 +23,63 @@
     <!-- 窗体模板 -->
     <ControlTemplate x:Key="tmplWindowEx" TargetType="{x:Type Window}">
         <Border>
-            <Border CornerRadius="5" Background="#0998B8" Margin="{Binding BorderMargin}">
+            <Border CornerRadius="5" Background="#ff6d3c" Margin="{Binding BorderMargin}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="26"></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="{TemplateBinding Title}" Margin="10 0 0 0" FontFamily="微软雅黑,黑体" FontSize="12" Foreground="#fff" VerticalAlignment="Center"></TextBlock>
-                    <StackPanel Orientation="Horizontal" Background="#0998B8" HorizontalAlignment="{Binding BtnPanelHorizontalAlignment}" Width="100" Margin="88 0 0 0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0 5 0" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <TextBlock Text="{TemplateBinding Title}" Margin="10 0 0 0" FontFamily="微软雅黑,黑体" FontSize="16" Foreground="#fff" VerticalAlignment="Center"></TextBlock>
+                    <StackPanel Orientation="Horizontal" Background="#ff6d3c" HorizontalAlignment="{Binding BtnPanelHorizontalAlignment}" Width="100" Margin="88 0 0 0">
+                        <StackPanel Orientation="Horizontal" Margin="10 0 5 0" VerticalAlignment="Center" HorizontalAlignment="Right">
                             <Button x:Name="btnMinimize" Template="{StaticResource tmplWindowBtn}" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding DataContext.WindowBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="1" Visibility="{Binding BtnMinimizeVisibility}" >
                                 <Button.Tag>
-                                    <BitmapImage UriSource="/SunCreate.Common.Controls;Component/WindowEx/Images/btnWindowMin.png"/>
+                                    <BitmapImage UriSource="../images/最小化.png"/>
+                                
                                 </Button.Tag>
                             </Button>
                             <Button x:Name="btnMaximize" Template="{StaticResource tmplWindowBtn}" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding DataContext.WindowBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="2" Visibility="{Binding BtnMaximizeVisibility}" >
                                 <Button.Tag>
-                                    <BitmapImage UriSource="/SunCreate.Common.Controls;Component/WindowEx/Images/btnWindowMax.png"/>
+                                    <BitmapImage UriSource="../images/最大化.png"/>
+                                  
                                 </Button.Tag>
                             </Button>
                             <Button x:Name="btnClose" Template="{StaticResource tmplWindowBtn}" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding DataContext.WindowBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="3">
                                 <Button.Tag>
-                                    <BitmapImage UriSource="/SunCreate.Common.Controls;Component/WindowEx/Images/btnWindowClose.png"/>
+                                    <BitmapImage UriSource="../images/关闭.png"/>
+                                 
                                 </Button.Tag>
                             </Button>
                         </StackPanel>
                     </StackPanel>
-                    <Border Background="#d6e7f1" CornerRadius="3 0 3 3" Grid.Row="1" Margin="3" >
+                    <Border Background="#ffffff" CornerRadius="3 0 3 3" Grid.Row="1" Margin="3" >
                         <ContentPresenter ></ContentPresenter>
                     </Border>
                 </Grid>
             </Border>
         </Border>
+        <ControlTemplate.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter TargetName="btnMaximize" Property="Tag">
+                    <Setter.Value>
+                        <BitmapImage UriSource="../images/最大化.png"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+            <Trigger Property="WindowState" Value="Normal">
+                <Setter TargetName="btnMaximize" Property="Tag">
+                    <Setter.Value>
+                        <BitmapImage UriSource="../images/最大化2.png"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </ControlTemplate.Triggers>
     </ControlTemplate>
     <!-- 窗体样式 -->
     <Style x:Key="stlWindowEx" TargetType="{x:Type Window}">
         <Setter Property="Template" Value="{StaticResource tmplWindowEx}"/>
-        <Setter Property="AllowsTransparency" Value="True"></Setter>
-        <Setter Property="Background" Value="Transparent"></Setter>
+        <!--<Setter Property="AllowsTransparency" Value="True"></Setter>-->
+        <!--<Setter Property="Background" Value="Transparent"></Setter>-->
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="ResizeMode" Value="NoResize" />

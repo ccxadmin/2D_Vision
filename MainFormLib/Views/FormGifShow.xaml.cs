@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace MainFormLib.Views
 {
@@ -27,6 +28,25 @@ namespace MainFormLib.Views
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
+        {
+            MediaElement mediaElement = sender as MediaElement;
+            mediaElement.Position = mediaElement.Position.Add(TimeSpan.FromMilliseconds(1));
+          
+        }
+        public static void DoEvents()
+        {
+            DispatcherFrame frame = new DispatcherFrame();
+            Dispatcher.CurrentDispatcher.BeginInvoke(DispatcherPriority.Background, new DispatcherOperationCallback(ExitFrame), frame);
+            Dispatcher.PushFrame(frame);
+        }
+
+        private static Object ExitFrame(Object state)
+        {
+            ((DispatcherFrame)state).Continue = false;
+            return null;
         }
     }
 }

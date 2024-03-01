@@ -46,7 +46,7 @@ namespace FunctionLib.TCP
 
         public int Port { get; set; } = 60000;
 
-
+        
        [NonSerialized]
         public Socket Socket;
         //{
@@ -66,18 +66,20 @@ namespace FunctionLib.TCP
         /// <summary>
         /// 本地服务器
         /// </summary>
-        public EndPoint Local
-        {
-            get;
-            private set;
-        }
+        [NonSerialized]
+        public EndPoint Local;
+        //{
+        //    get;
+        //    private set;
+        //}
         /// <summary>
         /// 接收数据编码格式
         /// </summary>
-        public Encoding ReceiveEncoding
-        {
-            get; set;
-        }
+        [NonSerialized]
+        public Encoding ReceiveEncoding;
+        //{
+        //    get; set;
+        //}
 
         /// <summary>
         /// 数据编码
@@ -102,11 +104,12 @@ namespace FunctionLib.TCP
         /// <summary>
         /// 远程服务器
         /// </summary>
-        public EndPoint Remote
-        {
-            get;
-            private set;
-        }
+        [NonSerialized]
+        public EndPoint Remote;
+        //{
+        //    get;
+        //    private set;
+        //}
 
         #region 连接服务端
         /// <summary>

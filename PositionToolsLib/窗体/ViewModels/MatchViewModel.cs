@@ -274,7 +274,7 @@ namespace PositionToolsLib.窗体.ViewModels
 
                 HOperatorSet.DrawRectangle1(ShowTool.HWindowsHandle, out HTuple hv_Row1, out HTuple hv_Column1,
                     out HTuple hv_Row2, out HTuple hv_Column2);
-                modelSearchRegion.Dispose();
+                //modelSearchRegion.Dispose();
                 HOperatorSet.GenRectangle1(out modelSearchRegion, hv_Row1, hv_Column1, hv_Row2,
                     hv_Column2);
                 MatchParam par = baseTool.GetParam() as MatchParam;

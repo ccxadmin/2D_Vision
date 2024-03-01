@@ -84,12 +84,15 @@ namespace CommunicationTools
                     if (!g_CommDeviceList.Exists(t => t.m_Name == s.m_Name))
                         g_CommDeviceList.Add(s);
         }
+        static int i, j, k;
         /// <summary>
         /// 保存
         /// </summary>
         static public void SaveCommDev(string path)
         {
+            if (i > 0) return;
             GeneralUse.WriteSerializationFile<List<CommDevInfo>>(path, g_CommDeviceList);
+            i++;
         }
         /// <summary>
         ///  初始化连接
@@ -102,8 +105,8 @@ namespace CommunicationTools
                    
                 //通讯设备启动
                 int i = 0;
-                List<CommDevInfo> datas = DeepCopy2<List<CommDevInfo>>(CommDeviceController.g_CommDeviceList);
-                foreach (var item in CommDeviceController.g_CommDeviceList)
+                List<CommDevInfo> datas = DeepCopy2<List<CommDevInfo>>(g_CommDeviceList);
+                foreach (var item in g_CommDeviceList)
                 {
                     if (item.m_CommDevType.Equals(CommDevType.TcpServer))
                     {
@@ -168,47 +171,55 @@ namespace CommunicationTools
         /// </summary>
         public static void DisposeConnect()
         {
-         
+            if (j > 0) return;
             //通讯设备由于可能之前已经打开了  此处要先将tcp服务器关闭
-            foreach (var item in CommDeviceController.g_CommDeviceList)
+            //List<CommDevInfo> datas = DeepCopy2<List<CommDevInfo>>(g_CommDeviceList);
+            //foreach (var item in g_CommDeviceList)
+            int count = g_CommDeviceList.Count;
+             for (int i=0;i< count; i++)
             {
-                if (item.m_CommDevType.Equals(CommDevType.TcpServer))
+                if (g_CommDeviceList[i].m_CommDevType.Equals(CommDevType.TcpServer))
                 {
-                    if (((TcpSocketServer)item.obj).State)
-                        ((TcpSocketServer)item.obj).Close();
+                    if (((TcpSocketServer)g_CommDeviceList[i].obj).State)
+                        ((TcpSocketServer)g_CommDeviceList[i].obj).Close();
                 }
-                else if (item.m_CommDevType.Equals(CommDevType.TcpClient))
+                else if (g_CommDeviceList[i].m_CommDevType.Equals(CommDevType.TcpClient))
                 {
-                    if (((TcpSocketClient)item.obj).State)
-                        ((TcpSocketClient)item.obj).Close();
+                    if (((TcpSocketClient)g_CommDeviceList[i].obj).State)
+                        ((TcpSocketClient)g_CommDeviceList[i].obj).Close();
                 }
 
-            }       
+            }
+            j++;
         }
         /// <summary>
         /// 释放外部通讯设备
         /// </summary>
         public static void ReleaseDev()
         {
-            foreach (var item in CommDeviceController.g_CommDeviceList)
-                if (item.m_CommDevType.Equals(CommDevType.TcpServer))
+            if (k > 0) return;
+            int count = g_CommDeviceList.Count;
+            //foreach (var item in g_CommDeviceList)
+                for(int i=0;i<count;i++)
+                if (g_CommDeviceList[i].m_CommDevType.Equals(CommDevType.TcpServer))
                 {
-                    ((TcpSocketServer)item.obj).RemoteConnect -= TcpServer_RemoteConnect;
-                    ((TcpSocketServer)item.obj).RemoteClose -= TcpServer_RemoteClose;
-                    if (((TcpSocketServer)item.obj).State)
+                    ((TcpSocketServer)g_CommDeviceList[i].obj).RemoteConnect -= TcpServer_RemoteConnect;
+                    ((TcpSocketServer)g_CommDeviceList[i].obj).RemoteClose -= TcpServer_RemoteClose;
+                    if (((TcpSocketServer)g_CommDeviceList[i].obj).State)
                     {
-                        ((TcpSocketServer)item.obj).Close();
+                        ((TcpSocketServer)g_CommDeviceList[i].obj).Close();
                     }
 
                 }
-                else if (item.m_CommDevType.Equals(CommDevType.TcpClient))
+                else if (g_CommDeviceList[i].m_CommDevType.Equals(CommDevType.TcpClient))
                 {
-                    ((TcpSocketClient)item.obj).RemoteClose -= TcpClient_RemoteClose;
-                    if (((TcpSocketClient)item.obj).State)
+                    ((TcpSocketClient)g_CommDeviceList[i].obj).RemoteClose -= TcpClient_RemoteClose;
+                    if (((TcpSocketClient)g_CommDeviceList[i].obj).State)
                     {
-                        ((TcpSocketClient)item.obj).Close();
+                        ((TcpSocketClient)g_CommDeviceList[i].obj).Close();
                     }
                 }
+            k++;
         }
         /// <summary>
         /// 深度复制（二进制）

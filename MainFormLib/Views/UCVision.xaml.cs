@@ -22,7 +22,7 @@ namespace MainFormLib.Views
     /// <summary>
     /// UCVision.xaml 的交互逻辑
     /// </summary>
-    public partial class UCVision : UserControl
+    public partial class UCVision : UserControl,IDisposable
     {
         static UCVision uCVision = null;
         public VisionViewModel viewModel { get; set; } = null;
@@ -41,10 +41,11 @@ namespace MainFormLib.Views
             var tool = viewModel.ShowTool;
             tool.Dock = System.Windows.Forms.DockStyle.Fill;
             tool.Padding = new System.Windows.Forms.Padding(2);
-
+         
             tool.SetBackgroundColor(EumControlBackColor.white);
             tool.setDraw(EumDrawModel.margin);
             host.Child = tool;
+           
         }
         ~UCVision()
         {
@@ -158,6 +159,13 @@ namespace MainFormLib.Views
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        public void Dispose()
+        {
+            viewModel.Release();
+            host.Child.Dispose();
+            host.Child = null;
         }
     }
 }

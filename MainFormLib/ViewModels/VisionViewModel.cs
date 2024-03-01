@@ -64,7 +64,10 @@ namespace MainFormLib.ViewModels
 {
     public class VisionViewModel
     {
-       
+        static VisionViewModel()
+        {
+            LoadCommDev();
+        }
         public delegate void GetDataHandle(string data);
         public event GetDataHandle GetDataOfVisionHandle = null;//虚拟断开数据传输事件
         public delegate void CamContinueGrabHandle(bool isGrabing);
@@ -410,7 +413,7 @@ namespace MainFormLib.ViewModels
                 Directory.CreateDirectory(saveToUsePath);
 
 
-            LoadCommDev();//加载外部通讯工具     
+
             LoadRecipe();//加载配方
 
             usingCamType = (EumUsingCamType)Enum.Parse(typeof(EumUsingCamType),
@@ -2630,19 +2633,19 @@ namespace MainFormLib.ViewModels
         /// <summary>
         /// 加载外部通讯工具
         /// </summary>
-        void LoadCommDev()
+       static  void LoadCommDev()
         {
             //if (Project.toolNamesList.Exists(t => t.Contains("Tcp接收")))
             {
 
-                string path = rootFolder + "\\CommDev";
+                string path = AppDomain.CurrentDomain.BaseDirectory + "CommDev";
                 if (!Directory.Exists(path))
                     Directory.CreateDirectory(path);
                 if (!File.Exists(path + "\\外部通讯.cdv")) return;
                 CommDeviceController.LoadCommDev(path + "\\外部通讯.cdv");
                 bool flag = CommDeviceController.InitialConnect();
-                if (!flag)
-                    Appentxt("外部通讯加载失败");
+                //if (!flag)
+                //    Appentxt("外部通讯加载失败");
 
                
             }
@@ -4679,7 +4682,7 @@ namespace MainFormLib.ViewModels
                 Thread.Sleep(100);
             }
             ShowTool.Dispose();
-            string path = rootFolder + "\\CommDev";
+            string path = AppDomain.CurrentDomain.BaseDirectory + "CommDev";
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             CommDeviceController.SaveCommDev(path + "\\外部通讯.cdv");      
@@ -5729,8 +5732,7 @@ namespace MainFormLib.ViewModels
                 return;
             string buf = "";
             string strData = string.Empty;
-            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+            strData = System.Text.Encoding.Default.GetString(buffer, 0, count);  
             buf += "[Pos：" + remote.ToString() + "]";
             buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
             buf += strData;
@@ -5766,13 +5768,12 @@ namespace MainFormLib.ViewModels
             string buf = "";
             string strData = string.Empty;
             strData = System.Text.Encoding.Default.GetString(buffer, 0, count);
-            if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+           
             buf += "[Pos：" + remote.ToString() + "]";
             buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
             buf += strData;
             Appentxt(buf);
-            
-            if (strData.Contains("AOI")) return;//定位流程忽略AOI触发信号
+                 
             Monitor.Enter(locker);
             try
             {

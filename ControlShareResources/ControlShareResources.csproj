@@ -16,6 +16,10 @@
 
   <ItemGroup>
     <None Remove="Fonts\Font Awesome 5 Free-Solid-900.otf" />
+    <None Remove="images\关闭.png" />
+    <None Remove="images\最大化.png" />
+    <None Remove="images\最大化2.png" />
+    <None Remove="images\最小化.png" />
     <None Remove="Themes\q05sj33r.maw~" />
   </ItemGroup>
 
@@ -28,6 +32,18 @@
 
   <ItemGroup>
     <Resource Include="Fonts\Font Awesome 5 Free-Solid-900.otf">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\关闭.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\最大化.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\最大化2.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="images\最小化.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>

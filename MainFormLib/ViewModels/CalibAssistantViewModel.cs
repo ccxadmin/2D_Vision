@@ -501,7 +501,8 @@ namespace MainFormLib.ViewModels
                 GeneralUse.WriteSerializationFile<ObservableCollection<ImageCorrectInfo>>(filePath + "\\图像信息", Model.DgImageCorrectInfoList);
 
                 string imageFile = filePath + "\\imags";
-                Directory.Delete(imageFile,true);
+                if(Directory.Exists(imageFile))
+                   Directory.Delete(imageFile,true);
                 Directory.CreateDirectory(imageFile);
                 foreach (var s in ImagesDic)
                     SaveImg(s.Value, imageFile, s.Key);
