@@ -1,2 +1,2 @@
-# MOGA_Vision
+# 2D_Vision
 The Repository includes visual interface design and algorithm function blocks
