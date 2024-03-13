@@ -5482,11 +5482,19 @@ namespace MainFormLib.ViewModels
 
                             })).ContinueWith(t =>
                             {
-                                virtualConnect.WriteData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
+                                virtualConnect.WriteData(string.Format("{0},{1},{2:f3},{3:f3}", "C,E",
+                                    flag ? "OK" : "NG",
+                                    this.caliModel.TxbRotateCenterX,
+                                    this.caliModel.TxbRotateCenterY
+                                    )) ;
                                 TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
-                                    tool.SendData(string.Format("{0},{1}", "C,E", flag ? "OK" : "NG"));
+                                    tool.SendData(string.Format("{0},{1},{2:f3},{3:f3}", "C,E",
+                                    flag ? "OK" : "NG",
+                                    this.caliModel.TxbRotateCenterX,
+                                    this.caliModel.TxbRotateCenterY
+                                    ));
                                 }
 
                                 Appentxt("旋转中心标定结束，标定结果" + (flag ? "OK" : "NG"));
