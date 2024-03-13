@@ -74,9 +74,9 @@ namespace MainFormLib.ViewModels
         public CamContinueGrabHandle camContinueGrabHandle;//相机是否连续采集状态
         public delegate void ImageSizeChangeHandle(int width, int height);
         public event ImageSizeChangeHandle imageSizeChangeHandle; //图像旋转后尺寸变化通知事件
-        public EventHandler CamConnectStatusHandle;//相机链接状态时间     
+        public EventHandler CamConnectStatusHandle;//相机链接状态事件     
         public OutPointGray DoubleClickGetMousePosHandle;//双击获取像素坐标  
-        public EventHandler AutoFocusDataHandle;//自动对焦事件
+        //public EventHandler AutoFocusDataHandle;//自动对焦事件
         /*-----------------------------------------文件配置---------------------------------------*/
         private string rootFolder = AppDomain.CurrentDomain.BaseDirectory; //根目录
         private string currCamStationName = "cam1";
@@ -5165,7 +5165,13 @@ namespace MainFormLib.ViewModels
                         stuProcessFocusSendData = AutoFocus.sendCmdOfAutoAdjust();
 
                     Appentxt(stuProcessFocusSendData.ToString());
-                    AutoFocusDataHandle?.Invoke(stuProcessFocusSendData, null);
+                    //AutoFocusDataHandle?.Invoke(stuProcessFocusSendData, null);
+                    virtualConnect.WriteData(stuProcessFocusSendData.ToString());
+                    TcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(stuProcessFocusSendData.ToString());
+                    }
                 }
                 else if (workstatus == EunmCamWorkStatus.AOI) //胶水AOI检测
                 {
@@ -5602,11 +5608,16 @@ namespace MainFormLib.ViewModels
                     switch (strData)
                     {
                         case "Request AF":
+                            TcpSendTool tool = GetToolToSendOfPos();
                             if (!GuidePositioning_HDevelopExport.ObjectValided(ShowTool.D_HImage) ||
                                 ShowTool.D_HImage == null)
-                            {
-                                AutoFocusDataHandle?.Invoke("Operation exception", null);
-
+                            {                        
+                                virtualConnect.WriteData("Operation exception");  
+                              
+                                if (tool != null)
+                                {
+                                    tool.SendData("Operation exception");
+                                }
                                 Appentxt("图像为空，请采集一张图片！");
                                 return;
                             }
@@ -5623,11 +5634,24 @@ namespace MainFormLib.ViewModels
                             if (!ObjectValided(autoFocusRegion) ||
                                autoFocusRegion == null)
                             {
-                                AutoFocusDataHandle?.Invoke("Operation exception", null);
+                                virtualConnect.WriteData("Operation exception");
+                                
+                                if (tool != null)
+                                {
+                                    tool.SendData("Operation exception");
+                                }
+                             
                                 Appentxt("对焦区域为空，请先打开辅助工具！");
                                 return;
                             }
-                            AutoFocusDataHandle?.Invoke("Ready AF", null);
+
+                            virtualConnect.WriteData("Ready AF");
+                           
+                            if (tool != null)
+                            {
+                                tool.SendData("Ready AF");
+                            }
+                            
                             //workstatus = EunmcurrCamWorkStatus.AutoFocus;
                             Appentxt("开始自动对焦");
                             break;
@@ -5638,7 +5662,13 @@ namespace MainFormLib.ViewModels
                             break;
                         case "Finish AF":
                             workstatus = EunmCamWorkStatus.None;
-                            AutoFocusDataHandle?.Invoke("OK AF", null);
+                            virtualConnect.WriteData("OK AF");
+                            TcpSendTool stool = GetToolToSendOfPos();
+                            if (stool != null)
+                            {
+                                stool.SendData("OK AF");
+                            }
+                       
                             Appentxt("自动对焦结束");
                             break;
                     }
