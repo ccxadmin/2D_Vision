@@ -184,7 +184,10 @@ namespace FunctionLib.TCP
         /// <returns></returns>
         public int Send(byte[] data)
         {
-            return this.Client.Send(data);
+            if (this.Client != null)
+                return this.Client.Send(data);
+            else
+                return -1;
         }
         /// <summary>
         /// 向远程服务器发送数据

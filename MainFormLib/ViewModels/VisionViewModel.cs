@@ -59,6 +59,8 @@ using System.Windows.Media.Media3D;
 using System.Numerics;
 using DalsaCamera;
 using PositionToolsLib.窗体.Pages;
+using System.Xml.Linq;
+
 
 namespace MainFormLib.ViewModels
 {
@@ -1265,7 +1267,13 @@ namespace MainFormLib.ViewModels
         void DoubleClickGetMousePosEvent(HTuple x, HTuple y, HTuple gray)
         {
             DoubleClickGetMousePosHandle?.Invoke(x, y, gray);
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1:f3},{2:f3}",
+                    "DoubleClickGetMousePosHandle", x.D, y.D));
 
+            }
         }
         /// <summary>
         /// 打开相机按钮单击事件
@@ -3866,9 +3874,20 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public List<string> GetAllRecipeNames()
         {
+            string buf = "";
             List<string> names = new List<string>();
             foreach (var s in Model.RecipeDgList)
+            {
+                buf += s.Name + ",";
                 names.Add(s.Name);
+            }
+               
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "GetAllRecipeNames", buf.TrimEnd(',')));
+            }
             return names;
         }
         /// <summary>
@@ -3877,6 +3896,12 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public string  GetCurrRecipeName()
         {
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "GetCurrRecipeName", currRecipeName));
+            }
             return this.currRecipeName;
         }
         /// <summary>
@@ -3889,10 +3914,17 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public bool NewRecipe(string recipeName)
         {
-
+            TcpSendTool tool = GetToolToSendOfPos();
+            
             if (Model.RecipeDgList.ToList().Exists(t => t.Name == recipeName))
             {
                 Appentxt(string.Format("已存在配方：{0}不可重复添加", recipeName));
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "NewRecipe", false));
+                }
+
                 return false;
             }
             Application.Current.Dispatcher.Invoke(() =>
@@ -3912,7 +3944,12 @@ namespace MainFormLib.ViewModels
                 RecipeDgListBuf.Add(new RecipeDgBuf(s.Name, s.IsUse));
             GeneralUse.WriteSerializationFile<ObservableCollection<RecipeDgBuf>>
                    (path, RecipeDgListBuf);
-
+          
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "NewRecipe", true));
+            }
             return true;
         }
         /// <summary>
@@ -3925,18 +3962,38 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public bool ExportRecipe(string path, string recipeName)
         {
+            TcpSendTool tool = GetToolToSendOfPos();
+            
             if (!Directory.Exists(path))
             {
                 Appentxt("存放导出配方的文件夹路径不存在");
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "ExportRecipe", false));
+                }
                 return false;
             }
             if (!Directory.Exists(rootFolder + "\\配方\\" + recipeName))
             {
                 Appentxt("配方文件不存在");
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "ExportRecipe", false));
+                }
                 return false;
             }
-            return CopyFolder(rootFolder + "\\配方\\" + recipeName,
+        
+            bool flag= CopyFolder(rootFolder + "\\配方\\" + recipeName,
                 path + "\\" + recipeName);
+
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "ExportRecipe", flag));
+            }
+            return flag;
         }
         /// <summary>
         /// 切换配方
@@ -3945,15 +4002,27 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public bool SwitchRecipe(string recipeName)
         {
+            TcpSendTool tool = GetToolToSendOfPos();
             Appentxt(string.Format("外部指令进行配方切换，配方名称：{0}", recipeName));
             if (currRecipeName == recipeName)
             {
                 Appentxt("配方同名无需切换");
+            
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "SwitchRecipe", true));
+                }
                 return true;
             }
             if (!Model.RecipeDgList.ToList().Exists(t => t.Name == recipeName))
             {
                 Appentxt("不存在配方：" + recipeName);
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "SwitchRecipe", false));
+                }
                 return false;
             }
             int index = Model.RecipeDgList.ToList().FindIndex
@@ -3971,6 +4040,11 @@ namespace MainFormLib.ViewModels
             currRecipeName = recipeName;
             saveToUsePath = rootFolder + "\\配方\\" + currRecipeName;
             LoadRecipe();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "SwitchRecipe", true));
+            }
             return true;
         }
         /// <summary>
@@ -3979,12 +4053,23 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public List<string> GetAllCalibNames()
         {
+            string buf = "";
             List<string> names = new List<string>();
             string temPath = rootFolder + "\\标定矩阵\\九点标定";
             DirectoryInfo di = new DirectoryInfo(temPath);
             DirectoryInfo[] dis = di.GetDirectories();
             foreach (var s in dis)
+            {
+                buf += s.Name + ",";
                 names.Add(s.Name);
+            }
+               
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "GetAllCalibNames", buf.TrimEnd(',')));
+            }
             return names;
         }
         /// <summary>
@@ -3993,6 +4078,12 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public string GetCurrCalibName()
         {
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "GetCurrCalibName", currCalibName));
+            }
             return this.currCalibName;
         }
         /// <summary>
@@ -4001,21 +4092,38 @@ namespace MainFormLib.ViewModels
         /// <param name="calibName"></param>
         public bool SwithCalib(string calibName)
         {
+            TcpSendTool tool = GetToolToSendOfPos();
             Appentxt(string.Format("外部指令进行标定关系切换，标定名称：{0}", calibName));
             if (currCalibName == calibName)
             {
                 Appentxt("标定同名无需切换");
+               
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "SwithCalib", true));
+                }
                 return true;
             }
             if (!File.Exists(rootFolder + "\\标定矩阵\\九点标定\\" +
                 calibName + "\\hv_HomMat2D.tup"))
             {
                 Appentxt("标定文件不存在，切换失败");
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1}",
+                        "SwithCalib", false));
+                }
                 return false;
             }
 
             currCalibName = calibName;
             LoadMatrix();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "SwithCalib", true));
+            }
             return true;
         }
 
@@ -4025,7 +4133,14 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public string GetCurrModelName()
         {
-            return this.currModelType.ToString();
+            string name= this.currModelType.ToString();
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "GetCurrModelName", name));
+            }
+            return name;
         }
         /// <summary>
         /// 切换输出类型
@@ -4034,12 +4149,20 @@ namespace MainFormLib.ViewModels
         /// <returns></returns>
         public bool SwitchOutputType(EumOutputType eumoutputType)
         {
+            TcpSendTool tool = GetToolToSendOfPos();
             Appentxt(string.Format("指令开启输出类型切换,名称:{0}",
                                    Enum.GetName(typeof(EumOutputType), eumoutputType)));
             if (outputType == eumoutputType)//如果无切换则不重载
             {
                 Appentxt(string.Format("当前输出类型类型:{0}与当前正使用的同名！",
                        Enum.GetName(typeof(EumOutputType), eumoutputType)));
+              
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("SwitchOutputType,{0}", true));
+
+                }
+
                 return true;
             }
 
@@ -4077,6 +4200,11 @@ namespace MainFormLib.ViewModels
                 }
                 Appentxt("输出类型切换完成");
             });
+            if (tool != null)
+            {
+                tool.SendData(string.Format("SwitchOutputType,{0}", true));
+
+            }
             return true;
         }
         /// <summary>
@@ -4086,7 +4214,7 @@ namespace MainFormLib.ViewModels
         /// <returns>模板切换是否成功标志</returns>
         public bool SwitchModelType(EumModelType eumModelType)
         {
-
+            TcpSendTool tool = GetToolToSendOfPos();
             return
                  Application.Current.Dispatcher.Invoke(() =>
              { 
@@ -4098,6 +4226,13 @@ namespace MainFormLib.ViewModels
                  {
                      Appentxt(string.Format("当前切换模板类型:{0}与当前正使用的同名！",
                             Enum.GetName(typeof(EumModelType), eumModelType)));
+
+                     
+                     if (tool != null)
+                     {
+                         tool.SendData(string.Format("SwitchModelType,{0}", true));
+
+                     }
                      return true;
                  }
                  outputType = Model.OutputType = EumOutputType.Location;
@@ -4116,7 +4251,12 @@ namespace MainFormLib.ViewModels
                      Model.ScanCamEnable = false;
                      LoadCamParam();
                  }
+            
+                 if (tool != null)
+                 {
+                     tool.SendData(string.Format("SwitchModelType,{0}", loadFlag));
 
+                 }             
                  return loadFlag;
                  //if (!PosBaseTool.ObjectValided(this.GrabImg))
                  //    return;
@@ -4322,6 +4462,13 @@ namespace MainFormLib.ViewModels
 
             })
                 .ContinueWith(t => { openFlag = t.Result; });
+
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("OpenCam,{0}", openFlag));
+
+            }
             return openFlag;
         }
         /// <summary>
@@ -4665,6 +4812,7 @@ namespace MainFormLib.ViewModels
                 foreach (var item in Model.ToolsOfGlueList)
                     item.ContextMenuVisib = Visibility.Visible;
             });
+           
             return true;
         }
         /// <summary>
@@ -4798,6 +4946,13 @@ namespace MainFormLib.ViewModels
             imageHeight = _height.I;
             imageSizeChangeHandle?.Invoke(_width.I, _height.I);
 
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1:f3},{2:f3}",
+                    "imageSizeChangeHandle", _width.I, _height.I));
+
+            }
             Create_Physical_coorsys();
             string ImageRotation = sender.ToString();
             GeneralUse.WriteValue("图像旋转", "角度", ImageRotation, "config", rootFolder + "\\Config");
@@ -5241,6 +5396,13 @@ namespace MainFormLib.ViewModels
         void CamConnectEvent(object sender, EventArgs e)
         {
             CamConnectStatusHandle?.Invoke(sender, e);
+            TcpSendTool tool = GetToolToSendOfPos();
+            if (tool != null)
+            {
+                tool.SendData(string.Format("{0},{1}",
+                    "CamConnectStatusHandle", (bool)sender));
+
+            }
         }
 
         #endregion
@@ -5272,11 +5434,19 @@ namespace MainFormLib.ViewModels
         /// <param name="strData"></param>
         void FlowHandle(string strData)
         {
+            //流程相关
+            #region 流程相关
             if (strData.Contains("NP,") || strData.Contains("C,") || strData.Contains("Deviation")
-       || strData.Contains("T1") || strData.Contains("T2") || strData.Contains("G")
+       || strData.Contains("T1") || strData.Contains("T2") || strData.Contains("Glue")
          || strData.Contains("AF") || strData.Contains("AOI") || strData.Contains("Trajectory"))
 
             {
+                if (!ContinueRunFlag)
+                {
+                    Appentxt("请开启连续运行");
+                    return;
+                }
+
                 if (strData.Contains("NP,")) //9点标定流程
                 {
                     if (outputType != EumOutputType.Location)
@@ -5328,7 +5498,7 @@ namespace MainFormLib.ViewModels
                                     tool.SendData("NP,S,NG");
                                 }
                             }
-                              
+
                             break;
                         case "E":
                             //校验9次模板匹配是否OK
@@ -5354,7 +5524,9 @@ namespace MainFormLib.ViewModels
                                 TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
-                                    tool.SendData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
+                                    tool.SendData(string.Format("{0},{1},{2},{3}",
+                                        "NP,E", flag ? "OK" : "NG",
+                                        ImageWidth, ImageHeight));
                                 }
 
                                 Appentxt("9点标定结束，标定结果" + (flag ? "OK" : "NG"));
@@ -5459,7 +5631,7 @@ namespace MainFormLib.ViewModels
                                     tool.SendData("C,S,NG");
                                 }
                             }
-                             
+
 
                             break;
                         case "E":
@@ -5482,11 +5654,8 @@ namespace MainFormLib.ViewModels
 
                             })).ContinueWith(t =>
                             {
-                                virtualConnect.WriteData(string.Format("{0},{1},{2:f3},{3:f3}", "C,E",
-                                    flag ? "OK" : "NG",
-                                    this.caliModel.TxbRotateCenterX,
-                                    this.caliModel.TxbRotateCenterY
-                                    )) ;
+                                virtualConnect.WriteData(string.Format("{0},{1}", "C,E",
+                                    flag ? "OK" : "NG"));
                                 TcpSendTool tool = GetToolToSendOfPos();
                                 if (tool != null)
                                 {
@@ -5544,7 +5713,7 @@ namespace MainFormLib.ViewModels
                                   CurrCam.IsAlive)
                     {
                         Appentxt("标定准备好,开始偏差校验");
-                   
+
                         OneGrab(EunmCamWorkStatus.DeviationLocation);
                     }
 
@@ -5572,10 +5741,10 @@ namespace MainFormLib.ViewModels
                         SwitchModelType(EumModelType.ProductModel_1);
 
                     stopwatch.Restart();
-                 
+
                     Appentxt("开始自动检测,使用模板为产品1模板！");
                     OneGrab(EunmCamWorkStatus.NormalTest_T1);
-                   
+
                 }
                 else if (strData.Equals("T2"))
                 {
@@ -5589,12 +5758,12 @@ namespace MainFormLib.ViewModels
                         SwitchModelType(EumModelType.ProductModel_2);
 
                     stopwatch.Restart();
-                 
+
                     Appentxt("开始自动检测,使用模板为产品2模板！");
                     OneGrab(EunmCamWorkStatus.NormalTest_T2);
 
                 }
-                else if (strData.Equals("G"))
+                else if (strData.Equals("Glue"))
                 {
                     if (outputType != EumOutputType.Location)
                     {
@@ -5606,10 +5775,10 @@ namespace MainFormLib.ViewModels
                         SwitchModelType(EumModelType.GluetapModel);
 
                     stopwatch.Restart();
-                
+
                     Appentxt("开始点胶阀示教检测");
                     OneGrab(EunmCamWorkStatus.NormalTest_G);
-                  
+
                 }
                 else if (strData.Contains("AF"))
                 {
@@ -5619,9 +5788,9 @@ namespace MainFormLib.ViewModels
                             TcpSendTool tool = GetToolToSendOfPos();
                             if (!GuidePositioning_HDevelopExport.ObjectValided(ShowTool.D_HImage) ||
                                 ShowTool.D_HImage == null)
-                            {                        
-                                virtualConnect.WriteData("Operation exception");  
-                              
+                            {
+                                virtualConnect.WriteData("Operation exception");
+
                                 if (tool != null)
                                 {
                                     tool.SendData("Operation exception");
@@ -5643,28 +5812,28 @@ namespace MainFormLib.ViewModels
                                autoFocusRegion == null)
                             {
                                 virtualConnect.WriteData("Operation exception");
-                                
+
                                 if (tool != null)
                                 {
                                     tool.SendData("Operation exception");
                                 }
-                             
+
                                 Appentxt("对焦区域为空，请先打开辅助工具！");
                                 return;
                             }
 
                             virtualConnect.WriteData("Ready AF");
-                           
+
                             if (tool != null)
                             {
                                 tool.SendData("Ready AF");
                             }
-                            
+
                             //workstatus = EunmcurrCamWorkStatus.AutoFocus;
                             Appentxt("开始自动对焦");
                             break;
                         case "AFT":
-                        
+
                             OneGrab(EunmCamWorkStatus.AutoFocus); //Z自动对焦         
                             Appentxt("自动对焦进行中");
                             break;
@@ -5676,7 +5845,7 @@ namespace MainFormLib.ViewModels
                             {
                                 stool.SendData("OK AF");
                             }
-                       
+
                             Appentxt("自动对焦结束");
                             break;
                     }
@@ -5694,7 +5863,7 @@ namespace MainFormLib.ViewModels
 
                     Appentxt("开始胶水AOI外观检测");
                     OneGrab(EunmCamWorkStatus.AOI);
-                   
+
 
                 }
                 else if (strData.Contains("Trajectory"))//轨迹提取
@@ -5721,9 +5890,192 @@ namespace MainFormLib.ViewModels
                     Appentxt("开始尺寸测量检测");
                     OneGrab(EunmCamWorkStatus.Size);
                 }
-                else
-                    return;
+
             }
+            #endregion
+            //调用接口相关
+            #region 接口相关
+            else if (strData.Contains("Pixel To Machine"))
+            {
+                string[] bufs = strData.Split(' ');
+                if (bufs.Length < 5) return;
+                double px = double.Parse(bufs[3]);
+                double py = double.Parse(bufs[4]);
+                this.Transformation_POINT(px, py, out HTuple rx, out HTuple ry);
+                TcpSendTool tool = GetToolToSendOfPos();
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1},{2},{3}",
+                        "Pixel To Machine ", rx.D, " ", ry.D));
+
+                }
+
+            }
+            else if (strData.Contains("Machine To Pixel"))
+            {
+                string[] bufs = strData.Split(' ');
+                if (bufs.Length < 5) return;
+                double rx = double.Parse(bufs[3]);
+                double ry = double.Parse(bufs[4]);
+                this.Transformation_POINT_INV(rx, ry, out HTuple px, out HTuple py);
+                TcpSendTool tool = GetToolToSendOfPos();
+                if (tool != null)
+                {
+                    tool.SendData(string.Format("{0},{1},{2},{3}",
+                        "Machine To Pixel ", px.D, " ", py.D));
+
+                }
+            }
+            else if (strData.Equals("GetAllRecipeNames"))
+            {
+                GetAllRecipeNames();
+            }
+            else if (strData.Equals("GetCurrRecipeName"))
+            {
+                GetCurrRecipeName();
+            }
+            else if (strData.Contains("NewRecipe"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                string name = bufs[1];
+                NewRecipe(name);
+            }
+            else if (strData.Contains("ExportRecipe"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 3) return;
+                string name = bufs[1];
+                string path = bufs[2];
+                ExportRecipe(name, path);
+            }
+            else if (strData.Contains("SwitchRecipe"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                string name = bufs[1];
+                SwitchRecipe(name);
+            }
+            else if (strData.Equals("GetAllCalibNames"))
+            {
+                GetAllCalibNames();
+            }
+            else if (strData.Equals("GetCurrCalibName"))
+            {
+                GetCurrCalibName();
+            }
+            else if (strData.Contains("SwithCalib"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                string name = bufs[1];
+                SwithCalib(name);
+            }
+            else if (strData.Equals("GetCurrModelName"))
+            {
+                GetCurrModelName();
+            }
+            else if (strData.Contains("SwitchOutputType"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                int index = int.Parse(bufs[1]);
+                SwitchOutputType((EumOutputType)index);
+            }
+            else if (strData.Contains("SwitchModelType"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                int index = int.Parse(bufs[1]);
+                SwitchModelType((EumModelType)index);
+            }
+            else if (strData.Contains("StartCalib"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                string name = bufs[1];
+                StartCalib(name);
+            }
+            else if (strData.Equals("SetCameraFreeStyle"))
+            {
+                SetCameraFreeStyle();
+            }
+            else if (strData.Contains("SaveImg"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 3) return;
+                string path = bufs[1];
+                string name = bufs[2];
+                SaveImg(path, name);
+            }
+            else if (strData.Contains("SaveWindowImg"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 3) return;
+                string path = bufs[1];
+                string name = bufs[2];
+                SaveWindowImg(path, name);
+            }
+            else if (strData.Equals("OpenCam"))
+            {
+                if (ContinueRunFlag)
+                {
+                    Appentxt("操作相机请关闭连续运行");
+                    return;
+                }
+                if (!ContinueRunFlag)
+                    OpenCam();
+            }
+            else if (strData.Equals("CloseCam"))
+            {
+                if (ContinueRunFlag)
+                {
+                    Appentxt("操作相机请关闭连续运行");
+                    return;
+                }
+                if (!ContinueRunFlag)
+                    CloseCam();
+            }
+            else if (strData.Equals("ContinueGrab"))
+            {
+                if (ContinueRunFlag)
+                {
+                    Appentxt("操作相机请关闭连续运行");
+                    return;
+                }
+                if (!ContinueRunFlag)
+                    ContinueGrab();
+            }
+            else if (strData.Equals("StopGrab"))
+            {
+                if (ContinueRunFlag)
+                {
+                    Appentxt("操作相机请关闭连续运行");
+                    return;
+                }
+                if (!ContinueRunFlag)
+                    StopGrab();
+            }
+            else if (strData.Equals("OneShot"))
+            {
+                if (ContinueRunFlag)
+                {
+                    Appentxt("操作相机请关闭连续运行");
+                    return;
+                }
+                if (!ContinueRunFlag)
+                    OneShot();
+            }
+            else if (strData.Equals("SystemRun"))
+            {
+                SystemRun();
+            }
+            else if (strData.Equals("SystemStop"))
+            {
+                SystemStop();
+            }
+
+            #endregion
         }
         /// <summary>
         /// 远程连接
@@ -5761,11 +6113,7 @@ namespace MainFormLib.ViewModels
         /// <param name="count"></param>
         private void PosTcpServer_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
         {
-            if (!ContinueRunFlag)
-            {
-                Appentxt("请开启连续运行");
-                return;
-            }
+           
             if (buffer == null || count <= 0 || buffer.Length < count)
                 return;
             string buf = "";
@@ -5775,7 +6123,7 @@ namespace MainFormLib.ViewModels
             buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
             buf += strData;
             Appentxt(buf);
-
+            //加锁保持流程同步
             Monitor.Enter(locker);
             try
             {
@@ -5796,11 +6144,7 @@ namespace MainFormLib.ViewModels
         /// <param name="count"></param>
         private void PosTcpClient_ReceiveData(IPEndPoint remote, byte[] buffer, int count)
         {
-            if (!ContinueRunFlag)
-            {
-                Appentxt("请开启连续运行");
-                return;
-            }
+            
             if (buffer == null || count <= 0 || buffer.Length < count)
                 return;
             string buf = "";
@@ -5811,7 +6155,7 @@ namespace MainFormLib.ViewModels
             buf += "[" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff") + "]";
             buf += strData;
             Appentxt(buf);
-                 
+            //加锁保持流程同步
             Monitor.Enter(locker);
             try
             {
