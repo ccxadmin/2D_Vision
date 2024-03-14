@@ -986,9 +986,11 @@ namespace MainFormLib.ViewModels
             else if (toolName.Contains("模板匹配"))
             {
                 string firstName = outputType.ToString();
-                (tool.GetParam() as MatchParam).RootFolder = saveToUsePath + "\\" + firstName;
+                (tool.GetParam() as MatchParam).RootFolder =
+                    (saveToUsePath + "\\" + firstName).Replace(AppDomain.CurrentDomain.BaseDirectory,"");
                 if (outputType == EumOutputType.Location)
-                    (tool.GetParam() as MatchParam).RootFolder = saveToUsePath + "\\" + firstName + "\\" + currModelType.ToString();
+                    (tool.GetParam() as MatchParam).RootFolder = 
+                        (saveToUsePath + "\\" + firstName + "\\" + currModelType.ToString()).Replace(AppDomain.CurrentDomain.BaseDirectory, "");
                 FormMatch f = new FormMatch(tool);
                 MatchViewModel.This.OnSaveParamHandle += OnSaveParamEventOfPosition;
                 MatchViewModel.This.OnSaveManageHandle = SaveManageOfPos;

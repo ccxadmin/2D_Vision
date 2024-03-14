@@ -36,11 +36,11 @@ namespace VisionShowLib.UserControls
             }
 
         }
-        public  void SetControlDoubleBuffer()
+        public void SetControlDoubleBuffer()
         {
 
             this.GetType().GetProperty("DoubleBuffered",
-                System.Reflection.BindingFlags.Instance | 
+                System.Reflection.BindingFlags.Instance |
                 System.Reflection.BindingFlags.NonPublic).SetValue(this, true, null);
         }
 
@@ -2100,7 +2100,7 @@ namespace VisionShowLib.UserControls
                 currParamOperate = paramOperate;
                 //折叠操作
                 if (paramOperate == EumParamOperate.fold)
-                {                   
+                {
                     toolStripButton1.Image = Resource.折叠;
                     toolStripButton1.ToolTipText = "展开参数页面";
                     ParamOperateActon?.Invoke(EumParamOperate.fold);
@@ -2108,7 +2108,7 @@ namespace VisionShowLib.UserControls
                 //展开操作
                 else
                 {
-             
+
                     toolStripButton1.Image = Resource.折叠__1_;
                     toolStripButton1.ToolTipText = "折叠参数页面";
                     ParamOperateActon?.Invoke(EumParamOperate.expand);

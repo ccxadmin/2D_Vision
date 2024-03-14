@@ -114,10 +114,9 @@
             无操作toolStripButton.BackgroundImageLayout = ImageLayout.Stretch;
             无操作toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             无操作toolStripButton.Image = (Image)resources.GetObject("无操作toolStripButton.Image");
-            无操作toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             无操作toolStripButton.ImageTransparentColor = Color.Magenta;
             无操作toolStripButton.Name = "无操作toolStripButton";
-            无操作toolStripButton.Size = new Size(36, 35);
+            无操作toolStripButton.Size = new Size(29, 35);
             无操作toolStripButton.Text = "无选择";
             无操作toolStripButton.Click += 无操作toolStripButton_Click;
             // 
@@ -130,10 +129,9 @@
             // 
             放大toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             放大toolStripButton.Image = (Image)resources.GetObject("放大toolStripButton.Image");
-            放大toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             放大toolStripButton.ImageTransparentColor = Color.Magenta;
             放大toolStripButton.Name = "放大toolStripButton";
-            放大toolStripButton.Size = new Size(36, 35);
+            放大toolStripButton.Size = new Size(29, 35);
             放大toolStripButton.Text = "放大";
             放大toolStripButton.Click += 放大toolStripButton_Click;
             // 
@@ -146,10 +144,9 @@
             // 
             缩小toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             缩小toolStripButton.Image = (Image)resources.GetObject("缩小toolStripButton.Image");
-            缩小toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             缩小toolStripButton.ImageTransparentColor = Color.Magenta;
             缩小toolStripButton.Name = "缩小toolStripButton";
-            缩小toolStripButton.Size = new Size(36, 35);
+            缩小toolStripButton.Size = new Size(29, 35);
             缩小toolStripButton.Text = "缩小";
             缩小toolStripButton.Click += 缩小toolStripButton_Click;
             // 
@@ -162,10 +159,9 @@
             // 
             平移toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             平移toolStripButton.Image = (Image)resources.GetObject("平移toolStripButton.Image");
-            平移toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             平移toolStripButton.ImageTransparentColor = Color.Magenta;
             平移toolStripButton.Name = "平移toolStripButton";
-            平移toolStripButton.Size = new Size(36, 35);
+            平移toolStripButton.Size = new Size(29, 35);
             平移toolStripButton.Text = "平移";
             平移toolStripButton.Click += 平移toolStripButton_Click;
             // 
@@ -178,10 +174,9 @@
             // 
             自适应toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             自适应toolStripButton.Image = (Image)resources.GetObject("自适应toolStripButton.Image");
-            自适应toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             自适应toolStripButton.ImageTransparentColor = Color.Magenta;
             自适应toolStripButton.Name = "自适应toolStripButton";
-            自适应toolStripButton.Size = new Size(36, 35);
+            自适应toolStripButton.Size = new Size(29, 35);
             自适应toolStripButton.Text = "自适应";
             自适应toolStripButton.Click += 自适应toolStripButton_Click;
             // 
@@ -194,10 +189,9 @@
             // 
             图像旋转toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             图像旋转toolStripButton.Image = (Image)resources.GetObject("图像旋转toolStripButton.Image");
-            图像旋转toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             图像旋转toolStripButton.ImageTransparentColor = Color.Magenta;
             图像旋转toolStripButton.Name = "图像旋转toolStripButton";
-            图像旋转toolStripButton.Size = new Size(36, 35);
+            图像旋转toolStripButton.Size = new Size(29, 35);
             图像旋转toolStripButton.Text = "图像旋转";
             图像旋转toolStripButton.Click += 图像旋转toolStripButton_Click;
             // 
@@ -210,10 +204,9 @@
             // 
             图像采集toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             图像采集toolStripButton.Image = (Image)resources.GetObject("图像采集toolStripButton.Image");
-            图像采集toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             图像采集toolStripButton.ImageTransparentColor = Color.Magenta;
             图像采集toolStripButton.Name = "图像采集toolStripButton";
-            图像采集toolStripButton.Size = new Size(36, 35);
+            图像采集toolStripButton.Size = new Size(29, 35);
             图像采集toolStripButton.Text = "图像采集";
             图像采集toolStripButton.Click += 图像采集toolStripButton_Click;
             // 
@@ -226,10 +219,9 @@
             // 
             运行toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
             运行toolStripButton.Image = (Image)resources.GetObject("运行toolStripButton.Image");
-            运行toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             运行toolStripButton.ImageTransparentColor = Color.Magenta;
             运行toolStripButton.Name = "运行toolStripButton";
-            运行toolStripButton.Size = new Size(39, 35);
+            运行toolStripButton.Size = new Size(29, 35);
             运行toolStripButton.Text = "连续运行";
             运行toolStripButton.Click += 运行toolStripButton_Click;
             // 
@@ -241,11 +233,11 @@
             // 停止toolStripButton
             // 
             停止toolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            停止toolStripButton.Font = new Font("Calibri", 10.8F, FontStyle.Regular, GraphicsUnit.Point);
             停止toolStripButton.Image = (Image)resources.GetObject("停止toolStripButton.Image");
-            停止toolStripButton.ImageScaling = ToolStripItemImageScaling.None;
             停止toolStripButton.ImageTransparentColor = Color.Magenta;
             停止toolStripButton.Name = "停止toolStripButton";
-            停止toolStripButton.Size = new Size(37, 35);
+            停止toolStripButton.Size = new Size(29, 35);
             停止toolStripButton.Text = "停止运行";
             停止toolStripButton.Click += 停止toolStripButton_Click;
             // 
@@ -258,10 +250,9 @@
             // 
             toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripButton1.Image = (Image)resources.GetObject("toolStripButton1.Image");
-            toolStripButton1.ImageScaling = ToolStripItemImageScaling.None;
             toolStripButton1.ImageTransparentColor = Color.Magenta;
             toolStripButton1.Name = "toolStripButton1";
-            toolStripButton1.Size = new Size(39, 35);
+            toolStripButton1.Size = new Size(29, 35);
             toolStripButton1.Text = "参数折叠";
             toolStripButton1.ToolTipText = "参数折叠";
             toolStripButton1.Click += toolStripButton1_Click;
@@ -379,9 +370,8 @@
             // 
             LocationLabel.ForeColor = Color.White;
             LocationLabel.Image = (Image)resources.GetObject("LocationLabel.Image");
-            LocationLabel.ImageScaling = ToolStripItemImageScaling.None;
             LocationLabel.Name = "LocationLabel";
-            LocationLabel.Size = new Size(64, 32);
+            LocationLabel.Size = new Size(52, 32);
             LocationLabel.Text = "0,0";
             // 
             // toolStripStatusLabel2
@@ -395,9 +385,8 @@
             // 
             GrayLabel.ForeColor = Color.White;
             GrayLabel.Image = (Image)resources.GetObject("GrayLabel.Image");
-            GrayLabel.ImageScaling = ToolStripItemImageScaling.None;
             GrayLabel.Name = "GrayLabel";
-            GrayLabel.Size = new Size(51, 32);
+            GrayLabel.Size = new Size(39, 32);
             GrayLabel.Text = "0";
             // 
             // toolStripStatusLabel4
@@ -411,9 +400,8 @@
             // 
             TimeLabel.ForeColor = Color.White;
             TimeLabel.Image = (Image)resources.GetObject("TimeLabel.Image");
-            TimeLabel.ImageScaling = ToolStripItemImageScaling.None;
             TimeLabel.Name = "TimeLabel";
-            TimeLabel.Size = new Size(72, 32);
+            TimeLabel.Size = new Size(60, 32);
             TimeLabel.Text = "0ms";
             // 
             // h_Disp

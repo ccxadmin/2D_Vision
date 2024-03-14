@@ -88,7 +88,7 @@ namespace PositionToolsLib.窗体.ViewModels
             BaseParam par = baseTool.GetParam(); 
             if (BaseTool.ObjectValided((par as MatchParam).InspectROI))
             {
-                modelSearchRegion.Dispose();
+                modelSearchRegion?.Dispose();
                 HOperatorSet.CopyObj((par as MatchParam).InspectROI, out modelSearchRegion, 1, -1);
             }
             if (BaseTool.ObjectValided((par as MatchParam).MaskROI))
