@@ -199,23 +199,29 @@ namespace CommunicationTools.ViewModels
         /// <param name="commDevInfos"></param>
         private void updateListView(List<CommDevInfo> commDevInfos)
         {
-            Model.FrameParamsVisib = Visibility.Hidden;
-            Model.DevInfoList.Clear();
-
-            if (commDevInfos.Count <= 0)
-                return;
-
-            for (int i = 0; i < commDevInfos.Count; i++)
-                Model.DevInfoList.Add(new DevInfo(i, commDevInfos[i].m_Name,
-                       commDevInfos[i].status.ToString()));
-            if (!string.IsNullOrEmpty(stCurDev.m_Name))
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                int index = CommDeviceController.g_CommDeviceList.FindIndex(cd =>
-                   cd.m_Name == stCurDev.m_Name);
-                Model.DevInfoSelectIndex = index;
-                Model.FrameParamsVisib = Visibility.Visible;
-            }
+                // 在UI线程上执行更新操作
+                // 更新绑定数据的代码
 
+
+                Model.FrameParamsVisib = Visibility.Hidden;
+                Model.DevInfoList.Clear();
+
+                if (commDevInfos.Count <= 0)
+                    return;
+
+                for (int i = 0; i < commDevInfos.Count; i++)
+                    Model.DevInfoList.Add(new DevInfo(i, commDevInfos[i].m_Name,
+                           commDevInfos[i].status.ToString()));
+                if (!string.IsNullOrEmpty(stCurDev.m_Name))
+                {
+                    int index = CommDeviceController.g_CommDeviceList.FindIndex(cd =>
+                       cd.m_Name == stCurDev.m_Name);
+                    Model.DevInfoSelectIndex = index;
+                    Model.FrameParamsVisib = Visibility.Visible;
+                }
+            });
         }
         /// <summary>
         /// 移除通讯设备

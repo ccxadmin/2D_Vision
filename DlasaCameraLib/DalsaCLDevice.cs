@@ -25,8 +25,8 @@ namespace DalsaCamera
 
         ~DalsaCLDevice()
         {
-            _image.Dispose();
-            _objDisp.Dispose();
+            _image?.Dispose();
+            _objDisp?.Dispose();
             FreeDalsaCam();
         }
         public string DeviceName { get => _deviceName; set => _deviceName = value; }
