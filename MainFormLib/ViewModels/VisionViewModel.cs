@@ -3770,6 +3770,13 @@ namespace MainFormLib.ViewModels
                 if (!CurrCam.IsAlive)
                 {
                     Appentxt("相机未在线");
+
+                    TcpSendTool tool = GetToolToSendOfPos();
+                    if (tool != null)
+                    {
+                        tool.SendData(string.Format("{0},{1}",
+                            "ERROR", "相机未在线"));
+                    }
                     return false;
                 }
 
@@ -4214,12 +4221,20 @@ namespace MainFormLib.ViewModels
         /// </summary>
         /// <param name="eumModelType">模板切换类型参数</param>
         /// <returns>模板切换是否成功标志</returns>
-        public bool SwitchModelType(EumModelType eumModelType)
+        public bool SwitchModelType(EumModelType eumModelType, bool flag = false)
         {
-            TcpSendTool tool = GetToolToSendOfPos();
+            TcpSendTool tool = null;
+            if (flag)
+                Appentxt("内部指令开启了模板切换");
+            else
+            {
+                tool = GetToolToSendOfPos();
+                Appentxt("外部指令开启了模板切换");
+            }             
+            
             return
                  Application.Current.Dispatcher.Invoke(() =>
-             { 
+             {
                  // 在UI线程上执行更新操作
                  // 更新绑定数据的代码
                  Appentxt(string.Format("指令开启模板切换,模板名称:{0}",
@@ -4229,12 +4244,9 @@ namespace MainFormLib.ViewModels
                      Appentxt(string.Format("当前切换模板类型:{0}与当前正使用的同名！",
                             Enum.GetName(typeof(EumModelType), eumModelType)));
 
-                     
-                     if (tool != null)
-                     {
-                         tool.SendData(string.Format("SwitchModelType,{0}", true));
-
-                     }
+                     if (!flag)
+                         if (tool != null)
+                             tool.SendData(string.Format("SwitchModelType,{0}", true));
                      return true;
                  }
                  outputType = Model.OutputType = EumOutputType.Location;
@@ -4253,12 +4265,10 @@ namespace MainFormLib.ViewModels
                      Model.ScanCamEnable = false;
                      LoadCamParam();
                  }
-            
-                 if (tool != null)
-                 {
-                     tool.SendData(string.Format("SwitchModelType,{0}", loadFlag));
 
-                 }             
+                 if (!flag)
+                     if (tool != null)
+                         tool.SendData(string.Format("SwitchModelType,{0}", loadFlag));
                  return loadFlag;
                  //if (!PosBaseTool.ObjectValided(this.GrabImg))
                  //    return;
@@ -5458,7 +5468,7 @@ namespace MainFormLib.ViewModels
                         return;
                     }
                     if (currModelType != EumModelType.CaliBoardModel)
-                        SwitchModelType(EumModelType.CaliBoardModel);
+                        SwitchModelType(EumModelType.CaliBoardModel,true);
                     string[] tempdataArray = strData.Split(',');
                     #region---//9点标定流程----------
                     switch (tempdataArray[1])
@@ -5590,7 +5600,7 @@ namespace MainFormLib.ViewModels
                         return;
                     }
                     if (currModelType != EumModelType.CaliBoardModel)
-                        SwitchModelType(EumModelType.CaliBoardModel);
+                        SwitchModelType(EumModelType.CaliBoardModel,true);
 
                     string[] tempdataArray = strData.Split(',');
                     #region---//旋转中心标定流程---------
@@ -5710,7 +5720,7 @@ namespace MainFormLib.ViewModels
                         return;
                     }
                     if (currModelType != EumModelType.CaliBoardModel)
-                        SwitchModelType(EumModelType.CaliBoardModel);
+                        SwitchModelType(EumModelType.CaliBoardModel,true);
                     if (this.Project.toolsDic.Count > 0 &&
                                   CurrCam.IsAlive)
                     {
@@ -5740,7 +5750,7 @@ namespace MainFormLib.ViewModels
                         return;
                     }
                     if (currModelType != EumModelType.ProductModel_1)
-                        SwitchModelType(EumModelType.ProductModel_1);
+                        SwitchModelType(EumModelType.ProductModel_1,true);
 
                     stopwatch.Restart();
 
@@ -5757,7 +5767,7 @@ namespace MainFormLib.ViewModels
                         return;
                     }
                     if (currModelType != EumModelType.ProductModel_2)
-                        SwitchModelType(EumModelType.ProductModel_2);
+                        SwitchModelType(EumModelType.ProductModel_2,true);
 
                     stopwatch.Restart();
 
@@ -5774,7 +5784,7 @@ namespace MainFormLib.ViewModels
                         return;
                     }
                     if (currModelType != EumModelType.GluetapModel)
-                        SwitchModelType(EumModelType.GluetapModel);
+                        SwitchModelType(EumModelType.GluetapModel,true);
 
                     stopwatch.Restart();
 
