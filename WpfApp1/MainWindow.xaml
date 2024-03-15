@@ -13,7 +13,7 @@
         Title="VisionApp"  Height="600" Width="800" Name="win" Icon="imgs/VisionApp.ico"
             WindowStartupLocation="CenterScreen"   Style="{DynamicResource stlWindowEx}"
         BtnMinimizeVisibility="Visible" BtnMaximizeVisibility="Visible" >
-
+  
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

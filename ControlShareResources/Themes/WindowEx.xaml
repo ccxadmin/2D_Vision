@@ -22,16 +22,17 @@
     </ControlTemplate>
     <!-- 窗体模板 -->
     <ControlTemplate x:Key="tmplWindowEx" TargetType="{x:Type Window}">
-        <Border>
-            <Border CornerRadius="5" Background="#ff6d3c" Margin="{Binding BorderMargin}">
+        <Border >
+            <Border CornerRadius="5"   Background="#ff6d3c" Margin="{Binding BorderMargin}">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="26"></RowDefinition>
+                        <RowDefinition Height="30" ></RowDefinition>
                         <RowDefinition></RowDefinition>
                     </Grid.RowDefinitions>
-                    <TextBlock Text="{TemplateBinding Title}" Margin="10 0 0 0" FontFamily="微软雅黑,黑体" FontSize="16" Foreground="#fff" VerticalAlignment="Center"></TextBlock>
-                    <StackPanel Orientation="Horizontal" Background="#ff6d3c" HorizontalAlignment="{Binding BtnPanelHorizontalAlignment}" Width="100" Margin="88 0 0 0">
-                        <StackPanel Orientation="Horizontal" Margin="10 0 5 0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock  Text="{TemplateBinding Title}" Margin="{Binding TitleMargin}" FontFamily="微软雅黑,黑体" FontSize="16" Foreground="#fff"   VerticalAlignment="Center"></TextBlock>
+                    <StackPanel Orientation="Horizontal" Background="#ff6d3c" HorizontalAlignment="{Binding BtnPanelHorizontalAlignment}"
+                                Width="100" Margin="88 0 5 0">
+                        <StackPanel Orientation="Horizontal" Margin="{Binding BtnMargin}" VerticalAlignment="Center" HorizontalAlignment="Right">
                             <Button x:Name="btnMinimize" Template="{StaticResource tmplWindowBtn}" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding DataContext.WindowBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="1" Visibility="{Binding BtnMinimizeVisibility}" >
                                 <Button.Tag>
                                     <BitmapImage UriSource="../images/最小化.png"/>
@@ -87,8 +88,8 @@
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome CornerRadius="5 5 0 0"
-                              CaptionHeight="35"
-                              GlassFrameThickness="0"
+                              CaptionHeight="30"                            
+                              GlassFrameThickness="0"                             
                               UseAeroCaptionButtons="False"
                               NonClientFrameEdges="None">
                 </WindowChrome>

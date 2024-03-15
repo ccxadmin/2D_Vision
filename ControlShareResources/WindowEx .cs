@@ -67,6 +67,36 @@ namespace ControlShareResources
             }
         }
 
+        private Thickness _TitleMargin = new Thickness(10, 0, 0, 0);
+        public Thickness TitleMargin
+        {
+            get
+            {
+                return _TitleMargin;
+            }
+            set
+            {
+                _TitleMargin = value;
+                OnPropertyChanged("TitleMargin");
+            }
+        }
+
+        private Thickness _BtnMargin = new Thickness(10, 0, 0, 0);
+        public Thickness BtnMargin
+        {
+            get
+            {
+                return _BtnMargin;
+            }
+            set
+            {
+                _BtnMargin = value;
+                OnPropertyChanged("BtnMargin");
+            }
+        }
+
+
+
         private Visibility _BtnMinimizeVisibility = Visibility.Visible;
         /// <summary>
         /// 窗体最小化按钮的显示状态
@@ -107,6 +137,7 @@ namespace ControlShareResources
         /// </summary>
         public Visibility BtnCloseVisibility
         {
+        
             get
             {
                 return _BtnCloseVisibility;
@@ -118,8 +149,8 @@ namespace ControlShareResources
             }
         }
 
-        
 
+      
         /// <summary>
         /// 窗体 构造函数
         /// </summary>
@@ -143,11 +174,13 @@ namespace ControlShareResources
                 {
                     this.BorderMargin = new Thickness(1, 0, 0, 0);
                     BtnPanelHorizontalAlignment = HorizontalAlignment.Left;
+                
                     BtnMinimizeVisibility = Visibility.Collapsed;
                     this.WindowState = WindowState.Minimized;
                 }
                 if (parameter == 2) //窗口还原、最大化
                 {
+                   
                     if (this.WindowState == WindowState.Normal)
                     {
                         double taskBarHeight = SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height;
@@ -161,13 +194,17 @@ namespace ControlShareResources
                             this.BorderMargin = new Thickness(0, 0, 0, taskBarHeight);
                         }
                         BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
+                        TitleMargin = new Thickness(10,10,0,0);
+                        BtnMargin = new Thickness(10, 10, 5, 0);
                         BtnMinimizeVisibility = Visibility.Visible;
                         this.WindowState = WindowState.Maximized;
                     }
                     else if (this.WindowState == WindowState.Maximized)
-                    {
+                    {                  
                         this.BorderMargin = new Thickness(0, 0, 0, 0);
                         BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
+                        TitleMargin = new Thickness(10, 0, 0, 0);
+                        BtnMargin = new Thickness(10, 0, 0, 0);
                         BtnMinimizeVisibility = Visibility.Visible;
                         this.WindowState = WindowState.Normal;
                     }
@@ -175,6 +212,8 @@ namespace ControlShareResources
                     {
                         this.BorderMargin = new Thickness(0, 0, 0, 0);
                         BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
+                        TitleMargin = new Thickness(10, 0, 0, 0);
+                        BtnMargin = new Thickness(10, 0, 0, 0);
                         BtnMinimizeVisibility = Visibility.Visible;
                         this.WindowState = WindowState.Normal;
                     }
@@ -191,6 +230,7 @@ namespace ControlShareResources
                 if (this.WindowState == WindowState.Maximized)
                 {
                     BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
+                 
                     BtnMinimizeVisibility = Visibility.Visible;
                     double taskBarHeight = SystemParameters.PrimaryScreenHeight - SystemParameters.WorkArea.Height;
                     double taskBarWidth = SystemParameters.PrimaryScreenWidth - SystemParameters.WorkArea.Width;
@@ -205,8 +245,10 @@ namespace ControlShareResources
                 }
                 if (this.WindowState == WindowState.Normal)
                 {
+                
                     this.BorderMargin = new Thickness(0, 0, 0, 0);
                     BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
+                  
                     if (BtnCloseVisibility != Visibility.Hidden)//如果窗体关闭按钮隐藏则退出操作                     
                         BtnMinimizeVisibility = Visibility.Visible;
                 }
