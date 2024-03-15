@@ -44,7 +44,7 @@
                                   
                                 </Button.Tag>
                             </Button>
-                            <Button x:Name="btnClose" Template="{StaticResource tmplWindowBtn}" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding DataContext.WindowBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="3">
+                            <Button x:Name="btnClose" Template="{StaticResource tmplWindowBtn}" WindowChrome.IsHitTestVisibleInChrome="True" Command="{Binding DataContext.WindowBtnCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="3"  Visibility="{Binding BtnCloseVisibility}" >
                                 <Button.Tag>
                                     <BitmapImage UriSource="../images/关闭.png"/>
                                  

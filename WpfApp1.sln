@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WpfApp1", "WpfApp1\WpfApp1.csproj", "{C4385730-AD1F-463E-8565-C1BA0BED8F05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VisionApp", "WpfApp1\VisionApp.csproj", "{C4385730-AD1F-463E-8565-C1BA0BED8F05}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ROIGenerateLib", "ROIGenerateLib\ROIGenerateLib.csproj", "{B59B4C6E-6102-4619-BF87-22C564EE344D}"
 EndProject

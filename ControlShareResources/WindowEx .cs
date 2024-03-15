@@ -101,6 +101,25 @@ namespace ControlShareResources
             }
         }
 
+        private Visibility _BtnCloseVisibility = Visibility.Visible;
+        /// <summary>
+        /// 窗体关闭按钮的显示状态
+        /// </summary>
+        public Visibility BtnCloseVisibility
+        {
+            get
+            {
+                return _BtnCloseVisibility;
+            }
+            set
+            {
+                _BtnCloseVisibility = value;
+                OnPropertyChanged("BtnCloseVisibility");
+            }
+        }
+
+        
+
         /// <summary>
         /// 窗体 构造函数
         /// </summary>
@@ -168,6 +187,7 @@ namespace ControlShareResources
             this.WindowBtnCommand = windowBtnCommand;
             this.StateChanged += (s, e) =>
             {
+               
                 if (this.WindowState == WindowState.Maximized)
                 {
                     BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
@@ -187,7 +207,8 @@ namespace ControlShareResources
                 {
                     this.BorderMargin = new Thickness(0, 0, 0, 0);
                     BtnPanelHorizontalAlignment = HorizontalAlignment.Right;
-                    BtnMinimizeVisibility = Visibility.Visible;
+                    if (BtnCloseVisibility != Visibility.Hidden)//如果窗体关闭按钮隐藏则退出操作                     
+                        BtnMinimizeVisibility = Visibility.Visible;
                 }
             };
             #endregion

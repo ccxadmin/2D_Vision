@@ -6086,7 +6086,13 @@ namespace MainFormLib.ViewModels
             {
                 SystemStop();
             }
-
+            else if (strData.Contains("SetParamMode"))
+            {
+                string[] bufs = strData.Split(',');
+                if (bufs.Length < 2) return;
+                int index = int.Parse(bufs[1]);
+                SetParamMode((EumParamOperate)index);
+            }
             #endregion
         }
         /// <summary>

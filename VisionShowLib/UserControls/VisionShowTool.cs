@@ -2278,8 +2278,8 @@ namespace VisionShowLib.UserControls
     #endregion
     public enum EumParamOperate
     {
-        fold,
-        expand
+        fold,   //折叠
+        expand   //展开
     }
 }
 

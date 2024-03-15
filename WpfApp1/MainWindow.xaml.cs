@@ -35,7 +35,7 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using System.Xml.Linq;
 
-namespace WpfApp1
+namespace VisionApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -68,11 +68,37 @@ namespace WpfApp1
             base.OnClosed(e);
         }
 
-      
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-           
-
+            bool wholeShow = bool.Parse(GeneralUse.ReadValue("窗体", "完整显示", "config", "true", "Config"));
+            if (!wholeShow)
+            {
+               
+                win.WindowStyle = WindowStyle.None;
+                win.WindowState = WindowState.Maximized;
+                win.BtnMaximizeVisibility = Visibility.Hidden;
+                win.BtnMinimizeVisibility = Visibility.Hidden;
+                win.BtnCloseVisibility = Visibility.Hidden;
+                rd1.Height = new GridLength(0);
+                tb.Visibility = Visibility.Collapsed;
+                tbar.Visibility = Visibility.Collapsed;
+                rd3.Height = new GridLength(0);
+                GeneralUse.WriteValue("窗体", "完整显示",  "false", "config", "Config");
+            }
+            else
+            {
+                win.WindowStyle = WindowStyle.SingleBorderWindow;
+                win.WindowState = WindowState.Normal;
+                win.BtnMaximizeVisibility = Visibility.Visible;
+                win.BtnMinimizeVisibility = Visibility.Visible;
+                win.BtnCloseVisibility = Visibility.Visible;
+                //rd1.Height = new GridLength(40);
+                tb.Visibility = Visibility.Visible;
+                //rd3.Height = new GridLength(40);
+                tbar.Visibility = Visibility.Visible;
+                GeneralUse.WriteValue("窗体", "完整显示", "true", "config", "Config");
+            }
         }
         #region No use
         //private void Button_Click(object sender, RoutedEventArgs e)
@@ -319,17 +345,28 @@ namespace WpfApp1
         /// <param name="e"></param>
         private void btnDeleteClick(object sender, RoutedEventArgs e)
         {
+
             int index = tbc.SelectedIndex;
-            if (index < 1) return;
-            string header=((TabItem)(tbc.Items[index])).Header.ToString();
-            tbc.Items.RemoveAt(index);
-            if (!VisionDicName.ContainsKey(header)) return;
-            //VisionDic[header].Dispose();
-            string preDeletePath = AppDomain.CurrentDomain.BaseDirectory + VisionDicName[header];
-            if(Directory.Exists(preDeletePath))
-                Directory.Delete(preDeletePath, true);
-            VisionDic.Remove(header);
-            VisionDicName.Remove(header);
+            if (index < 1)
+            {
+                MessageBox.Show("Main工位不可被删除！");
+                return;
+            }
+                
+            string header = ((TabItem)(tbc.Items[index])).Header.ToString();
+
+            if (MessageBox.Show("确认删除工位:" + header + "?", "Information", MessageBoxButton.OKCancel,
+                MessageBoxImage.Question) == MessageBoxResult.OK)
+            {
+                tbc.Items.RemoveAt(index);
+                if (!VisionDicName.ContainsKey(header)) return;
+                //VisionDic[header].Dispose();
+                string preDeletePath = AppDomain.CurrentDomain.BaseDirectory + VisionDicName[header];
+                if (Directory.Exists(preDeletePath))
+                    Directory.Delete(preDeletePath, true);
+                VisionDic.Remove(header);
+                VisionDicName.Remove(header);
+            }
         }
         /// <summary>
         /// 保存
@@ -343,7 +380,21 @@ namespace WpfApp1
             initStatus.Foreground = new SolidColorBrush(Color.FromRgb(255, 109, 60));
             initStatus.Content = "工作流程保存成功" ;
         }
+        /// <summary>
+        /// 退出
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnExitClick(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("确认退出应用？" , "Warning", MessageBoxButton.OKCancel,
+             MessageBoxImage.Warning) == MessageBoxResult.OK)
+                foreach (var v in VisionDic.Values)
+            {
+                v.viewModel.Release();
+            }
 
+        }
         /// <summary>
         /// 复制文件夹及文件
         /// </summary>

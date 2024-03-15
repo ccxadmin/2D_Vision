@@ -13,8 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="imgs\VisionApp.ico" />
+    <None Remove="imgs\VisonApp.ico" />
+    <None Remove="imgs\保存.ico" />
     <None Remove="imgs\保存.png" />
+    <None Remove="imgs\关闭.ico" />
+    <None Remove="imgs\删除.ico" />
     <None Remove="imgs\删除.png" />
+    <None Remove="imgs\新建.ico" />
     <None Remove="imgs\新建.png" />
   </ItemGroup>
 
@@ -42,10 +48,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="imgs\VisionApp.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\保存.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\保存.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="imgs\关闭.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\删除.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="imgs\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\新建.ico">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="imgs\新建.png">

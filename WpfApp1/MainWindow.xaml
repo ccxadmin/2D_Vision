@@ -1,16 +1,16 @@
-﻿<uw:WindowEx x:Class="WpfApp1.MainWindow"
+﻿<uw:WindowEx x:Class="VisionApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp1"       
+        xmlns:local="clr-namespace:VisionApp"       
         xmlns:view="clr-namespace:VisionShowLib.UserControls;assembly=VisionShowLib"     
         xmlns:uc="clr-namespace:ControlShareResources.UserControls;assembly=ControlShareResources" 
          xmlns:uw="clr-namespace:ControlShareResources;assembly=ControlShareResources"
         xmlns:attach="clr-namespace:ControlShareResources.Attach;assembly=ControlShareResources"
         mc:Ignorable="d" Loaded="Window_Loaded"   Closing="Window_Closing"
         xmlns:convert="clr-namespace:ControlShareResources.Converter;assembly=ControlShareResources"
-        Title="MainWindow"  Height="600" Width="800"
+        Title="VisionApp"  Height="600" Width="800" Name="win" Icon="imgs/VisionApp.ico"
             WindowStartupLocation="CenterScreen"   Style="{DynamicResource stlWindowEx}"
         BtnMinimizeVisibility="Visible" BtnMaximizeVisibility="Visible" >
 
@@ -25,9 +25,9 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="40" x:Name="rd1"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="40" x:Name="rd3"/>
         </Grid.RowDefinitions>
         <Rectangle Grid.Row="0" Stroke="#dddddd" StrokeThickness="1"/>
         <ToolBarTray x:Name="tb" Grid.Row="0" Margin="1" 
@@ -78,8 +78,37 @@ Content="保存" Margin="2" Background="Transparent"  x:Name="btnSave"
                 <Grid x:Name="panel0"/>
                 <!--</ScrollViewer>-->
             </TabItem>
+            <TabControl.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="新建" 
+                              Click="btnNewClick">
+                        <MenuItem.Icon>
+                            <Image Source="imgs/新建.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="删除"  
+                               Click="btnDeleteClick">
+                        <MenuItem.Icon>
+                            <Image Source="imgs/删除.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="保存" 
+                               Click="btnSaveClick" >
+                        <MenuItem.Icon>
+                            <Image Source="imgs/保存.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="退出" 
+             Click="btnExitClick" >
+                        <MenuItem.Icon>
+                            <Image Source="imgs/关闭.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </TabControl.ContextMenu>
+
         </TabControl>
-        <StatusBar Grid.Row="2" Background="#ffffff"
+        <StatusBar Grid.Row="2" Background="#ffffff" Name="tbar"
                    BorderBrush="#dddddd" BorderThickness="1">
             <StatusBarItem Content="状态：" Foreground="#ff6d3c" FontSize="16"/>
             <StatusBarItem  x:Name="initStatus" Content="未知"  Foreground="#ff6d3c" FontSize="16"/>
