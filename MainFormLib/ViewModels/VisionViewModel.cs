@@ -5917,8 +5917,8 @@ namespace MainFormLib.ViewModels
                 TcpSendTool tool = GetToolToSendOfPos();
                 if (tool != null)
                 {
-                    tool.SendData(string.Format("{0},{1},{2},{3}",
-                        "Pixel To Machine ", rx.D, " ", ry.D));
+                    tool.SendData(string.Format("{0}{1} {2}",
+                        "Pixel To Machine ", rx.D,  ry.D));
 
                 }
 
@@ -5933,8 +5933,8 @@ namespace MainFormLib.ViewModels
                 TcpSendTool tool = GetToolToSendOfPos();
                 if (tool != null)
                 {
-                    tool.SendData(string.Format("{0},{1},{2},{3}",
-                        "Machine To Pixel ", px.D, " ", py.D));
+                    tool.SendData(string.Format("{0}{1} {2}",
+                        "Machine To Pixel ", px.D,  py.D));
 
                 }
             }
