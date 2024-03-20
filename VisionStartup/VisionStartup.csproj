@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="imgs\VisionApp.ico" />
+    <None Remove="imgs\保存.ico" />
+    <None Remove="imgs\保存.png" />
+    <None Remove="imgs\关闭.ico" />
+    <None Remove="imgs\删除.ico" />
+    <None Remove="imgs\删除.png" />
+    <None Remove="imgs\新建.ico" />
+    <None Remove="imgs\新建.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ControlShareResources\ControlShareResources.csproj" />
+    <ProjectReference Include="..\ExternalFunctionLib\ExternalFunctionLib.csproj" />
+    <ProjectReference Include="..\FunctionLib\FunctionLib.csproj" />
+    <ProjectReference Include="..\MainFormLib\MainFormLib.csproj" />
+    <ProjectReference Include="..\PositionToolsLib\PositionToolsLib.csproj" />
+    <ProjectReference Include="..\ROIGenerateLib\ROIGenerateLib.csproj" />
+    <ProjectReference Include="..\VisionShowLib\VisionShowLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="FilesRAWLibrary">
+      <HintPath>..\FunctionLib\dll\FilesRAWLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="halcondotnet">
+      <HintPath>..\ROIGenerateLib\dll\halcondotnet.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="imgs\VisionApp.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\保存.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\保存.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\关闭.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\删除.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\删除.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\新建.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="imgs\新建.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+</Project>
