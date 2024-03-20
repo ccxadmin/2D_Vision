@@ -5529,7 +5529,7 @@ namespace MainFormLib.ViewModels
                                 this.caliModel = model;
                                 NinePointsCalibTool.SaveNineCaliData(this.caliModel,
                                     rootFolder, currCalibName);
-
+                                LoadMatrix();//重载标定关系
                             })).ContinueWith(t =>
                             {
                                 virtualConnect.WriteData(string.Format("{0},{1}", "NP,E", flag ? "OK" : "NG"));
