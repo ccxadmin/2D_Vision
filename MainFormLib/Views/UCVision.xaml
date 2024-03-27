@@ -59,7 +59,7 @@ Height="700" Width="1000">
             <TabControl Style="{DynamicResource TabControlStyle}" Margin="2" >
                 <TabItem Style="{DynamicResource TabItemStyle}"
                          IsEnabled="{Binding Model.FrameCamEnable}"
-                         Header="面阵相机">
+                         Header="面阵相机" >
                     <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto">-->
 
@@ -622,7 +622,7 @@ CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"  IsEnable
 
                                 </Expander.Content>
                             </Expander>
-                            <GroupBox Grid.Row="1"  Style="{DynamicResource GroupBoxStyle}" Header="输出类型"   > 
+                            <GroupBox Grid.Row="1"  Style="{DynamicResource GroupBoxStyle}" Header="输出类型"   >
                                 <Grid>
                                     <Label Style="{DynamicResource  LabelStyle}" Content="输出类型：" VerticalAlignment="Top" Margin="3,7,0,0"/>
                                     <ComboBox Style="{DynamicResource MyCbbStyle}" HorizontalAlignment="Center"
@@ -675,7 +675,7 @@ VerticalAlignment="Top" Width="160" Height="25" Margin="0,7,0,7"
                                     </Button.Content>
                                 </Button>
 
-                               
+
                             </Grid>
                             <GroupBox Grid.Row="3"   Style="{DynamicResource GroupBoxStyle}" Header="检测流程"    >
                                 <Grid>
@@ -947,19 +947,19 @@ CommandParameter="{Binding RelativeSource={RelativeSource Self}}"
                                                             Command="{Binding PosMenuClickCommand}"
                                                             CommandParameter="线线距离"/>
                                         </MenuItem>
-                                       
-                       
+
+
                                     </Menu>
                                     <Menu Grid.Row="2"   Margin="1" 
             Style="{DynamicResource WD.DefaultMenu}"
              IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
-                                       
+
                                         <MenuItem Header="轨迹提取"  Margin="0,3" 
          IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"      
                Style="{DynamicResource WD.DefaultMenuItem}"
                 Command="{Binding PosMenuClickCommand}"
                 CommandParameter="轨迹提取">
-                                         
+
                                         </MenuItem>
                                         <Separator  Style="{DynamicResource WD.SeparatorStyleKey}"/>
                                         <MenuItem Header="AOI>>"  Margin="0,3" 
@@ -987,7 +987,7 @@ CommandParameter="胶宽"                                                  />
             Style="{DynamicResource WD.DefaultMenu}"
              IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}">
 
-                                      
+
                                         <MenuItem Header="结果显示"  Margin="0,3" 
                                          IsEnabled="{Binding  Model.ContinueRunFlag, Converter={StaticResource boolConverter}}"
                                          Style="{DynamicResource WD.DefaultMenuItem}"
@@ -1102,7 +1102,6 @@ CommandParameter="Tcp接收"/>
                         </Grid>
                     </ScrollViewer>
                 </TabItem>
-               
                 <TabItem Style="{DynamicResource TabItemStyle}"
                           
                          Header="配方设置">

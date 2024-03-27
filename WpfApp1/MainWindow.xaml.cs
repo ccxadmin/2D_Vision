@@ -34,6 +34,8 @@ using System.Threading;
 using System.Windows.Threading;
 using System.ComponentModel;
 using System.Xml.Linq;
+using FilesRAW.Encryption;
+
 
 namespace VisionApp
 {
@@ -42,7 +44,8 @@ namespace VisionApp
     /// </summary>
     public partial class MainWindow
     {
-      
+        //动态随机码，每次启动软件都不一样
+        FormRegiester _frmRegiester = null;
         FormGifShow f_GifShow;//进度显示
         UCVision newf =null;
         double width, height;
@@ -51,12 +54,23 @@ namespace VisionApp
         Dictionary<string, UCVision> VisionDic = new Dictionary<string, UCVision>();
         public MainWindow()
         {
-            InitializeComponent();
-            width = this.panel0.Width;
-            height = this.panel0.Height;
-            tbc.Items.Clear();
+            _frmRegiester = new FormRegiester(System.Guid.NewGuid());
+            if (_frmRegiester.ShowDialog().Value)
+            {           
+                //DoSomething;
+                InitializeComponent();
+                width = this.panel0.Width;
+                height = this.panel0.Height;
+                tbc.Items.Clear();
+
+                LoadMain();
+            }
+            else
+            {
+                MessageBox.Show("注册失败");
+                System.Diagnostics.Process.GetCurrentProcess().Kill();
+            }
           
-            LoadMain();
                   
         }
         /// <summary>

@@ -37,7 +37,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
-                    <StackPanel Margin="5 0 0 0" Cursor="Hand" VerticalAlignment="Center">
+                    <StackPanel Margin="5 0 5 0" Cursor="Hand" VerticalAlignment="Center">
                         <TextBlock x:Name="text" Text="{TemplateBinding Header}" FontSize="15" Foreground="{DynamicResource MainTextColor}"/>
                         <Border x:Name="border" Background="Transparent" Height="3" CornerRadius="1" />
                     </StackPanel>
