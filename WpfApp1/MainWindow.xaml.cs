@@ -45,6 +45,7 @@ namespace VisionApp
     /// </summary>
     public partial class MainWindow
     {
+        bool wholeShow = true;
         //动态随机码，每次启动软件都不一样
         FormRegiester _frmRegiester = null;
         FormGifShow f_GifShow;//进度显示
@@ -86,7 +87,7 @@ namespace VisionApp
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            bool wholeShow = bool.Parse(GeneralUse.ReadValue("窗体", "完整显示", "config", "true", "Config"));
+             wholeShow = bool.Parse(GeneralUse.ReadValue("窗体", "完整显示", "config", "true", "Config"));
             if (!wholeShow)
             {
                
@@ -244,6 +245,10 @@ namespace VisionApp
                     grid.Children.Add(newf);
                     item.Content = grid;
                     tbc.Items.Add(item);
+                    if(wholeShow)
+                      newf.viewModel.SetParamMode( EumParamOperate.expand);
+                    else
+                        newf.viewModel.SetParamMode(EumParamOperate.fold);
                 }
                 else
                 {
@@ -272,7 +277,10 @@ namespace VisionApp
                         grid.Children.Add(newf);
                         item.Content = grid;
                         tbc.Items.Add(item);
-
+                        if (wholeShow)
+                            newf.viewModel.SetParamMode(EumParamOperate.expand);
+                        else
+                            newf.viewModel.SetParamMode(EumParamOperate.fold);
                     }
 
                 }
