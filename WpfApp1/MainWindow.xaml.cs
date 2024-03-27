@@ -35,6 +35,7 @@ using System.Windows.Threading;
 using System.ComponentModel;
 using System.Xml.Linq;
 using FilesRAW.Encryption;
+using System.Runtime.Intrinsics.Arm;
 
 
 namespace VisionApp
@@ -282,7 +283,8 @@ namespace VisionApp
             }
             catch (Exception er)
             {
-                MessageBox.Show("工作流程初始化失败：" + er.Message);
+              
+                MessageBox.Show("工作流程初始化失败：" + er.Message);      
                 initStatus.Background = new SolidColorBrush(Color.FromRgb(255, 0, 0));
                 initStatus.Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255));
                 initStatus.Content = "工作流程初始化失败：" + er.Message;

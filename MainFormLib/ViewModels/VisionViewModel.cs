@@ -387,6 +387,7 @@ namespace MainFormLib.ViewModels
 
             #endregion
 
+            SetParamMode( EumParamOperate.fold);
         }
         public VisionViewModel(Action<string, string> appenTxtAction,
                Action<string> clearTxtAction,
